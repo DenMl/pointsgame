@@ -4,10 +4,9 @@
 #include "BasicTypes.h"
 #include "BasicConstants.h"
 #include "BotEngine.h"
-
 #include <iostream>
-using std::cin;
-using std::cout;
+
+using namespace std;
 
 const int min_MinMaxDepth = 0;
 const int max_MinMaxDepth = 8;
@@ -75,7 +74,7 @@ int main(int argc, char* argv[])
 			cout << X << " " << Y << " " << color << std::endl;
 			break;
 		case 2:
-			cin >> s;
+			cin.getline(s, 256);
 			cout << s << std::endl;
 			break;
 		}
