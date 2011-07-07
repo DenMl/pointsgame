@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<GameLanguage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <File>_Файл</File>
+  <Game>_Игра</Game>
+  <Options>_Опции</Options>
+  <Help>_Помощь</Help>
+  <New>_Новая</New>
+  <Close>_Закрыть</Close>
+  <Save>_Сохранить</Save>
+  <Load>_Загрузить</Load>
+  <Back>_Назад</Back>
+  <DoStep>_Ходить</DoStep>
+  <NextPlayer>_Следующий игрок</NextPlayer>
+  <GlobalPreferences>_Глобальные настройки</GlobalPreferences>
+  <LocalPreferences>_Локальные настройки</LocalPreferences>
+  <Language>_Язык</Language>
+  <About>_О программе</About>
+  <Red>Красные</Red>
+  <Black>Черные</Black>
+  <OK>_OK</OK>
+  <Cancel>_Отмена</Cancel>
+  <GamePreferences>Настройки игры</GamePreferences>
+  <AIPreferences>Настройки ИИ</AIPreferences>
+  <PlayersPreferences>Настройки игроков</PlayersPreferences>
+  <OtherPrefernces>Другие настройки</OtherPrefernces>
+  <Width>Ширина</Width>
+  <Height>Высота</Height>
+  <SurroundCondition>Условие захвата</SurroundCondition>
+  <Standart>Стандартное</Standart>
+  <Always>Всегда</Always>
+  <AlwaysEnemy>Всегда враг</AlwaysEnemy>
+  <BeginPattern>Начало с</BeginPattern>
+  <Clean>Чистого поля</Clean>
+  <Crosswire>Скреста</Crosswire>
+  <Square>Квадрата</Square>
+  <AI>ИИ</AI>
+  <MinMaxDepth>Глубина минимакса</MinMaxDepth>
+  <UCTIterations>Итерации UCT</UCTIterations>
+  <RedName>Имя красных</RedName>
+  <BlackName>Имя черных</BlackName>
+  <RedColor>Цвет красных</RedColor>
+  <BlackColor>Цвет черных</BlackColor>
+  <FillingAlpha>Альфа заливки</FillingAlpha>
+  <Sounds>Звуки</Sounds>
+  <NewGame>Новая игра</NewGame>
+  <preferences>настройки</preferences>
+</GameLanguage>
