@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<GameLanguage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <File>_File</File>
+  <Game>_Game</Game>
+  <Options>_Options</Options>
+  <Help>_Help</Help>
+  <New>_New</New>
+  <Close>_Close</Close>
+  <Save>_Save</Save>
+  <Load>_Load</Load>
+  <Back>_Back</Back>
+  <DoStep>_Do step</DoStep>
+  <NextPlayer>_Next player</NextPlayer>
+  <GlobalPreferences>_Global preferences</GlobalPreferences>
+  <LocalPreferences>_Local preferences</LocalPreferences>
+  <Language>_Language</Language>
+  <About>_About</About>
+  <Red>Red</Red>
+  <Black>Black</Black>
+  <OK>_OK</OK>
+  <Cancel>_Cancel</Cancel>
+  <GamePreferences>Game preferences</GamePreferences>
+  <AIPreferences>AI preferences</AIPreferences>
+  <PlayersPreferences>Players preferences</PlayersPreferences>
+  <OtherPrefernces>Other preferences</OtherPrefernces>
+  <Width>Width</Width>
+  <Height>Height</Height>
+  <SurroundCondition>Surround condition</SurroundCondition>
+  <Standart>Standart</Standart>
+  <Always>Always</Always>
+  <AlwaysEnemy>Always enemy</AlwaysEnemy>
+  <BeginPattern>Begin pattern</BeginPattern>
+  <Clean>Clean</Clean>
+  <Crosswire>Crosswire</Crosswire>
+  <Square>Square</Square>
+  <AI>AI</AI>
+  <MinMaxDepth>MinMax depth</MinMaxDepth>
+  <UCTIterations>UCT iterations</UCTIterations>
+  <RedName>Red name</RedName>
+  <BlackName>Black name</BlackName>
+  <RedColor>Red color</RedColor>
+  <BlackColor>Black color</BlackColor>
+  <FillingAlpha>Filling alpha</FillingAlpha>
+  <Sounds>Sounds</Sounds>
+  <NewGame>New game</NewGame>
+  <preferences>preferences</preferences>
+</GameLanguage>
