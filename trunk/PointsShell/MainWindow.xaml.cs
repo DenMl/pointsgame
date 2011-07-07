@@ -219,7 +219,7 @@ namespace PointsShell
 
         private void AboutClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("PointsGame 1.3.1.0\nAuthors: Keij, Kvanttt\nContacts:\nKeij: ICQ 366-369-317, mail kurnevsky@gmail.com", "PointsGame");
+            MessageBox.Show("PointsGame 1.3.1.1\nAuthors: Keij, Kvanttt\nContacts:\nKeij: ICQ 366-369-317, mail kurnevsky@gmail.com", "PointsGame");
         }
     }
 }
