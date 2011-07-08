@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
 	cin >> P;
 
-	if (P != 3)
+	if (P != 4)
 	{
 		cout << "Invalid protocol. The last version at http://code.google.com/p/pointsgame/" << std::endl << "-1" << std::endl;
 		return -1;
@@ -56,14 +56,30 @@ int main(int argc, char* argv[])
 
 		switch (c)
 		{
+		// -1 - выход.
 		case -1:
 			return 0;
+
+		// 0 - сделать ход.
+		// Входные параметры:
+		// 1. X - координата x.
+		// 2. Y - координата y.
+		// 3. color - цвет игрока.
+		// Выходные параметры:
+		// Повторяет ход, если согласен с ним.
 		case 0:
 			cin >> X >> Y >> color;
 			if (!MainField->DoStep(MainField->ConvertToPos(X, Y), color))
 				continue;
 			cout << X << " " << Y << " " << color << std::endl;
 			break;
+
+		// 1 - получить наилучший ход для текущей позиции.
+		// Входные параметры:
+		// 1. color - цвет игрока, чей ход нужно получить.
+		// 2. P - мощность анализа. Изменяется от 0 до 100.
+		// Выходные параметры:
+		// Наилучший ход.
 		case 1:
 			cin >> color >> P;
 			MainField->CurPlayer = color;
@@ -73,7 +89,15 @@ int main(int argc, char* argv[])
 			MainField->ConvertToXY(pos, X, Y);
 			cout << X << " " << Y << " " << color << std::endl;
 			break;
+
+		// 2 - откатить на один ход назад.
 		case 2:
+			if (MainField->PointsSeq.Count)
+				MainField->UndoStep();
+			break;
+
+		// 3 - эхо. Повторяет полученную строку.
+		case 3:
 			cin.getline(s, 256);
 			cout << s << std::endl;
 			break;
