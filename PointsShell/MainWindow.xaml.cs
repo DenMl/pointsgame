@@ -146,7 +146,10 @@ namespace PointsShell
             if (OFD.ShowDialog() != true)
                 return;
 
-            var game = new Game(OFD.FileName, new GamePreferences(GlobalPreferences), GlobalLanguage);
+            var game = Game.Load(OFD.FileName, new GamePreferences(GlobalPreferences), GlobalLanguage);
+
+            if (game == null)
+                return;
 
             MainTabControl.Items.Add(new TabItem { Content = game, Header = GlobalPreferences.Header != "" ? GlobalPreferences.Header : GlobalLanguage.Game });
             MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
