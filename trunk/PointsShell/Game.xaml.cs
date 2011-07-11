@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +26,7 @@ namespace PointsShell
     {
         private const int CellSize = 18;
 
-        private readonly GamePreferences _preferences;
+        private GamePreferences _preferences;
         public GamePreferences Preferences
         {
             get { return new GamePreferences(_preferences); }
@@ -64,91 +65,109 @@ namespace PointsShell
         // Переменная, показывающая, выполняются ли в данный момент вычисления для хода ИИ.
         private bool Thinking;
         // Вспомогательный список, нужный для отката ходов.
-        private readonly List<int> CanvasChildrenCount;
+        private readonly List<int> CanvasChildrenCount = new List<int>();
+
+        private Game()
+        {
+            InitializeComponent();
+        }
 
         public Game(GamePreferences preferences)
         {
             InitializeComponent();
-
             _preferences = preferences;
-
             Field = new Field(preferences.Width, preferences.Height, preferences.SurCond);
             Bot = new PointsBot(preferences.Width, preferences.Height, preferences.SurCond, BeginPattern.CleanPattern);
-
-            CanvasChildrenCount = new List<int>();
             DrawField(_preferences.Width, _preferences.Height);
-
             PlaceBeginPattern(preferences.BeginPattern);
-
             UpdateTextInfo();
         }
 
         public Game(GamePreferences preferences, GameLanguage language)
         {
             InitializeComponent();
-
             _preferences = preferences;
-
             Field = new Field(preferences.Width, preferences.Height, preferences.SurCond);
             Bot = new PointsBot(preferences.Width, preferences.Height, preferences.SurCond, BeginPattern.CleanPattern);
-
-            CanvasChildrenCount = new List<int>();
             DrawField(_preferences.Width, _preferences.Height);
-
             PlaceBeginPattern(preferences.BeginPattern);
-
-            UpdateTextInfo();
-
             SetLanguage(language);
-        }
-
-        public Game(string File, GamePreferences preferences)
-        {
-            InitializeComponent();
-
-            _preferences = preferences;
-
-            CanvasChildrenCount = new List<int>();
-            DrawField(_preferences.Width, _preferences.Height);
-
-            LoadXT(File);
-
             UpdateTextInfo();
         }
 
-        public Game(string File, GamePreferences preferences, GameLanguage language)
+        public static Game Load(string FileName, GamePreferences preferences)
         {
-            InitializeComponent();
+            var Format = GetFormat(FileName);
+            switch (Format)
+            {
+                case (GameFormat.PointsXT):
+                    var result = new Game {_preferences = preferences};
+                    result.LoadXT(FileName);
+                    return result;
+                default:
+                    return null;
+            }
+        }
 
-            _preferences = preferences;
+        public static Game Load(string FileName, GamePreferences preferences, GameLanguage language)
+        {
+            var result = Load(FileName, preferences);
+            if (result != null)
+                result.SetLanguage(language);
+            return result;
+        }
 
-            CanvasChildrenCount = new List<int>();
-            DrawField(_preferences.Width, _preferences.Height);
+        // Проверяет файл FileName на формат PointsXT и его валидность.
+        public static bool IsXT(string FileName)
+        {
+            var Stream = new StreamReader(FileName);
+            var buffer = new byte[Stream.BaseStream.Length];
+            var Count = (int)Stream.BaseStream.Length;
+            Stream.BaseStream.Read(buffer, 0, Count);
+            Stream.Close();
 
-            LoadXT(File);
+            if (Count < 71) // Размер должен быть таким, чтобы в файле содержался как минимум 1 ход.
+                return false;
 
-            UpdateTextInfo();
+            if ((Count - 58) % 13 != 0)
+                return false;
 
-            SetLanguage(language);
+            for (var i = 58; i < Count; i += 13)
+                if (buffer[i] > 38 || buffer[i + 1] > 31 || (buffer[i + 3] != 0x00 && buffer[i + 3] != 0xFF))
+                    return false;
+
+            return true;
+        }
+
+        public static bool IsSGF(string FileName)
+        {
+            var s = "";
+
+            using (var Stream = new StreamReader(FileName))
+                while (!Stream.EndOfStream)
+                    s += Stream.ReadLine();
+
+            var re = new Regex(@"\s*\(\s*;(\s*[a-zA-Z]*\[.*\])*\s*SZ\[([a-zA-Z][a-zA-Z]|\d+[-:]\d+)\]");
+            // \s* - любое число пробельных символов.
+            // \( - открывающаяся скобка.
+            // \s* - любое число пробельных символов.
+            // ; - точка с запятой.
+            // (\s*[a-zA-Z]*\[.*\])* - любое число выражений вида CA[UTF-8] AP[vpoints122] etc.
+            // \s* - любое число пробельных символов.
+            // SZ\[([a-zA-Z][a-zA-Z]|\d+[-:]\d+) - выражение SZ[NG]
+
+            return re.IsMatch(s);
         }
 
         // Определяет формат сохранения для файла.
-        public GameFormat GetFormat(string file)
+        public static GameFormat GetFormat(string FileName)
         {
-            var Stream = File.OpenRead(file);
-            var x = Stream.ReadByte();
-            Stream.Close();
-            switch (x)
-            {
-                case (40):
-                    return GameFormat.SGF;
-                case (49):
-                    return GameFormat.VKontacte;
-                case (121):
-                    return GameFormat.PointsXT;
-                default:
-                    return GameFormat.Unknown;
-            }
+            if (IsXT(FileName))
+                return GameFormat.PointsXT;
+            else if (IsSGF(FileName))
+                return GameFormat.SGF;
+            else
+                return GameFormat.Unknown;
         }
 
         public void SetLanguage(GameLanguage language)
@@ -157,12 +176,12 @@ namespace PointsShell
             BlackTextBlock.Text = language.Black;
         }
 
-        public Pos ConvertToPos(Point Point)
+        private static Pos ConvertToPos(Point Point)
         {
             return new Pos((int)Math.Round(Point.X / CellSize - 0.5), (int)Math.Round(Point.Y / CellSize - 0.5));
         }
 
-        public void DrawField(int width, int height)
+        private void DrawField(int width, int height)
         {
             canvas.Width = width * CellSize;
             canvas.Height = height * CellSize;
@@ -191,7 +210,7 @@ namespace PointsShell
                                         });
         }
 
-        public void UpdateTextInfo()
+        private void UpdateTextInfo()
         {
             RedName.Text = _preferences.RedName;
             BlackName.Text = _preferences.BlackName;
@@ -208,6 +227,41 @@ namespace PointsShell
                 RedTextBlock.TextDecorations = null;
                 BlackTextBlock.TextDecorations = TextDecorations.Underline;
             }
+        }
+
+        private void PlaceBeginPattern(BeginPattern BeginPattern)
+        {
+            // Отключаем звуки.
+            var Sounds = _preferences.Sounds;
+            _preferences.Sounds = false;
+
+            Pos pos;
+            switch (BeginPattern)
+            {
+                case (BeginPattern.CrosswisePattern):
+                    pos = new Pos(Preferences.Width / 2 - 1, Preferences.Height / 2 - 1);
+                    PutPoint(pos);
+                    pos.X++;
+                    PutPoint(pos);
+                    pos.Y++;
+                    PutPoint(pos);
+                    pos.X--;
+                    PutPoint(pos);
+                    break;
+                case (BeginPattern.SquarePattern):
+                    pos = new Pos(Preferences.Width / 2 - 1, Preferences.Height / 2 - 1);
+                    PutPoint(pos);
+                    pos.X++;
+                    PutPoint(pos);
+                    pos.Y++;
+                    pos.X--;
+                    PutPoint(pos);
+                    pos.X++;
+                    PutPoint(pos);
+                    break;
+            }
+
+            _preferences.Sounds = Sounds;
         }
 
         public bool PutPoint(Pos Point, PlayerColor Player)
@@ -282,41 +336,6 @@ namespace PointsShell
                 return true;
             }
             return false;
-        }
-
-        public void PlaceBeginPattern(BeginPattern BeginPattern)
-        {
-            // Отключаем звуки.
-            var Sounds = _preferences.Sounds;
-            _preferences.Sounds = false;
-
-            Pos pos;
-            switch (BeginPattern)
-            {
-                case (BeginPattern.CrosswisePattern):
-                    pos = new Pos(Preferences.Width / 2 - 1, Preferences.Height / 2 - 1);
-                    PutPoint(pos);
-                    pos.X++;
-                    PutPoint(pos);
-                    pos.Y++;
-                    PutPoint(pos);
-                    pos.X--;
-                    PutPoint(pos);
-                    break;
-                case (BeginPattern.SquarePattern):
-                    pos = new Pos(Preferences.Width / 2 - 1, Preferences.Height / 2 - 1);
-                    PutPoint(pos);
-                    pos.X++;
-                    PutPoint(pos);
-                    pos.Y++;
-                    pos.X--;
-                    PutPoint(pos);
-                    pos.X++;
-                    PutPoint(pos);
-                    break;
-            }
-
-            _preferences.Sounds = Sounds;
         }
 
         public void DoBotStep()
@@ -394,12 +413,12 @@ namespace PointsShell
             MouseCoord.Text = pos.X + ":" + pos.Y;
         }
 
-        public bool Save(string File, GameFormat Format)
+        public bool Save(string FileName, GameFormat Format)
         {
             switch (Format)
             {
                 case (GameFormat.PointsXT):
-                    return SaveXT(File);
+                    return SaveXT(FileName);
                 default:
                     return false;
             }
@@ -452,13 +471,13 @@ namespace PointsShell
         }
 
         // Загрузка игры из формата PointsXT. Полное описание формата можно посмотреть в SaveXT.
-        public void LoadXT(string PointsXTFileName)
+        private void LoadXT(string PointsXTFileName)
         {
             Field = new Field(39, 32, SurroundCond.Standart);
             Bot = new PointsBot(39, 32, SurroundCond.Standart, BeginPattern.CleanPattern);
+            DrawField(39, 32);
 
             var Stream = new StreamReader(PointsXTFileName);
-
             var buffer = new byte[Stream.BaseStream.Length];
             var Count = (int)Stream.BaseStream.Length;
             Stream.BaseStream.Read(buffer, 0, Count);
@@ -471,18 +490,13 @@ namespace PointsShell
             var Sounds = _preferences.Sounds;
             _preferences.Sounds = false;
 
-            var Ind = 58;
-            while (Ind + 3 < Count)
-            {
-                if (buffer[Ind] >= 39 || buffer[Ind + 1] >= 32 || (buffer[Ind + 3] != 0x00 && buffer[Ind + 3] != 0xFF))
-                    break;
-
-                PutPoint(new Pos(buffer[Ind], buffer[Ind + 1]), buffer[Ind + 3] == 0x00 ? PlayerColor.Black : PlayerColor.Red);
-                Ind += 13;
-            }
-            Field.CurPlayer = buffer[Ind - 10] == 0x00 ? PlayerColor.Red : PlayerColor.Black;
+            for (var i = 58; i < Count; i += 13)
+                PutPoint(new Pos(buffer[i], buffer[i + 1]), buffer[i + 3] == 0x00 ? PlayerColor.Black : PlayerColor.Red);
+            Field.CurPlayer = buffer[Count - 10] == 0x00 ? PlayerColor.Red : PlayerColor.Black;
 
             _preferences.Sounds = Sounds;
+
+            UpdateTextInfo();
         }
     }
 }
