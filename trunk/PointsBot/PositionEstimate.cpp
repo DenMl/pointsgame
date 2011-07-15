@@ -24,7 +24,7 @@ _int PositionEstimate(Field &MainField, _int TestedPoint, _int Player)
 
 void PositionEstimate(Field &MainField, GameStack<_int, MAX_CHAIN_POINTS> &Moves)
 {
-	float BestScore = 0;
+	_int BestScore = -Infinity;
 	GameStack<_int, MAX_CHAIN_POINTS> BestMoves;
 	BestMoves.Clear();
 	for (_int i = 0; i < Moves.Count; i++)
