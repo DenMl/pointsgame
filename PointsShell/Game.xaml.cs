@@ -37,10 +37,11 @@ namespace PointsShell
                 _preferences.UCTIterations = value.UCTIterations;
                 _preferences.RedName = value.RedName;
                 _preferences.BlackName = value.BlackName;
-                _preferences.Sounds = value.Sounds;
 
                 if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha)
                 {
+                    _preferences.Sounds = false;
+
                     _preferences.RedColor = value.RedColor;
                     _preferences.BlackColor = value.BlackColor;
                     _preferences.FillingAlpha = value.FillingAlpha;
@@ -54,6 +55,7 @@ namespace PointsShell
                     foreach (var pos in LastField.PointsSeq)
                         PutPoint(new Pos(pos.X - 1, pos.Y - 1), LastField.Points[pos.X, pos.Y].Color);
                 }
+                _preferences.Sounds = value.Sounds;
 
                 UpdateTextInfo();
             }
