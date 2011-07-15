@@ -42,58 +42,58 @@ class Field
 	// Функции получения состояния.
 
 	// Получить по координате игрока, чья точка там поставлена.
-	inline const _int GetPlayer(_int Pos) { return Points[Pos] & PlayerBit; }
+	inline const _int GetPlayer(const _int Pos) { return Points[Pos] & PlayerBit; }
 	// Получить по игроку следующего игрока.
-	inline static _int NextPlayer(_int Player) { return Player ^ PlayerBit; }
+	inline static _int NextPlayer(const _int Player) { return Player ^ PlayerBit; }
 	// Проверить по координате, поставлена ли там точка.
-	inline const _int IsPutted(_int Pos) { return Points[Pos] & PutBit; }
+	inline const _int IsPutted(const _int Pos) { return Points[Pos] & PutBit; }
 	// Прверить по координате, является ли точка окружающей базу.
-	inline const _int IsBaseBound(_int Pos) { return Points[Pos] & BoundBit; }
+	inline const _int IsBaseBound(const _int Pos) { return Points[Pos] & BoundBit; }
 	// Проверить по координате, захвачено ли поле.
-	inline const _int IsCaptured(_int Pos) { return Points[Pos] & SurBit; }
+	inline const _int IsCaptured(const _int Pos) { return Points[Pos] & SurBit; }
 	// Проверить по координате, лежит ли она в пустой базе.
-	inline const _int IsInEmptyBase(_int Pos) { return Points[Pos] & EmptyBaseBit; }
+	inline const _int IsInEmptyBase(const _int Pos) { return Points[Pos] & EmptyBaseBit; }
 	// Проверить по координате, помечено ли поле.
-	inline const _int IsTagged(_int Pos) { return Points[Pos] & TagBit; }
+	inline const _int IsTagged(const _int Pos) { return Points[Pos] & TagBit; }
 	// Получить условие по координате.
-	inline const _int GetEnableCond(_int Pos) { return Points[Pos] & EnableMask; }
+	inline const _int GetEnableCond(const _int Pos) { return Points[Pos] & EnableMask; }
 	// Проверка незанятости поля по условию.
-	inline const bool IsEnable(_int Pos, _int EnableCond) { return (Points[Pos] & EnableMask) == EnableCond; }
+	inline const bool IsEnable(const _int Pos, const _int EnableCond) { return (Points[Pos] & EnableMask) == EnableCond; }
 	// Проверка занятости поля по условию.
-	inline const bool IsNotEnable(_int Pos, _int EnableCond) { return (Points[Pos] & EnableMask) != EnableCond; }
+	inline const bool IsNotEnable(const _int Pos, const _int EnableCond) { return (Points[Pos] & EnableMask) != EnableCond; }
 	// Проверка на то, захвачено ли поле.
-	inline const bool IsBound(_int Pos, _int BoundCond) { return (Points[Pos] & BoundMask) == BoundCond; }
+	inline const bool IsBound(const _int Pos, const _int BoundCond) { return (Points[Pos] & BoundMask) == BoundCond; }
 	// Проверка на то, не захвачено ли поле.
-	inline const bool IsNotBound(_int Pos, _int BoundCond) { return (Points[Pos] & BoundMask) != BoundCond; }
+	inline const bool IsNotBound(const _int Pos, const _int BoundCond) { return (Points[Pos] & BoundMask) != BoundCond; }
 	// Провека на то,возможно ли поставить точку в полке.
-	inline const bool PuttingAllow(_int Pos) { return !(Points[Pos] & (PutBit | SurBit | BadValue)); }
+	inline const bool PuttingAllow(const _int Pos) { return !(Points[Pos] & (PutBit | SurBit | BadValue)); }
 
 	// Set state functions.
 	// Функции установки состояния.
 
 	// Пометить поле по координате как содержащее точку.
-	inline void SetPutted(_int Pos) { Points[Pos] |= PutBit; }
+	inline void SetPutted(const _int Pos) { Points[Pos] |= PutBit; }
 	// Убрать с поля по координате PutBit.
-	inline void ClearPutBit(_int Pos) { Points[Pos] &= ~PutBit; }
+	inline void ClearPutBit(const _int Pos) { Points[Pos] &= ~PutBit; }
 	// Пометить поле по координате как принадлежащее игроку.
-	inline void SetPlayer(_int Pos, _int Player) { Points[Pos] = (Points[Pos] & ~PlayerBit) | Player; }
+	inline void SetPlayer(const _int Pos, const _int Player) { Points[Pos] = (Points[Pos] & ~PlayerBit) | Player; }
 	// Пометить поле по координате как содержащее точку игрока.
-	inline void SetPlayerPutted(_int Pos, _int Player) { Points[Pos] |= Player | PutBit; }
+	inline void SetPlayerPutted(const _int Pos, const _int Player) { Points[Pos] |= Player | PutBit; }
 	// Пометить битом SurBit (захватить).
-	inline void Capture(_int Pos) { Points[Pos] |= SurBit; }
+	inline void Capture(const _int Pos) { Points[Pos] |= SurBit; }
 	// Убрать бит SurBit.
-	inline void Free(_int Pos) { Points[Pos] &= ~SurBit; }
+	inline void Free(const _int Pos) { Points[Pos] &= ~SurBit; }
 	// Пометить точку как окружающую базу.
-	inline void SetBaseBound(_int Pos) { Points[Pos] |= BoundBit; }
+	inline void SetBaseBound(const _int Pos) { Points[Pos] |= BoundBit; }
 	// Пометить точку как не окружающую базу.
-	inline void ClearBaseBound(_int Pos) { Points[Pos] &= ~BoundBit; }
-	inline void SetInEmptyBase(_int Pos, _int Player) { Points[Pos] &= ~PlayerBit | EmptyBaseBit | Player; }
-	inline void SetEmptyBase(_int Pos) { Points[Pos] |= EmptyBaseBit; }
-	inline void ClearEmptyBase(_int Pos) { Points[Pos] &= ~EmptyBaseBit; }
+	inline void ClearBaseBound(const _int Pos) { Points[Pos] &= ~BoundBit; }
+	inline void SetInEmptyBase(const _int Pos, const _int Player) { Points[Pos] &= ~PlayerBit | EmptyBaseBit | Player; }
+	inline void SetEmptyBase(const _int Pos) { Points[Pos] |= EmptyBaseBit; }
+	inline void ClearEmptyBase(const _int Pos) { Points[Pos] &= ~EmptyBaseBit; }
 	// Установить бит TagBit.
-	inline void SetTag(_int Pos) { Points[Pos] |= TagBit; }
+	inline void SetTag(const _int Pos) { Points[Pos] |= TagBit; }
 	// Убрать бит TagBit.
-	inline void ClearTag(_int Pos) { Points[Pos] &= ~TagBit; }
+	inline void ClearTag(const _int Pos) { Points[Pos] &= ~TagBit; }
 #pragma endregion
 
 #pragma region MainVariables
@@ -183,7 +183,7 @@ class Field
 
 	private:
 	// Возвращает косое произведение векторов Pos1 и Pos2.
-	inline static _int Square(_int Pos1, _int Pos2)
+	inline static _int Square(const _int Pos1, const _int Pos2)
 	{
 		return (Pos1 % FieldWidth2) * (Pos2 / FieldWidth2) - (Pos1 / FieldWidth2) * (Pos2 % FieldWidth2);
 	}
@@ -194,7 +194,7 @@ class Field
 	//  o - center pos
 	//  x - pos
 	//  * - result
-	inline const void GetFirstNextPos(_int CenterPos, _int &Pos)
+	inline const void GetFirstNextPos(const _int CenterPos, _int &Pos)
 	{
 		if (Pos < CenterPos)
 		{
@@ -218,7 +218,7 @@ class Field
 	//  o - center pos
 	//  x - pos
 	//  * - result
-	inline const void GetNextPos(_int CenterPos, _int &Pos)
+	inline const void GetNextPos(const _int CenterPos, _int &Pos)
 	{
 		_int t;
 		if (Pos < CenterPos)
@@ -253,7 +253,7 @@ class Field
 
 	// Возвращает количество групп точек рядом с CenterPos.
 	// InpChainPoints - возможные точки цикла, InpSurPoints - возможные окруженные точки.
-	inline const _int GetInputPoints(_int CenterPos, _int EnableCond, _int *InpChainPoints, _int *InpSurPoints)
+	inline const _int GetInputPoints(const _int CenterPos, const _int EnableCond, _int *InpChainPoints, _int *InpSurPoints)
 	{
 		_int k = 0;
 
@@ -357,7 +357,7 @@ class Field
 	}
 
 	// Изменение счета игроков.
-	inline void AddSubCapturedFreed(_int Player, _int Captured, _int Freed)
+	inline void AddSubCapturedFreed(const _int Player, const _int Captured, const _int Freed)
 	{
 		if (Captured == MinusOne)
 		{
@@ -371,7 +371,7 @@ class Field
 	}
 
 	// Изменяет Captured/Free в зависимости от того, захвачена или окружена точка.
-	inline void CheckCapturedAndFreed(_int Pos, _int Player, _int &Captured, _int &Free)
+	inline void CheckCapturedAndFreed(const _int Pos, const _int Player, _int &Captured, _int &Free)
 	{
 		if (IsPutted(Pos))
 		{
@@ -383,7 +383,7 @@ class Field
 	}
 
 	// Захватывает/освобождает окруженную точку.
-	inline void SetCaptureFreeState(_int Pos, _int Player)
+	inline void SetCaptureFreeState(const _int Pos, const _int Player)
 	{
 		if (IsPutted(Pos))
 		{
@@ -397,7 +397,7 @@ class Field
 	}
 
 	// Заливка захваченной области.
-	inline void CapturedAndFreedCount(_int StartPos, _int Player, _int &Captured, _int &Freed, GameStack<_int, MAX_SUR_POINTS> &SurPoints)
+	inline void CapturedAndFreedCount(const _int StartPos, const _int Player, _int &Captured, _int &Freed, GameStack<_int, MAX_SUR_POINTS> &SurPoints)
 	{
 		SurPoints.Clear();
 
@@ -442,7 +442,7 @@ class Field
 
 	// Удаляет пометку пустой базы с поля точек, начиная с позиции StartPos.
 	// StartPos не заносится в список изменений поля.
-	inline void RemoveEmptyBase(_int StartPos)
+	inline void RemoveEmptyBase(const _int StartPos)
 	{
 		_int Pos = StartPos;
 		TempStack.Clear();
@@ -491,7 +491,7 @@ class Field
 		}
 	}
 
-	bool BuildChain(_int StartPos, _int InpChainPoint, GameStack<_int, MAX_CHAIN_POINTS> &Chain)
+	bool BuildChain(const _int StartPos, const _int InpChainPoint, GameStack<_int, MAX_CHAIN_POINTS> &Chain)
 	{
 		_int Player = GetPlayer(StartPos);
 
@@ -529,17 +529,10 @@ class Field
 		for (_int i = 0; i < Chain.Count; i++)
 			ClearTag(Chain.Stack[i]);
 
-		if (TempSquare >= 0 || Chain.Count <=2) // Если обход внешний, то не рассматриваем этот случай.
-		{
-			return false;
-		}
-		else // Обход внутренний.
-		{
-			return true;
-		}
+		return (TempSquare < 0 && Chain.Count > 2);
 	}
 
-	inline _int BuildChains(_int StartPos, _int InpChainPoints[], _int InpSurPoints[], _int InpPointsCount, GameStack<_int, MAX_CHAIN_POINTS> Chains[], _int InsidePoints[])
+	inline _int BuildChains(const _int StartPos, const _int InpChainPoints[], const _int InpSurPoints[], const _int InpPointsCount, GameStack<_int, MAX_CHAIN_POINTS> Chains[], _int InsidePoints[])
 	{
 		_int Count = 0;
 		for (_int i = 0; i < InpPointsCount; i++)
@@ -552,7 +545,7 @@ class Field
 			return Count;
 	}
 
-	inline _int BuildChainsFast(_int StartPos, _int InpChainPoints[], _int InpSurPoints[], _int InpPointsCount, GameStack<_int, MAX_CHAIN_POINTS> Chains[], _int InsidePoints[])
+	inline _int BuildChainsFast(const _int StartPos, _int InpChainPoints[], const _int InpSurPoints[], const _int InpPointsCount, GameStack<_int, MAX_CHAIN_POINTS> Chains[], _int InsidePoints[])
 	{
 		_int Count = 0;
 		for (_int i = 0; i < InpPointsCount; i++)
@@ -654,8 +647,7 @@ class Field
 		ISDown,
 		ISTarget
 	};
-
-	IntersectionState GetIntersectionState(_int Pos, _int NextPos)
+	const IntersectionState GetIntersectionState(const _int Pos, const _int NextPos)
 	{
 		Point a, b;
 		ConvertToXY(Pos, a);
@@ -679,7 +671,7 @@ class Field
 
 public:
 	// Конструктор.
-	inline Field(_int FieldWidth, _int FieldHeight, _int SurCond, _int BeginPattern)
+	inline Field(const _int FieldWidth, const _int FieldHeight, const _int SurCond, const _int BeginPattern)
 	{
 		Initialize(FieldWidth, FieldHeight, SurCond, BeginPattern);
 	}
@@ -691,7 +683,7 @@ public:
 	}
 
 	// Инициализация поля.
-	inline void Initialize(_int FieldWidth, _int FieldHeight, _int SurCond, _int BeginPattern)
+	inline void Initialize(const _int FieldWidth, const _int FieldHeight, const _int SurCond, const _int BeginPattern)
 	{
 		// Очищаем массив изменений доски.
 		PointsChange.Clear();
@@ -776,104 +768,68 @@ public:
 	}
 
 	// Функции конвертации координат.
-	inline const _int ConvertToPos(_int X, _int Y)
+	inline const _int ConvertToPos(const _int X, const _int Y)
 	{
 		if ((X < 0) || (X >= FieldWidth) || (Y < 0) || (Y >= FieldHeight))
 			return 0;
 		else
 			return ((Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth);
 	}
-	inline const _int ConvertToPos(Point point)
+	inline const _int ConvertToPos(const Point point)
 	{
 		return ConvertToPos(point.X, point.Y);
 	}
 	// Небезопасные функции конвертации координат.
-	inline const _int UnsafeConvertToPos(_int X, _int Y)
+	inline const _int UnsafeConvertToPos(const _int X, const _int Y)
 	{
 		return ((Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth);
 	}
-	inline const _int UnsafeConvertToPos(Point point)
+	inline const _int UnsafeConvertToPos(const Point point)
 	{
 		return UnsafeConvertToPos(point.X, point.Y);
 	}
 	// Конвертация из Pos в XY.
-	inline const void ConvertToXY(_int Pos, _int &X, _int &Y)
+	inline const void ConvertToXY(const _int Pos, _int &X, _int &Y)
 	{
 		X = Pos % FieldWidth2 - ExpandWidth;
 		Y = Pos / FieldWidth2 - ExpandHeight;
 	}
-	inline const void ConvertToXY(_int Pos, Point &P)
+	inline const void ConvertToXY(const _int Pos, Point &P)
 	{
 		P.X = Pos % FieldWidth2 - ExpandWidth;
 		P.Y = Pos / FieldWidth2 - ExpandHeight;
 	}
 
 	// Поставить точку на поле следующего по очереди игрока.
-	inline bool DoStep(_int Pos)
+	inline bool DoStep(const _int Pos)
 	{
 		if (PuttingAllow(Pos))
 		{
-			PointsChange.Push(CaptureCount[0]);
-			PointsChange.Push(CaptureCount[1]);
-			PointsChange.Push(CurPlayer);
-
-			// Сбрасываем текущее количество изменений доски и добавляем в изменения поставленную точку.
-			CurrentBoardChangesNumber = 1;
-			PointsChange.Push(Points[Pos]);
-			PointsChange.Push(Pos);
-
-			SetPlayer(Pos, CurPlayer);
-			SetPutted(Pos);
-
-			PointsSeq.Push(Pos);
-
-			SetNextPlayer();
-
-			CheckClosure(Pos);
-
-			PointsChange.Push(CurrentBoardChangesNumber);
-
+			DoUnsafeStep(Pos);
 			return true;
 		}
 		return false;
 	}
-	inline bool DoStep(Point point)
+	inline bool DoStep(const Point point)
 	{
 		return DoStep(ConvertToPos(point));
 	}
 	// Поставить точку на поле.
-	inline bool DoStep(_int Pos, _int Player)
+	inline bool DoStep(const _int Pos, const _int Player)
 	{
 		if (PuttingAllow(Pos))
 		{
-			PointsChange.Push(CaptureCount[0]);
-			PointsChange.Push(CaptureCount[1]);
-			PointsChange.Push(CurPlayer);
-
-			// Сбрасываем текущее количество изменений доски и добавляем в изменения поставленную точку.
-			CurrentBoardChangesNumber = 1;
-			PointsChange.Push(Points[Pos]);
-			PointsChange.Push(Pos);
-
-			SetPlayer(Pos, Player);
-			SetPutted(Pos);
-
-			PointsSeq.Push(Pos);
-
-			CheckClosure(Pos);
-
-			PointsChange.Push(CurrentBoardChangesNumber);
-
+			DoUnsafeStep(Pos, Player);
 			return true;
 		}
 		return false;
 	}
-	inline bool DoStep(Point point, _int Player)
+	inline bool DoStep(const Point point, const _int Player)
 	{
 		return DoStep(ConvertToPos(point), Player);
 	}
 	// Поставить точку на поле максимально быстро (без дополнительных проверок).
-	inline void DoUnsafeStep(_int Pos)
+	inline void DoUnsafeStep(const _int Pos)
 	{
 		PointsChange.Push(CaptureCount[0]);
 		PointsChange.Push(CaptureCount[1]);
@@ -895,12 +851,12 @@ public:
 
 		PointsChange.Push(CurrentBoardChangesNumber);
 	}
-	inline void DoUnsafeStep(Point point)
+	inline void DoUnsafeStep(const Point point)
 	{
 		DoStep(UnsafeConvertToPos(point));
 	}
 	// Поставить точку на поле следующего по очереди игрока максимально быстро (без дополнительных проверок).
-	inline void DoUnsafeStep(_int Pos, _int Player)
+	inline void DoUnsafeStep(const _int Pos, const _int Player)
 	{
 		PointsChange.Push(CaptureCount[0]);
 		PointsChange.Push(CaptureCount[1]);
@@ -920,13 +876,13 @@ public:
 
 		PointsChange.Push(CurrentBoardChangesNumber);
 	}
-	inline void DoUnsafeStep(Point point, _int Player)
+	inline void DoUnsafeStep(const Point point, const _int Player)
 	{
 		DoStep(UnsafeConvertToPos(point), Player);
 	}
 
 	// Делает ход и проверяет на окруженность только точку CheckedPos.
-	inline bool DoUnsafeStepAndCheckPoint(_int Pos, _int Player, _int CheckedPos)
+	inline bool DoUnsafeStepAndCheckPoint(const _int Pos, const _int Player, const _int CheckedPos)
 	{
 		PointsChange.Push(CaptureCount[0]);
 		PointsChange.Push(CaptureCount[1]);
@@ -973,106 +929,105 @@ public:
 		EnemyPlayer ^= PlayerBit;
 	}
 
-	inline void SetCurrentPlayer(_int Player)
+	inline void SetCurrentPlayer(const _int Player)
 	{
 		CurPlayer = Player;
 		EnemyPlayer = NextPlayer(Player);
 	}
 
 	// Проверяет, находятся ли две точки рядом.
-	inline static bool IsNear(_int Pos1, _int Pos2)
+	inline static bool IsNear(const _int Pos1, const _int Pos2)
 	{
-		Pos1 = Pos1 - FieldWidth2 - 1;
-		if (Pos1 == Pos2)
+		_int TempPos = Pos1 - FieldWidth2 - 1;
+		if (TempPos == Pos2)
 			return true;
-		Pos1++;
-		if (Pos1 == Pos2)
+		TempPos++;
+		if (TempPos == Pos2)
 			return true;
-		Pos1++;
-		if (Pos1 == Pos2)
+		TempPos++;
+		if (TempPos == Pos2)
 			return true;
-		Pos1 += FieldWidth2;
-		if (Pos1 == Pos2)
+		TempPos += FieldWidth2;
+		if (TempPos == Pos2)
 			return true;
-		Pos1 -= 2;
-		if (Pos1 == Pos2)
+		TempPos -= 2;
+		if (TempPos == Pos2)
 			return true;
-		Pos1 +=FieldWidth2;
-		if (Pos1 == Pos2)
+		TempPos +=FieldWidth2;
+		if (TempPos == Pos2)
 			return true;
-		Pos1++;
-		if (Pos1 == Pos2)
+		TempPos++;
+		if (TempPos == Pos2)
 			return true;
-		Pos1++;
-		if (Pos1 == Pos2)
+		TempPos++;
+		if (TempPos == Pos2)
 			return true;
 		return false;
 	}
 
 	// Проверяет, есть ли рядом с Pos точки цвета Player.
-	inline const bool IsNearPoints(_int Pos, _int Player)
+	inline const bool IsNearPoints(const _int Pos, const _int Player)
 	{
-		Pos = Pos - FieldWidth2 - 1;
-		if (IsEnable(Pos, PutBit | Player))
+		_int TempPos = Pos - FieldWidth2 - 1;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos += FieldWidth2;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos += FieldWidth2;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos -= 2;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos -= 2;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos += FieldWidth2;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos += FieldWidth2;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			return true;
 		return false;
 	}
 
 	// Возвращает количество точек рядом с Pos цвета Player.
-	inline const _int NumberNearPoints(_int Pos, _int Player)
+	inline const _int NumberNearPoints(const _int Pos, const _int Player)
 	{
 		_int Result = 0;
-
-		Pos = Pos - FieldWidth2 - 1;
-		if (IsEnable(Pos, PutBit | Player))
+		_int TempPos = Pos - FieldWidth2 - 1;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos += FieldWidth2;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos += FieldWidth2;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos -= 2;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos -= 2;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos += FieldWidth2;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos += FieldWidth2;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
-		Pos++;
-		if (IsEnable(Pos, PutBit | Player))
+		TempPos++;
+		if (IsEnable(TempPos, PutBit | Player))
 			Result++;
 		return Result;
 	}
 
 	// Возвращает количество групп точек рядом с CenterPos.
-	inline const _int NumberNearGroups(_int CenterPos, _int Player)
+	inline const _int NumberNearGroups(const _int CenterPos, const _int Player)
 	{
 		_int k = 0;
 
@@ -1091,7 +1046,7 @@ public:
 		return k;
 	}
 
-	bool PointInsideRing(_int TestedPos, GameStack<_int, MAX_CHAIN_POINTS> Ring)
+	const bool PointInsideRing(const _int TestedPos, const GameStack<_int, MAX_CHAIN_POINTS> &Ring)
 	{
 		_int Intersections = 0;
 
@@ -1133,7 +1088,7 @@ public:
 	}
 
 	// Проверяет поставленную точку на наличие созданных ею окружений, и окружает, если они есть.
-	inline void CheckClosure(_int StartPos)
+	inline void CheckClosure(const _int StartPos)
 	{
 		_int InpPointsCount;
 		_int InpChainPoints[4], InpSurPoints[4];
@@ -1208,7 +1163,7 @@ public:
 	}
 
 	// Проверяет поставленную точку, не окружает ли она позицию CheckedPos.
-	inline bool CheckClosure(_int StartPos, _int CheckedPos)
+	inline bool CheckClosure(const _int StartPos, const _int CheckedPos)
 	{
 		_int InpChainPoints[4], InpSurPoints[4];
 
