@@ -126,16 +126,18 @@ private:
 		Count++;
 	}
 
-	bool IsComposite()
-	{
-
-	}
-
 	// Проверяет, во все ли точки траектории можно сделать ход, кроме, возможно, точки Pos.
 	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory, _int Pos)
 	{
 		for (_int i = 0; i < CurTrajectory.Count; i++)
 			if (CurTrajectory.Points[i] != Pos && !CurField.PuttingAllow(CurTrajectory.Points[i]))
+				return false;
+		return true;
+	}
+	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory)
+	{
+		for (_int i = 0; i < CurTrajectory.Count; i++)
+			if (!CurField.PuttingAllow(CurTrajectory.Points[i]))
 				return false;
 		return true;
 	}
@@ -229,7 +231,7 @@ public:
 	inline void BuildCurrentTrajectories(Field &CurField, TrajectoryList &LastTrajectories, _int Pos, _int Depth, _int Player)
 	{
 		for (_int i = 0; i < LastTrajectories.Count; i++)
-			if (LastTrajectories.Trajectories[i].Find(Pos) == -1)
+			if (IsTrajectoryValid(CurField, LastTrajectories.Trajectories[i]))
 				AddNewTrajectory(LastTrajectories.Trajectories[i]);
 
 		CurrentDepth = Depth;
