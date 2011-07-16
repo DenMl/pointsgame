@@ -149,7 +149,10 @@ namespace PointsShell
             var game = Game.Load(OFD.FileName, new GamePreferences(GlobalPreferences), GlobalLanguage);
 
             if (game == null)
+            {
+                MessageBox.Show("Unknown format!", "Error!");
                 return;
+            }
 
             MainTabControl.Items.Add(new TabItem { Content = game, Header = GlobalPreferences.Header != "" ? GlobalPreferences.Header : GlobalLanguage.Game });
             MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
@@ -222,7 +225,7 @@ namespace PointsShell
 
         private void AboutClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("PointsGame 1.3.1.1\nAuthors: Keij, Kvanttt\nContacts:\nKeij: ICQ 366-369-317, mail kurnevsky@gmail.com", "PointsGame");
+            MessageBox.Show("PointsGame 1.4.0.0\nAuthors: Keij, Kvanttt\nContacts:\nKeij: ICQ - 366-369-317; mail, jabber - kurnevsky@gmail.com", "PointsGame");
         }
     }
 }
