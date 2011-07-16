@@ -38,7 +38,7 @@ The communication between the AI and the GUI interface is done via messages to s
 
 `play X Y Color` — to send a played move to the GUI.
 
-`reg_genmove color complexity` — to send a "suggestd" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
+`reg_genmove X Y Color` — to send a "suggestd" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
 
 `message messagetext` — to send a message to the GUI.
 
