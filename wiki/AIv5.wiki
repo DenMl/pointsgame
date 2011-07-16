@@ -8,39 +8,39 @@ The communication between the AI and the GUI interface is done via messages to s
 
 ==GUI -> AI message types:==
 
-`list_commands` - request a space-separated list of known GUI->AI commands.
+`list_commands` — request a space-separated list of known GUI->AI commands.
 
-`quit` - request for the AI to exit.
+`quit` — request for the AI to exit.
 
-`boardsize X Y` - initialization. X - field width (number of crosses), Y - field height.
+`boardsize X Y` — initialization. X - field width (number of crosses), Y - field height.
 
-`name` - request to return name of the AI, like "keij&kvanttt AI", "kropkiAI".
+`name` — request to return name of the AI, like "keij&kvanttt AI", "kropkiAI".
 
-`version` - request to return version of the AI, like "1.2.1".
+`version` — request to return version of the AI, like "1.2.1".
 
-`play X Y Color` - play move. It's not a move to be answered, just place it. AI must return this move if it's ok.
+`play X Y Color` — play move. It's not a move to be answered, just place it. AI must return this move if it's ok.
 
-`genmove color complexity` - request to calculate an AI move and return it.
+`genmove color complexity` — request to calculate an AI move and return it.
 
-`reg_genmove color complexity` - request to calculate an AI move, but do NOT make it on the field. The AI should reply with a "suggested move" message.
+`reg_genmove color complexity` — request to calculate an AI move, but do NOT make it on the field. The AI should reply with a "suggested move" message.
 
-`undo` -- undo move.
+`undo` — undo move.
 
-`echo messagetext` -- echoes the message. Send the received message back to the GUI with the "message" command. This can be needed for debugging purposes.
+`echo messagetext` — echoes the message. Send the received message back to the GUI with the "message" command. This can be needed for debugging purposes.
 
 ==AI -> GUI message types:==
 
-`list_commands [command1 command2 ...]` - to send a space-separated list of known GUI->AI commands
+`list_commands [command1 command2 ...]` — to send a space-separated list of known GUI->AI commands
 
-`name` - to send the name of the AI, like "keij&kvanttt AI", "kropkiAI".
+`name` — to send the name of the AI, like "keij&kvanttt AI", "kropkiAI".
 
-`version` - to send version of the AI, like "1.2.1".
+`version` — to send version of the AI, like "1.2.1".
 
-`play X Y Color` - to send a played move to the GUI.
+`play X Y Color` — to send a played move to the GUI.
 
-`reg_genmove color complexity` - to send a "suggestd" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
+`reg_genmove color complexity` — to send a "suggestd" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
 
-`message messagetext` - to send a message to the GUI.
+`message messagetext` — to send a message to the GUI.
 
 ===Explanations:===
 
