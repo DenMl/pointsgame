@@ -113,8 +113,8 @@ _int Negamax(Field &CurField, _int TrajectoriesBoard[], _int Depth, _int Pos, Tr
 
 	if (Depth > 1)
 		Trajectories[CurField.EnemyPlayer].BuildEnemyTrajectories(CurField, LastEnemyTrajectories, Pos, Depth / 2);
-	//Trajectories[CurField.CurPlayer].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.CurPlayer);
-	Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
+	Trajectories[CurField.CurPlayer].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.CurPlayer);
+	//Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	
 	GameStack<_int, MAX_CHAIN_POINTS> Moves;
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, Moves);
