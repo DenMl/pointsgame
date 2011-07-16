@@ -5,8 +5,12 @@
 #include "BasicConstants.h"
 #include "BotEngine.h"
 #include <iostream>
+#include <string>
+#include <map>
 
 using namespace std;
+
+Field *MainField;
 
 const int min_MinMaxDepth = 0;
 const int max_MinMaxDepth = 8;
@@ -25,81 +29,140 @@ inline int GetUCTIterations(int P)
 	return (P - min_P) * (max_UCTIterations - min_UCTIterations) / (max_P - min_P) + min_UCTIterations;
 }
 
+inline void FillCodes(map<string, long> &codes)
+{
+	codes["boardsize"] = 1;
+	codes["echo"] = 2;
+	codes["genmove"] = 3;
+	codes["list_commands"] = 4;
+	codes["name"] = 5;
+	codes["play"] = 6;
+	codes["quit"] = 7;
+	codes["reg_genmove"] = 8;
+	codes["undo"] = 9;
+	codes["version"] = 10;
+}
+
+inline void boardsize()
+{
+	int X, Y;
+	cin >> X >> Y;
+	if (MainField != NULL)
+		MainField->Initialize(X, Y, Field::Standart, Field::CleanPattern);
+	else
+		MainField = new Field(X, Y, Field::Standart, Field::CleanPattern);
+}
+
+inline void echo()
+{
+	string s;
+	getline(cin, s);
+	cout << "message" << s << endl;
+}
+
+inline void genmove()
+{
+	int X, Y, color, P, pos;
+	cin >> color >> P;
+	if (MainField == NULL)
+		return;
+	MainField->SetCurrentPlayer(color);
+	pos = SearchBestMove(*MainField, GetMinMaxDepth(P), GetUCTIterations(P));
+	MainField->DoStep(pos);
+	MainField->ConvertToXY(pos, X, Y);
+	cout << "play " << X << " " << Y << " " << color << endl;
+}
+
+inline void list_commands()
+{
+	cout << "list_commands boardsize echo genmove list_commands name play quit reg_genmove undo version" << endl;
+}
+
+inline void name()
+{
+	cout << "name keijkvantttai" << endl;
+}
+
+inline void play()
+{
+	int X, Y, color;
+	cin >> X >> Y >> color;
+	if (MainField == NULL || !MainField->DoStep(MainField->ConvertToPos(X, Y), color))
+		return;
+	cout << "play " << X << " " << Y << " " << color << endl;
+}
+
+inline void reg_genmove()
+{
+	int X, Y, color, P;
+	cin >> color >> P;
+	if (MainField == NULL)
+		return;
+	MainField->SetCurrentPlayer(color);
+	MainField->ConvertToXY(SearchBestMove(*MainField, GetMinMaxDepth(P), GetUCTIterations(P)), X, Y);
+	cout << "reg_genmove " << X << " " << Y << " " << color << endl;
+}
+
+inline void undo()
+{
+	if (MainField == NULL || MainField->PointsSeq.Count == 0)
+		return;
+	MainField->UndoStep();
+}
+
+inline void version()
+{
+	cout << "version 1.4.0.0" << endl;
+}
+
 int main(int argc, char* argv[])
 {
-	Field *MainField;
-	int X, Y, P, color, c, pos;
-	char s[256];
+	string s;
+	map<string, long> codes;
 
+	MainField = NULL;
+	FillCodes(codes);
 	Randomize();
+	list_commands();
 
-	cout << "PointsAI v1.3.1.1\n";
-
-	cout << "Current path:\n";
-	cout << argv[0] << std::endl;
-
-	cin >> P;
-
-	if (P != 4)
-	{
-		cout << "Invalid protocol. The last version at http://code.google.com/p/pointsgame/" << std::endl << "-1" << std::endl;
-		return -1;
-	}
-
-	cin >> X >> Y;
-
-	MainField = new Field(X, Y, Field::Standart, Field::CleanPattern);
-
+	//cout << argv[0] << std::endl;
+	
 	while (true)
 	{
-		cin >> c;
-
-		switch (c)
+		cin >> s;
+		switch (codes[s])
 		{
-		// -1 - выход.
-		case -1:
-			return 0;
-
-		// 0 - сделать ход.
-		// Входные параметры:
-		// 1. X - координата x.
-		// 2. Y - координата y.
-		// 3. color - цвет игрока.
-		// Выходные параметры:
-		// Повторяет ход, если согласен с ним.
-		case 0:
-			cin >> X >> Y >> color;
-			if (!MainField->DoStep(MainField->ConvertToPos(X, Y), color))
-				continue;
-			cout << X << " " << Y << " " << color << std::endl;
-			break;
-
-		// 1 - получить наилучший ход для текущей позиции.
-		// Входные параметры:
-		// 1. color - цвет игрока, чей ход нужно получить.
-		// 2. P - мощность анализа. Изменяется от 0 до 100.
-		// Выходные параметры:
-		// Наилучший ход.
 		case 1:
-			cin >> color >> P;
-			MainField->CurPlayer = color;
-			MainField->EnemyPlayer = Field::NextPlayer(color);
-			pos = SearchBestMove(*MainField, GetMinMaxDepth(P), GetUCTIterations(P));
-			MainField->DoStep(pos);
-			MainField->ConvertToXY(pos, X, Y);
-			cout << X << " " << Y << " " << color << std::endl;
+			boardsize();
 			break;
-
-		// 2 - откатить на один ход назад.
 		case 2:
-			if (MainField->PointsSeq.Count)
-				MainField->UndoStep();
+			echo();
 			break;
-
-		// 3 - эхо. Повторяет полученную строку.
 		case 3:
-			cin.getline(s, 256);
-			cout << s << std::endl;
+			genmove();
+			break;
+		case 4:
+			list_commands();
+			break;
+		case 5:
+			name();
+			break;
+		case 6:
+			play();
+			break;
+		case 7:
+			if (MainField != NULL)
+				delete MainField;
+			return 0;
+			break;
+		case 8:
+			reg_genmove();
+			break;
+		case 9:
+			undo();
+			break;
+		case 10:
+			version();
 			break;
 		}
 	}
