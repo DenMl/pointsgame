@@ -41,6 +41,7 @@
   <RedColor>Red color</RedColor>
   <BlackColor>Black color</BlackColor>
   <FillingAlpha>Filling alpha</FillingAlpha>
+  <BackgroundColor>Background color</BackgroundColor>
   <Sounds>Sounds</Sounds>
   <NewGame>New game</NewGame>
   <preferences>preferences</preferences>

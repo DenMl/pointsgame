@@ -37,6 +37,8 @@ namespace PointsShell
                 _preferences.UCTIterations = value.UCTIterations;
                 _preferences.RedName = value.RedName;
                 _preferences.BlackName = value.BlackName;
+                _preferences.BackgroundColor = value.BackgroundColor;
+                canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 
                 if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha)
                 {
@@ -187,7 +189,7 @@ namespace PointsShell
         {
             canvas.Width = width * CellSize;
             canvas.Height = height * CellSize;
-            canvas.Background = Brushes.White;
+            canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 
             for (var i = 0; i < width; i++)
                 canvas.Children.Add(new Line

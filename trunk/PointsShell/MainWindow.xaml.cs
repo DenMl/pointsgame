@@ -78,9 +78,7 @@ namespace PointsShell
         {
             var serializer = new XmlSerializer(typeof(GamePreferences));
             using (Stream stream = File.Create("Preferences.xml"))
-            {
                 serializer.Serialize(stream, GlobalPreferences);
-            }
         }
 
         public void SetLanguage(GameLanguage language)

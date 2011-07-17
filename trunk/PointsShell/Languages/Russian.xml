@@ -41,6 +41,7 @@
   <RedColor>Цвет красных</RedColor>
   <BlackColor>Цвет черных</BlackColor>
   <FillingAlpha>Альфа заливки</FillingAlpha>
+  <BackgroundColor>Цвет фона</BackgroundColor>
   <Sounds>Звуки</Sounds>
   <NewGame>Новая игра</NewGame>
   <preferences>настройки</preferences>
