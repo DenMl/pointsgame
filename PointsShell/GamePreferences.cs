@@ -38,6 +38,7 @@ namespace PointsShell
         public Color RedColor = Colors.Red;
         public Color BlackColor = Colors.Black;
         public byte FillingAlpha = 127;
+        public Color BackgroundColor = Colors.White;
         public bool Sounds = true;
         public string Language = "English.xml";
 
@@ -72,6 +73,7 @@ namespace PointsShell
             RedColor = Preferences.RedColor;
             BlackColor = Preferences.BlackColor;
             FillingAlpha = Preferences.FillingAlpha;
+            BackgroundColor = Preferences.BackgroundColor;
             Sounds = Preferences.Sounds;
         }
 
