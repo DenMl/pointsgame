@@ -168,10 +168,9 @@ namespace PointsShell
         {
             if (IsXT(FileName))
                 return GameFormat.PointsXT;
-            else if (IsSGF(FileName))
+            if (IsSGF(FileName))
                 return GameFormat.SGF;
-            else
-                return GameFormat.Unknown;
+            return GameFormat.Unknown;
         }
 
         public void SetLanguage(GameLanguage language)
