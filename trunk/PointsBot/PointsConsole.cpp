@@ -80,7 +80,7 @@ inline void list_commands()
 
 inline void name()
 {
-	cout << "name keijkvantttai" << endl;
+	cout << "name kkai" << endl;
 }
 
 inline void play()
