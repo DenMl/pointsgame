@@ -29,7 +29,7 @@ inline int GetUCTIterations(int P)
 	return (P - min_P) * (max_UCTIterations - min_UCTIterations) / (max_P - min_P) + min_UCTIterations;
 }
 
-inline void FillCodes(map<string, long> &codes)
+inline void FillCodes(map<string, int> &codes)
 {
 	codes["boardsize"] = 1;
 	codes["echo"] = 2;
@@ -118,7 +118,7 @@ inline void version()
 int main(int argc, char* argv[])
 {
 	string s;
-	map<string, long> codes;
+	map<string, int> codes;
 
 	MainField = NULL;
 	FillCodes(codes);
@@ -130,7 +130,10 @@ int main(int argc, char* argv[])
 	while (true)
 	{
 		cin >> s;
-		switch (codes[s])
+		map<string, int>::iterator i = codes.find(s);
+		if (i == codes.end())
+			continue;
+		switch (i->second)
 		{
 		case 1:
 			boardsize();
