@@ -2,11 +2,11 @@
 #include "BasicTypes.h"
 #include "BasicConstants.h"
 
-_int Zobrist[2][2][PointsLength22];
+p_int Zobrist[2][2][PointsLength22];
 
 void ZobristInit()
 {
-	for (_int i = 0; i < PointsLength22; i++)
+	for (p_int i = 0; i < PointsLength22; i++)
 	{
 		Zobrist[0][0][i] = Random();
 		Zobrist[0][1][i] = Random();

@@ -1,14 +1,15 @@
 #pragma once
+#include <limits.h>
 
-typedef int _int;
+typedef long p_int;
+
+#define SIZEOF_P_INT 4
 
 // Значение бесконечности.
-const _int Infinity = 2147483647;
-// Значение минус единицы.
-const _int MinusOne = -1;
+#define INFINITY LONG_MAX
 
 // Структура координат точки.
 struct Point
 {
-	_int X, Y;
+	p_int X, Y;
 };

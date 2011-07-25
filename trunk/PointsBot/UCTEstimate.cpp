@@ -7,47 +7,47 @@
 #include <assert.h>
 #endif
 
-inline _int PlayRandomGame(Field &CurrentField, GameStack<_int, MAX_CHAIN_POINTS> &PossibleMoves)
+inline p_int PlayRandomGame(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
 {
-	GameStack<_int, MAX_CHAIN_POINTS> Moves;
-	_int Putted = 0;
-	_int result;
+	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
+	p_int Putted = 0;
+	p_int result;
 
 	Moves.Count = PossibleMoves.Count;
 
 	Moves.Stack[0] = PossibleMoves.Stack[0];
-	for (_int i = 1; i < PossibleMoves.Count; i++)
+	for (p_int i = 1; i < PossibleMoves.Count; i++)
 	{
-		_int j = rand() % (i + 1);
+		p_int j = rand() % (i + 1);
 		Moves.Stack[i] = Moves.Stack[j];
 		Moves.Stack[j] = PossibleMoves.Stack[i];
 	}
 
-	for (_int i = 0; i < Moves.Count; i++)
+	for (p_int i = 0; i < Moves.Count; i++)
 		if (CurrentField.PuttingAllow(Moves.Stack[i]))
 		{
 			CurrentField.DoUnsafeStep(Moves.Stack[i]);
 			Putted++;
 		}
 
-		if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
-			result = 0;
-		else if (CurrentField.CaptureCount[0] < CurrentField.CaptureCount[1])
-			result = 1;
-		else
-			result = -1;
+	if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
+		result = 0;
+	else if (CurrentField.CaptureCount[0] < CurrentField.CaptureCount[1])
+		result = 1;
+	else
+		result = -1;
 
-		for (_int i = 0; i < Putted; i++)
-			CurrentField.UndoStep();
+	for (p_int i = 0; i < Putted; i++)
+		CurrentField.UndoStep();
 
-		return result;
+	return result;
 }
 
-inline void CreateChildren(Field &CurrentField, GameStack<_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+inline void CreateChildren(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	Node **CurrentChild = &n.Child;
 
-	for (_int i = 0; i < PossibleMoves.Count; i++)
+	for (p_int i = 0; i < PossibleMoves.Count; i++)
 		if (CurrentField.PuttingAllow(PossibleMoves.Stack[i]))
 		{
 			*CurrentChild = new Node();
@@ -84,22 +84,13 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-_int PlaySimulation(Field &CurrentField, GameStack<_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+p_int PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
-	_int randomresult;
+	p_int randomresult;
 
 	if (n.Visits == 0)
 	{
-#if DEBUG
-		_int D_Points[PointsLength22];
-		for (_int i = 0; i < PointsLength22; i++)
-			D_Points[i] = CurrentField.Points[i];
-#endif
 		randomresult = PlayRandomGame(CurrentField, PossibleMoves);
-#if DEBUG
-		for (_int i = 0; i < PointsLength22; i++)
-			assert(CurrentField.Points[i] == D_Points[i]);
-#endif
 	}
 	else
 	{
@@ -110,9 +101,9 @@ _int PlaySimulation(Field &CurrentField, GameStack<_int, MAX_CHAIN_POINTS> &Poss
 
 		if (next == NULL)
 		{
-			n.Visits = Infinity;
+			n.Visits = INFINITY;
 			if (CurrentField.CaptureCount[CurrentField.EnemyPlayer] > CurrentField.CaptureCount[CurrentField.CurPlayer])
-				n.Wins = Infinity;
+				n.Wins = INFINITY;
 
 			if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
 				return 0;
@@ -146,8 +137,8 @@ inline void SetDefaultRect(Field &CurrentField, Rect &rect)
 
 inline void SetRect(Field &CurrentField, Rect &rect)
 {
-	_int X, Y;
-	for (_int i = 0; i < CurrentField.PointsSeq.Count; i++)
+	p_int X, Y;
+	for (p_int i = 0; i < CurrentField.PointsSeq.Count; i++)
 	{
 		CurrentField.ConvertToXY(CurrentField.PointsSeq.Stack[i], X, Y);
 		if (X < rect.Left)
@@ -173,19 +164,19 @@ inline void IncreaseRect(Field &CurrentField, Rect &rect)
 		rect.Bottom++;
 }
 
-inline void GeneratePossibleMoves(Field &CurrentField, GameStack<_int, MAX_CHAIN_POINTS> &PossibleMoves, Rect &rect)
+inline void GeneratePossibleMoves(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Rect &rect)
 {
 	PossibleMoves.Clear();
-	for (_int i = rect.Left; i <= rect.Right; i++)
-		for (_int j = rect.Top; j <= rect.Bottom; j++)
+	for (p_int i = rect.Left; i <= rect.Right; i++)
+		for (p_int j = rect.Top; j <= rect.Bottom; j++)
 		{
-			_int Pos = CurrentField.UnsafeConvertToPos(i, j);
+			p_int Pos = CurrentField.UnsafeConvertToPos(i, j);
 			if (CurrentField.PuttingAllow(Pos))
 				PossibleMoves.Push(Pos);
 		}
 }
 
-inline void InitUCT(Field &CurrentField, GameStack<_int, MAX_CHAIN_POINTS> &PossibleMoves)
+inline void InitUCT(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	Rect rect;
 
@@ -210,12 +201,12 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-void UCTEstimate(Field &MainField, _int MaxSimulations, GameStack<_int, MAX_CHAIN_POINTS> &Moves)
+void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
-	_int Wins[PointsLength22] = {0};
-	_int Visits[PointsLength22] = {0};
+	p_int Wins[PointsLength22] = {0};
+	p_int Visits[PointsLength22] = {0};
 	// Список всех возможных ходов для UCT.
-	GameStack<_int, MAX_CHAIN_POINTS> PossibleMoves;
+	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
 
 	InitUCT(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
@@ -233,7 +224,7 @@ void UCTEstimate(Field &MainField, _int MaxSimulations, GameStack<_int, MAX_CHAI
 		CreateChildren(*LocalField, Moves, n);
 
 		#pragma omp for
-		for (_int i = 0; i < MaxSimulations; i++)
+		for (p_int i = 0; i < MaxSimulations; i++)
 			PlaySimulation(*LocalField, PossibleMoves, n);
 
 		Node *next = n.Child;
@@ -251,9 +242,9 @@ void UCTEstimate(Field &MainField, _int MaxSimulations, GameStack<_int, MAX_CHAI
 	}
 
 	float BestScore = 0;
-	GameStack<_int, MAX_CHAIN_POINTS> BestMoves;
+	GameStack<p_int, MAX_CHAIN_POINTS> BestMoves;
 	BestMoves.Clear();
-	for (_int i = 0; i < Moves.Count; i++)
+	for (p_int i = 0; i < Moves.Count; i++)
 		if (Visits[Moves.Stack[i]] != 0)
 		{
 			float TempScore = (float)Wins[Moves.Stack[i]] / Visits[Moves.Stack[i]];
