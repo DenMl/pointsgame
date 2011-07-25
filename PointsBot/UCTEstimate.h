@@ -2,13 +2,13 @@
 #include "BasicTypes.h"
 #include "Field.h"
 
-const _int UCTK = 1;
+const p_int UCTK = 1;
 
 struct Node
 {
-	_int Wins;
-	_int Visits;
-	_int Move;
+	p_int Wins;
+	p_int Visits;
+	p_int Move;
 	Node *Child;
 	Node *Sibling;
 
@@ -24,7 +24,7 @@ struct Node
 
 struct Rect
 {
-	_int Left, Right, Top, Bottom;
+	p_int Left, Right, Top, Bottom;
 };
 
-void UCTEstimate(Field &MainField, _int MaxSimulations, GameStack<_int, MAX_CHAIN_POINTS> &Moves);
+void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);

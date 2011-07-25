@@ -2,9 +2,9 @@
 
 #include "BasicTypes.h"
 
-template<typename TYPE, _int MAX_POINTS> struct GameStack
+template<typename TYPE, p_int MAX_POINTS> struct GameStack
 {
-	_int Count;
+	p_int Count;
 	TYPE Stack[MAX_POINTS];
 
 	inline GameStack()
@@ -31,13 +31,13 @@ template<typename TYPE, _int MAX_POINTS> struct GameStack
 	inline void Copy(const GameStack &Orig)
 	{
 		Count = Orig.Count;
-		for (_int i = 0; i < Orig.Count; i++)
+		for (p_int i = 0; i < Orig.Count; i++)
 			Stack[i] = Orig.Stack[i];
 	}
 
-	inline const _int Find(const TYPE x)
+	inline const p_int Find(const TYPE x)
 	{
-		for (_int i = 0; i < Count; i++)
+		for (p_int i = 0; i < Count; i++)
 			if (Stack[i] == x)
 				return i;
 		return -1;
@@ -49,14 +49,14 @@ template<typename TYPE, _int MAX_POINTS> struct GameStack
 		TempStack.Copy(*this);
 
 		this->Clear();
-		for (_int i = 0; i < TempStack.Count; i++)
+		for (p_int i = 0; i < TempStack.Count; i++)
 			if (Orig.Find(TempStack.Stack[i]) != -1)
 				this->Push(TempStack.Stack[i]);
 	}
 
 	inline void Union(GameStack &Orig)
 	{
-		for (_int i = 0; i < Orig.Count; i++)
+		for (p_int i = 0; i < Orig.Count; i++)
 			if (Find(Orig.Stack[i]) == -1)
 				Push(Orig.Stack[i]);
 	}

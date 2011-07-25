@@ -8,19 +8,19 @@
 #include "LadderEstimate.h"
 #include "Random.h"
 
-void BuildAllMoves(Field &MainField, GameStack<_int, MAX_CHAIN_POINTS> &Moves)
+void BuildAllMoves(Field &MainField, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
 	Moves.Clear();
-	for (_int i = MainField.MinPos; i <= MainField.MaxPos; i++)
+	for (p_int i = MainField.MinPos; i <= MainField.MaxPos; i++)
 		if (MainField.PuttingAllow(i))
 			Moves.Push(i);
 }
 
-_int SearchBestMove(Field &MainField, _int Depth, _int UCTIterations)
+p_int SearchBestMove(Field &MainField, p_int Depth, p_int UCTIterations)
 {
-	_int MaxScore = -Infinity;
+	p_int MaxScore = -INFINITY;
 
-	GameStack<_int, MAX_CHAIN_POINTS> Moves;
+	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.

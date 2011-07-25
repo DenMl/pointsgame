@@ -4,12 +4,12 @@
 #include "Field.h"
 
 // Учет позиционных эвристик.
-_int PositionEstimate(Field &MainField, _int TestedPoint, _int Player)
+p_int PositionEstimate(Field &MainField, p_int TestedPoint, p_int Player)
 {
-	const _int cgSumma[] = {-5, -1, 0, 0, 1, 2, 5, 20, 30};
-	_int g1, g2;
-	_int c1, c2;
-	_int Result;
+	const p_int cgSumma[] = {-5, -1, 0, 0, 1, 2, 5, 20, 30};
+	p_int g1, g2;
+	p_int c1, c2;
+	p_int Result;
 
 	g1 = MainField.NumberNearGroups(TestedPoint, Player);
 	g2 = MainField.NumberNearGroups(TestedPoint, Field::NextPlayer(Player));
@@ -22,14 +22,14 @@ _int PositionEstimate(Field &MainField, _int TestedPoint, _int Player)
 	return Result;
 }
 
-void PositionEstimate(Field &MainField, GameStack<_int, MAX_CHAIN_POINTS> &Moves)
+void PositionEstimate(Field &MainField, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
-	_int BestScore = -Infinity;
-	GameStack<_int, MAX_CHAIN_POINTS> BestMoves;
+	p_int BestScore = -INFINITY;
+	GameStack<p_int, MAX_CHAIN_POINTS> BestMoves;
 	BestMoves.Clear();
-	for (_int i = 0; i < Moves.Count; i++)
+	for (p_int i = 0; i < Moves.Count; i++)
 	{
-		_int TempScore = PositionEstimate(MainField, Moves.Stack[i], MainField.CurPlayer);
+		p_int TempScore = PositionEstimate(MainField, Moves.Stack[i], MainField.CurPlayer);
 		if (TempScore > BestScore)
 		{
 			BestScore = TempScore;
