@@ -41,6 +41,7 @@ namespace PointsShell
         public Color BackgroundColor = Colors.White;
         public bool Sounds = true;
         public string Language = "English.xml";
+        public int CellSize = 18;
 
         public string Header
         {
@@ -75,6 +76,7 @@ namespace PointsShell
             FillingAlpha = Preferences.FillingAlpha;
             BackgroundColor = Preferences.BackgroundColor;
             Sounds = Preferences.Sounds;
+            CellSize = Preferences.CellSize;
         }
 
         public static GamePreferences Load(string File)

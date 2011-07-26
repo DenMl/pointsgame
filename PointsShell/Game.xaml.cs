@@ -24,8 +24,6 @@ namespace PointsShell
 
     public partial class Game
     {
-        private const int CellSize = 18;
-
         private GamePreferences _preferences;
         public GamePreferences Preferences
         {
@@ -179,24 +177,24 @@ namespace PointsShell
             BlackTextBlock.Text = language.Black;
         }
 
-        private static Pos ConvertToPos(Point Point)
+        private Pos ConvertToPos(Point Point)
         {
-            return new Pos((int)Math.Round(Point.X / CellSize - 0.5), (int)Math.Round(Point.Y / CellSize - 0.5));
+            return new Pos((int)Math.Round(Point.X / Preferences.CellSize - 0.5), (int)Math.Round(Point.Y / Preferences.CellSize - 0.5));
         }
 
         private void DrawField(int width, int height)
         {
-            canvas.Width = width * CellSize;
-            canvas.Height = height * CellSize;
+            canvas.Width = width * Preferences.CellSize;
+            canvas.Height = height * Preferences.CellSize;
             canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 
             for (var i = 0; i < width; i++)
                 canvas.Children.Add(new Line
                                         {
-                                            X1 = CellSize * i + CellSize / 2,
-                                            X2 = CellSize * i + CellSize / 2,
+                                            X1 = Preferences.CellSize * i + Preferences.CellSize / 2,
+                                            X2 = Preferences.CellSize * i + Preferences.CellSize / 2,
                                             Y1 = 0,
-                                            Y2 = CellSize * height,
+                                            Y2 = Preferences.CellSize * height,
                                             Stroke = Brushes.Black,
                                             StrokeThickness = 0.5
                                         });
@@ -204,10 +202,10 @@ namespace PointsShell
             for (var i = 0; i < height; i++)
                 canvas.Children.Add(new Line
                                         {
-                                            Y1 = CellSize * i + CellSize / 2,
-                                            Y2 = CellSize * i + CellSize / 2,
+                                            Y1 = Preferences.CellSize * i + Preferences.CellSize / 2,
+                                            Y2 = Preferences.CellSize * i + Preferences.CellSize / 2,
                                             X1 = 0,
-                                            X2 = CellSize * width,
+                                            X2 = Preferences.CellSize * width,
                                             Stroke = Brushes.Black,
                                             StrokeThickness = 0.5
                                         });
@@ -290,8 +288,8 @@ namespace PointsShell
                 Width = 8,
                 Height = 8
             };
-            Canvas.SetLeft(E, Point.X * CellSize + CellSize / 2 - 4);
-            Canvas.SetTop(E, Point.Y * CellSize + CellSize / 2 - 4);
+            Canvas.SetLeft(E, Point.X * Preferences.CellSize + Preferences.CellSize / 2 - 4);
+            Canvas.SetTop(E, Point.Y * Preferences.CellSize + Preferences.CellSize / 2 - 4);
             canvas.Children.Add(E);
 
             // Рисуем заливку.
@@ -299,7 +297,7 @@ namespace PointsShell
             {
                 var GraphicsPoints = new PointCollection(chain.Count);
                 for (var i = 0; i < chain.Count; i++)
-                    GraphicsPoints.Add(new Point((chain[i].X - 1) * CellSize + CellSize / 2, (chain[i].Y - 1) * CellSize + CellSize / 2));
+                    GraphicsPoints.Add(new Point((chain[i].X - 1) * Preferences.CellSize + Preferences.CellSize / 2, (chain[i].Y - 1) * Preferences.CellSize + Preferences.CellSize / 2));
 
                 var Poly = new Polygon { Points = GraphicsPoints };
                 if (Field.Points[chain[0].X, chain[0].Y].Color == PlayerColor.Red)
@@ -322,8 +320,8 @@ namespace PointsShell
                 Width = 12,
                 Height = 12
             };
-            Canvas.SetLeft(E, Point.X * CellSize + CellSize / 2 - 6);
-            Canvas.SetTop(E, Point.Y * CellSize + CellSize / 2 - 6);
+            Canvas.SetLeft(E, Point.X * Preferences.CellSize + Preferences.CellSize / 2 - 6);
+            Canvas.SetTop(E, Point.Y * Preferences.CellSize + Preferences.CellSize / 2 - 6);
             canvas.Children.Add(E);
 
             UpdateTextInfo();
@@ -384,8 +382,8 @@ namespace PointsShell
                     Width = 12,
                     Height = 12
                 };
-                Canvas.SetLeft(E, (Field.PointsSeq[Field.PointsCount - 1].X - 1) * CellSize + CellSize / 2 - 6);
-                Canvas.SetTop(E, (Field.PointsSeq[Field.PointsCount - 1].Y - 1) * CellSize + CellSize / 2 - 6);
+                Canvas.SetLeft(E, (Field.PointsSeq[Field.PointsCount - 1].X - 1) * Preferences.CellSize + Preferences.CellSize / 2 - 6);
+                Canvas.SetTop(E, (Field.PointsSeq[Field.PointsCount - 1].Y - 1) * Preferences.CellSize + Preferences.CellSize / 2 - 6);
                 canvas.Children.Add(E);
             }
         }
