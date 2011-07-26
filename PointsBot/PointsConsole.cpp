@@ -12,24 +12,24 @@ using namespace std;
 
 Field *MainField;
 
-const int min_MinMaxDepth = 0;
-const int max_MinMaxDepth = 8;
-const int min_UCTIterations = 0;
-const int max_UCTIterations = 100000;
-const int min_P = 0;
-const int max_P = 100;
+const p_int min_MinMaxDepth = 0;
+const p_int max_MinMaxDepth = 8;
+const p_int min_UCTIterations = 0;
+const p_int max_UCTIterations = 100000;
+const p_int min_P = 0;
+const p_int max_P = 100;
 
-inline int GetMinMaxDepth(int P)
+inline p_int GetMinMaxDepth(p_int P)
 {
 	return (P - min_P) * (max_MinMaxDepth - min_MinMaxDepth) / (max_P - min_P) + min_MinMaxDepth;
 }
 
-inline int GetUCTIterations(int P)
+inline p_int GetUCTIterations(p_int P)
 {
 	return (P - min_P) * (max_UCTIterations - min_UCTIterations) / (max_P - min_P) + min_UCTIterations;
 }
 
-inline void FillCodes(map<string, int> &codes)
+inline void FillCodes(map<string, p_int> &codes)
 {
 	codes["boardsize"] = 1;
 	codes["echo"] = 2;
@@ -45,7 +45,7 @@ inline void FillCodes(map<string, int> &codes)
 
 inline void boardsize()
 {
-	int X, Y;
+	p_int X, Y;
 	cin >> X >> Y;
 	if (MainField != NULL)
 		MainField->Initialize(X, Y, Field::Standart, Field::CleanPattern);
@@ -62,7 +62,7 @@ inline void echo()
 
 inline void genmove()
 {
-	int X, Y, color, P, pos;
+	p_int X, Y, color, P, pos;
 	cin >> color >> P;
 	if (MainField == NULL)
 		return;
@@ -85,7 +85,7 @@ inline void name()
 
 inline void play()
 {
-	int X, Y, color;
+	p_int X, Y, color;
 	cin >> X >> Y >> color;
 	if (MainField == NULL || !MainField->DoStep(MainField->ConvertToPos(X, Y), color))
 		return;
@@ -94,7 +94,7 @@ inline void play()
 
 inline void reg_genmove()
 {
-	int X, Y, color, P;
+	p_int X, Y, color, P;
 	cin >> color >> P;
 	if (MainField == NULL)
 		return;
@@ -115,10 +115,10 @@ inline void version()
 	cout << "version 1.4.0.0" << endl;
 }
 
-int main(int argc, char* argv[])
+p_int main(p_int argc, char* argv[])
 {
 	string s;
-	map<string, int> codes;
+	map<string, p_int> codes;
 
 	MainField = NULL;
 	FillCodes(codes);
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 	while (true)
 	{
 		cin >> s;
-		map<string, int>::iterator i = codes.find(s);
+		map<string, p_int>::iterator i = codes.find(s);
 		if (i == codes.end())
 			continue;
 		switch (i->second)
