@@ -38,13 +38,14 @@ namespace PointsShell
                 _preferences.BackgroundColor = value.BackgroundColor;
                 canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 
-                if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha)
+                if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha || _preferences.CellSize != value.CellSize)
                 {
                     _preferences.Sounds = false;
 
                     _preferences.RedColor = value.RedColor;
                     _preferences.BlackColor = value.BlackColor;
                     _preferences.FillingAlpha = value.FillingAlpha;
+                    _preferences.CellSize = value.CellSize;
 
                     canvas.Children.Clear();
                     CanvasChildrenCount.Clear();
