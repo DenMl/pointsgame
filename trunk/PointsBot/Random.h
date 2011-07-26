@@ -10,6 +10,7 @@
 #include <ctime>
 #endif
 
+// Рандомизация последовательности псевдослучайных чисел. Должно вызываться отдельно для каждого потока, если необходим рандом.
 inline void Randomize()
 {
 #if WINDOWS
@@ -19,6 +20,7 @@ inline void Randomize()
 #endif
 }
 
+// Генерирует случайное p_int (все биты принимают случайное значение).
 inline p_int Random()
 {
 #if RAND_MAX == 0x7FFF // В этом случае rand() генерирует 15 случайных бит. Смещениями можно получить 32/64 бита.
@@ -31,7 +33,7 @@ inline p_int Random()
 #error Unknown SIZEOF_P_INT
 #endif
 
-#elif RAND_MAX == 0x7FFFFFFF
+#elif RAND_MAX == 0x7FFFFFFF // В этом случае rand() генерирует 31 случайный бит. Смещениями можно получить 32/64 бита.
 
 #if SIZEOF_P_INT == 4
 	return (rand() << 1) | (rand() & 1);
@@ -46,7 +48,14 @@ inline p_int Random()
 #endif
 }
 
+// Генерирует случайное число от 0 до max-1. Если необходимо случайное число, не превосходящее RAND_MAX, лучше пользоваться FastRandom.
 inline p_int Random(p_int max)
 {
 	return Random() % max;
+}
+
+// Генерирует случайное число от 0 до max-1. max <= RAND_MAX.
+inline p_int FastRandom(p_int max)
+{
+	return rand() % max;
 }
