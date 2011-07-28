@@ -19,12 +19,12 @@ void FinalField(Field *MainField)
 
 void PutPoint(Field *MainField, p_int X, p_int Y)
 {
-	MainField->DoStep(MainField->ConvertToPos(X, Y));
+	MainField->DoStep(MainField->ConvertToPos(X - 1, Y - 1)); // -1 = костыль.
 }
 
 void PutPlayersPoint(Field *MainField, p_int X, p_int Y, p_int Player)
 {
-	MainField->DoStep(MainField->ConvertToPos(X, Y), Player);
+	MainField->DoStep(MainField->ConvertToPos(X - 1, Y - 1), Player); // -1 = костыль.
 }
 
 void RemoveLastPoint(Field *MainField)
@@ -51,4 +51,5 @@ void GetBotMove(Field *MainField, p_int MinMaxDepth, p_int UCTIterations, p_int 
 {
 	Randomize();
 	MainField->ConvertToXY(SearchBestMove(*MainField, MinMaxDepth, UCTIterations), X, Y);
+	X++; Y++; // Костыль.
 }

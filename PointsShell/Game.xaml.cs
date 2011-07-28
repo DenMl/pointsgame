@@ -180,7 +180,7 @@ namespace PointsShell
 
         private Pos ConvertToPos(Point Point)
         {
-            return new Pos((int)Math.Round(Point.X / Preferences.CellSize - 0.5), (int)Math.Round(Point.Y / Preferences.CellSize - 0.5));
+            return new Pos((int)Math.Round(Point.X / Preferences.CellSize - 0.5) + 1, (int)Math.Round(Point.Y / Preferences.CellSize - 0.5) + 1);
         }
 
         private void DrawField(int width, int height)
@@ -266,6 +266,41 @@ namespace PointsShell
             _preferences.Sounds = Sounds;
         }
 
+        private void FillAround(Pos Point, PlayerColor Player)
+        {
+            
+        }
+        private void FullFill(PlayerColor Player)
+        {
+            // Пользуемся тем свойством, что заливка происходит по минимальной площади, а значит рядом с точкой, которая что-то окружает, не может находиться точки того же цвета в окружении.
+            // То есть строить заливку будем только от тех точек, которые достижимы обходом в ширину от края поля.
+
+            // Очередь для обхода в ширину всего поля.
+            var queue = new Queue<Pos>();
+            // Здесь помечаются поля, посещенные обходом в ширину поля для того, чтобы не посещались многократно.
+            var p_queue = new bool[Field.Width, Field.Height];
+            // Здесь помечаются просмотренные точки (от которых не нужно строить заливку).
+            var p = new bool[Field.Width, Field.Height];
+            queue.Enqueue(new Pos(1, 1));
+            p_queue[1, 1] = true;
+            while (queue.Count > 0)
+            {
+                var pos = queue.Dequeue();
+                if (Field.Points[pos.X, pos.Y].Enabled(Player) && !p[pos.X, pos.Y])
+                    FillAround(pos, Player);
+                if (Field.Points[pos.X, pos.Y].Bound)
+                    continue;
+                if (!Field.Points[pos.X + 1, pos.Y].Bad)
+                    queue.Enqueue(new Pos(pos.X + 1, pos.Y));
+                if (!Field.Points[pos.X - 1, pos.Y].Bad)
+                    queue.Enqueue(new Pos(pos.X - 1, pos.Y));
+                if (!Field.Points[pos.X, pos.Y + 1].Bad)
+                    queue.Enqueue(new Pos(pos.X, pos.Y + 1));
+                if (!Field.Points[pos.X, pos.Y - 1].Bad)
+                    queue.Enqueue(new Pos(pos.X, pos.Y - 1));
+            }
+        }
+
         public bool PutPoint(Pos Point, PlayerColor Player)
         {
             if (!Field.PutPoint(Point, Player))
@@ -289,8 +324,8 @@ namespace PointsShell
                 Width = 8,
                 Height = 8
             };
-            Canvas.SetLeft(E, Point.X * Preferences.CellSize + Preferences.CellSize / 2 - 4);
-            Canvas.SetTop(E, Point.Y * Preferences.CellSize + Preferences.CellSize / 2 - 4);
+            Canvas.SetLeft(E, (Point.X - 1) * Preferences.CellSize + Preferences.CellSize / 2 - 4);
+            Canvas.SetTop(E, (Point.Y - 1) * Preferences.CellSize + Preferences.CellSize / 2 - 4);
             canvas.Children.Add(E);
 
             // Рисуем заливку.
@@ -321,8 +356,8 @@ namespace PointsShell
                 Width = 12,
                 Height = 12
             };
-            Canvas.SetLeft(E, Point.X * Preferences.CellSize + Preferences.CellSize / 2 - 6);
-            Canvas.SetTop(E, Point.Y * Preferences.CellSize + Preferences.CellSize / 2 - 6);
+            Canvas.SetLeft(E, (Point.X - 1) * Preferences.CellSize + Preferences.CellSize / 2 - 6);
+            Canvas.SetTop(E, (Point.Y - 1) * Preferences.CellSize + Preferences.CellSize / 2 - 6);
             canvas.Children.Add(E);
 
             UpdateTextInfo();
@@ -493,7 +528,7 @@ namespace PointsShell
             _preferences.Sounds = false;
 
             for (var i = 58; i < Count; i += 13)
-                PutPoint(new Pos(buffer[i], buffer[i + 1]), buffer[i + 3] == 0x00 ? PlayerColor.Black : PlayerColor.Red);
+                PutPoint(new Pos(buffer[i] + 1, buffer[i + 1] + 1), buffer[i + 3] == 0x00 ? PlayerColor.Black : PlayerColor.Red);
             Field.CurPlayer = buffer[Count - 10] == 0x00 ? PlayerColor.Red : PlayerColor.Black;
 
             _preferences.Sounds = Sounds;

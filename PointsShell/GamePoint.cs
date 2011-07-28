@@ -15,6 +15,8 @@
         public bool EmptyBase;
         // Вспомогательный бит (используется при работе алгоритма "заливки" точек в базе).
         public bool Tagged;
+        // Указывает на то, что координаты точки невалидны.
+        public bool Bad;
 
         public GamePoint(GamePoint Point)
         {
@@ -24,16 +26,7 @@
             Bound = Point.Bound;
             EmptyBase = Point.EmptyBase;
             Tagged = Point.Tagged;
-        }
-
-        public GamePoint(PlayerColor color, bool putted, bool surrounded, bool bound, bool emptyBase, bool tagged)
-        {
-            Color = color;
-            Putted = putted;
-            Surrounded = surrounded;
-            Bound = bound;
-            EmptyBase = emptyBase;
-            Tagged = tagged;
+            Bad = Point.Bad;
         }
 
         // Проверка наличия точки игрока.
@@ -51,7 +44,7 @@
         // Возможно ли поставить точку.
         public bool PuttingAllow()
         {
-            return !Putted && !Surrounded;
+            return !Putted && !Surrounded && !Bad;
         }
     }
 }
