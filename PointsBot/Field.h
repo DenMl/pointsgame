@@ -690,16 +690,10 @@ public:
 		// Очищаем количество текущих изменений.
 		CurrentBoardChangesNumber = 0;
 
-		this->FieldWidth = FieldWidth;
-		this->FieldHeight = FieldHeight;
-
 		ExpandWidth = (FieldWidth2 - FieldWidth) / 2;
 		ParityWidth = (FieldWidth2 - FieldWidth) % 2;
 		ExpandHeight = (FieldHeight2 - FieldHeight) / 2;
 		ParityHeight = (FieldHeight2 - FieldHeight) % 2;
-
-		MinPos = UnsafeConvertToPos(0, 0);
-		MaxPos = UnsafeConvertToPos(FieldWidth - 1, FieldHeight - 1);
 
 		// Верхнюю часть доски помечаем флагом BadValue.
 		for (p_int i = 0; i < ExpandHeight * FieldWidth2; i++)
@@ -719,8 +713,8 @@ public:
 		for (Pos; Pos < PointsLength22; Pos++)
 			Points[Pos] = BadValue;
 
-		//PlaceBeginPattern();
-
+		this->FieldWidth = FieldWidth;
+		this->FieldHeight = FieldHeight;
 		PointsSeq.Clear();
 		#if SURROUND_CONDITIONS
 		this->SurCond = (SurroundCondition)SurCond;
@@ -732,6 +726,9 @@ public:
 		CaptureCount[1] = 0;
 
 		Hash = 0;
+
+		MinPos = UnsafeConvertToPos(0, 0);
+		MaxPos = UnsafeConvertToPos(FieldWidth - 1, FieldHeight - 1);
 
 		PlaceBeginPattern();
 	}
@@ -746,9 +743,6 @@ public:
 		ParityWidth = Orig.ParityWidth;
 		ExpandHeight = Orig.ExpandHeight;
 		ParityHeight = Orig.ParityHeight;
-
-		MinPos = Orig.MinPos;
-		MaxPos = Orig.MaxPos;
 
 		for (p_int i = 0; i < PointsLength22; i++)
 			Points[i] = Orig.Points[i];
@@ -766,6 +760,9 @@ public:
 		CaptureCount[1] = Orig.CaptureCount[1];
 
 		Hash = Orig.Hash;
+
+		MinPos = Orig.MinPos;
+		MaxPos = Orig.MaxPos;
 	}
 
 	// Функции конвертации координат.
