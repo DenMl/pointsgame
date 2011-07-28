@@ -9,7 +9,11 @@
         </Grid.RowDefinitions>
 
         <Viewbox Grid.Row="0">
-            <Canvas Name="canvas" ClipToBounds="True" MouseLeftButtonDown="canvasMouseLeftButtonDown" MouseMove="canvasMouseMove" />
+            <Canvas Name="canvas" ClipToBounds="True" MouseLeftButtonDown="canvasMouseLeftButtonDown" MouseMove="canvasMouseMove">
+                <Canvas.LayoutTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="-1" />
+                </Canvas.LayoutTransform>
+            </Canvas>
         </Viewbox>
 
         <Grid Grid.Row="1">

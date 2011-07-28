@@ -70,6 +70,18 @@ namespace PointsShell
             Points = new GamePoint[width + 2, height + 2];
             PointsSeq = new List<Pos>();
             MainState = new StateChange();
+
+            // Помечаем граничные точки как невалидные.
+            for (var i = 0; i < width + 2; i++)
+            {
+                Points[i, 0].Bad = true;
+                Points[i, height + 1].Bad = true;
+            }
+            for (var i = 0; i < height + 2; i++)
+            {
+                Points[0, i].Bad = true;
+                Points[width + 1, i].Bad = true;
+            }
         }
 
         public static PlayerColor NextPlayer(PlayerColor Player)
@@ -699,12 +711,10 @@ namespace PointsShell
 
         public virtual bool PutPoint(Pos Point, PlayerColor Player)
         {
-            if (Point.X < 0 || Point.X >= Width || Point.Y < 0 || Point.Y >= Height)
+            if (Point.X < 1 || Point.X > Width || Point.Y < 1 || Point.Y > Height)
                 return false;
 
-            var X1 = Point.X + 1;
-            var Y1 = Point.Y + 1;
-            if (!Points[X1, Y1].PuttingAllow())
+            if (!Points[Point.X, Point.Y].PuttingAllow())
                 return false;
 
             // Добавляем новый список изменений поля.
@@ -714,13 +724,13 @@ namespace PointsShell
             // Запоминаем игрока, чей ход сейчас должен быть.
             MainState.AddPlayer(CurPlayer);
 
-            MainState.AddPosPoint(new Pos(X1, Y1), Points[X1, Y1]);
+            MainState.AddPosPoint(Point, Points[Point.X, Point.Y]);
 
-            Points[X1, Y1].Putted = true;
-            Points[X1, Y1].Color = Player;
-            PointsSeq.Add(new Pos(X1, Y1));
+            Points[Point.X, Point.Y].Putted = true;
+            Points[Point.X, Point.Y].Color = Player;
+            PointsSeq.Add(Point);
 
-            CheckClosure(new Pos(X1, Y1));
+            CheckClosure(Point);
 
             return true;
         }
