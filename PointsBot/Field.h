@@ -690,13 +690,16 @@ public:
 		// Очищаем количество текущих изменений.
 		CurrentBoardChangesNumber = 0;
 
+		this->FieldWidth = FieldWidth;
+		this->FieldHeight = FieldHeight;
+
 		ExpandWidth = (FieldWidth2 - FieldWidth) / 2;
 		ParityWidth = (FieldWidth2 - FieldWidth) % 2;
 		ExpandHeight = (FieldHeight2 - FieldHeight) / 2;
 		ParityHeight = (FieldHeight2 - FieldHeight) % 2;
 
-		MinPos = ExpandHeight * FieldWidth2 + ExpandWidth;
-		MaxPos = (FieldHeight - 1 + ExpandHeight) * FieldWidth2 + FieldWidth - 1 + ExpandWidth;
+		MinPos = UnsafeConvertToPos(0, 0);
+		MaxPos = UnsafeConvertToPos(FieldWidth - 1, FieldHeight - 1);
 
 		// Верхнюю часть доски помечаем флагом BadValue.
 		for (p_int i = 0; i < ExpandHeight * FieldWidth2; i++)
@@ -718,8 +721,6 @@ public:
 
 		//PlaceBeginPattern();
 
-		this->FieldWidth = FieldWidth;
-		this->FieldHeight = FieldHeight;
 		PointsSeq.Clear();
 		#if SURROUND_CONDITIONS
 		this->SurCond = (SurroundCondition)SurCond;
