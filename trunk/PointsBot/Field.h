@@ -695,8 +695,8 @@ public:
 		ExpandHeight = (FieldHeight2 - FieldHeight) / 2;
 		ParityHeight = (FieldHeight2 - FieldHeight) % 2;
 
-		MinPos = ExpandHeight * FieldWidth2 + 1;
-		MaxPos = (ExpandHeight + FieldHeight) * FieldWidth2;
+		MinPos = ExpandHeight * FieldWidth2 + ExpandWidth;
+		MaxPos = (FieldHeight - 1 + ExpandHeight) * FieldWidth2 + FieldWidth - 1 + ExpandWidth;
 
 		// Верхнюю часть доски помечаем флагом BadValue.
 		for (p_int i = 0; i < ExpandHeight * FieldWidth2; i++)
@@ -773,7 +773,7 @@ public:
 		if ((X < 0) || (X >= FieldWidth) || (Y < 0) || (Y >= FieldHeight))
 			return 0;
 		else
-			return ((Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth);
+			return (Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth;
 	}
 	inline const p_int ConvertToPos(const Point point)
 	{
@@ -782,7 +782,7 @@ public:
 	// Небезопасные функции конвертации координат.
 	inline const p_int UnsafeConvertToPos(const p_int X, const p_int Y)
 	{
-		return ((Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth);
+		return (Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth;
 	}
 	inline const p_int UnsafeConvertToPos(const Point point)
 	{

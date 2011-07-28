@@ -43,12 +43,12 @@ namespace PointsShell
 
         public void PutPoint(Pos pos)
         {
-            PutPoint(Handle, pos.X, pos.Y);
+            PutPoint(Handle, pos.X - 1, pos.Y - 1);
         }
 
         public void PutPoint(Pos pos, PlayerColor Player)
         {
-            PutPlayersPoint(Handle, pos.X, pos.Y, Player);
+            PutPlayersPoint(Handle, pos.X - 1, pos.Y - 1, Player);
         }
 
         public void RemoveLastPoint()
@@ -60,6 +60,8 @@ namespace PointsShell
         {
             var Result = new Pos();
             GetBotMove(Handle, MinMaxDepth, UCTIterations, ref Result.X, ref Result.Y);
+            Result.X++;
+            Result.Y++;
             return Result;
         }
 
