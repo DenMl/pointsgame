@@ -47,14 +47,7 @@ namespace PointsShell
                     _preferences.FillingAlpha = value.FillingAlpha;
                     _preferences.CellSize = value.CellSize;
 
-                    canvas.Children.Clear();
-                    CanvasChildrenCount.Clear();
-                    DrawField(_preferences.Width, _preferences.Height);
-                    var LastField = Field;
-                    Field = new Field(_preferences.Width, _preferences.Height, _preferences.SurCond);
-
-                    foreach (var pos in LastField.PointsSeq)
-                        PutPoint(new Pos(pos.X - 1, pos.Y - 1), LastField.Points[pos.X, pos.Y].Color);
+                    ReDraw();
                 }
                 _preferences.Sounds = value.Sounds;
 
@@ -182,6 +175,10 @@ namespace PointsShell
         {
             return new Pos((int)Math.Round(Point.X / Preferences.CellSize - 0.5) + 1, (int)Math.Round(Point.Y / Preferences.CellSize - 0.5) + 1);
         }
+        private Point ConvertToGraphicsPoint(Pos pos)
+        {
+            return new Point((pos.X - 1) * Preferences.CellSize + Preferences.CellSize / 2, (pos.Y - 1) * Preferences.CellSize + Preferences.CellSize / 2);
+        }
 
         private void DrawField(int width, int height)
         {
@@ -266,9 +263,40 @@ namespace PointsShell
             _preferences.Sounds = Sounds;
         }
 
-        private void FillAround(Pos Point, PlayerColor Player)
+        public void ReDraw()
         {
-            
+            canvas.Children.Clear();
+            CanvasChildrenCount.Clear();
+            DrawField(_preferences.Width, _preferences.Height);
+            var LastField = Field;
+            Field = new Field(_preferences.Width, _preferences.Height, _preferences.SurCond);
+
+            foreach (var pos in LastField.PointsSeq)
+                PutPoint(new Pos(pos.X - 1, pos.Y - 1), LastField.Points[pos.X, pos.Y].Color);
+        }
+
+        private void FillTriangle(Pos pos1, Pos pos2, Pos pos3, PlayerColor Player)
+        {
+            canvas.Children.Add(new Polygon
+                                    {
+                                        Points =
+                                            new PointCollection
+                                                {
+                                                    ConvertToGraphicsPoint(pos1),
+                                                    ConvertToGraphicsPoint(pos2),
+                                                    ConvertToGraphicsPoint(pos3)
+                                                },
+                                        Fill =
+                                            Player == PlayerColor.Red
+                                                ? new SolidColorBrush(Color.FromArgb(Preferences.FillingAlpha,
+                                                                                     Preferences.RedColor.R,
+                                                                                     Preferences.RedColor.G,
+                                                                                     Preferences.RedColor.B))
+                                                : new SolidColorBrush(Color.FromArgb(Preferences.FillingAlpha,
+                                                                                     Preferences.BlackColor.R,
+                                                                                     Preferences.BlackColor.G,
+                                                                                     Preferences.BlackColor.B))
+                                    });
         }
         private void FullFill(PlayerColor Player)
         {
@@ -278,26 +306,98 @@ namespace PointsShell
             // Очередь для обхода в ширину всего поля.
             var queue = new Queue<Pos>();
             // Здесь помечаются поля, посещенные обходом в ширину поля для того, чтобы не посещались многократно.
-            var p_queue = new bool[Field.Width, Field.Height];
+            var p_queue = new bool[Field.Width + 2, Field.Height + 2];
             // Здесь помечаются просмотренные точки (от которых не нужно строить заливку).
-            var p = new bool[Field.Width, Field.Height];
+            var p = new bool[Field.Width + 2, Field.Height + 2];
+            // Более компактная проверка, нужная дальше.
+            Func<int, int, bool> Test = (X, Y) => Field.Points[X, Y].Enabled(Player);
             queue.Enqueue(new Pos(1, 1));
             p_queue[1, 1] = true;
             while (queue.Count > 0)
             {
                 var pos = queue.Dequeue();
-                if (Field.Points[pos.X, pos.Y].Enabled(Player) && !p[pos.X, pos.Y])
-                    FillAround(pos, Player);
+                if (Test(pos.X, pos.Y) && !p[pos.X, pos.Y])
+                {
+                    if (Test(pos.X - 1, pos.Y - 1))
+                    {
+                        if (Test(pos.X - 1, pos.Y))
+                            FillTriangle(pos, new Pos(pos.X - 1, pos.Y - 1), new Pos(pos.X - 1, pos.Y), Player);
+                        if (Test(pos.X, pos.Y - 1))
+                            FillTriangle(pos, new Pos(pos.X - 1, pos.Y - 1), new Pos(pos.X, pos.Y - 1), Player);
+                    }
+                    else if (Test(pos.X - 1, pos.Y) && Test(pos.X, pos.Y - 1))
+                    {
+                        FillTriangle(pos, new Pos(pos.X - 1, pos.Y), new Pos(pos.X, pos.Y - 1), Player);
+                    }
+
+                    if (Test(pos.X + 1, pos.Y - 1))
+                    {
+                        if (Test(pos.X, pos.Y - 1))
+                            FillTriangle(pos, new Pos(pos.X + 1, pos.Y - 1), new Pos(pos.X, pos.Y - 1), Player);
+                        if (Test(pos.X + 1, pos.Y))
+                            FillTriangle(pos, new Pos(pos.X + 1, pos.Y - 1), new Pos(pos.X + 1, pos.Y), Player);
+                    }
+                    else if (Test(pos.X, pos.Y - 1) && Test(pos.X + 1, pos.Y))
+                    {
+                        FillTriangle(pos, new Pos(pos.X, pos.Y - 1), new Pos(pos.X + 1, pos.Y), Player);
+                    }
+
+                    if (Test(pos.X + 1, pos.Y + 1))
+                    {
+                        if (Test(pos.X + 1, pos.Y))
+                            FillTriangle(pos, new Pos(pos.X + 1, pos.Y + 1), new Pos(pos.X + 1, pos.Y), Player);
+                        if (Test(pos.X, pos.Y + 1))
+                            FillTriangle(pos, new Pos(pos.X + 1, pos.Y + 1), new Pos(pos.X, pos.Y + 1), Player);
+                    }
+                    else if (Test(pos.X + 1, pos.Y) && Test(pos.X, pos.Y + 1))
+                    {
+                        FillTriangle(pos, new Pos(pos.X + 1, pos.Y), new Pos(pos.X, pos.Y + 1), Player);
+                    }
+
+                    if (Test(pos.X - 1, pos.Y + 1))
+                    {
+                        if (Test(pos.X, pos.Y + 1))
+                            FillTriangle(pos, new Pos(pos.X - 1, pos.Y + 1), new Pos(pos.X, pos.Y + 1), Player);
+                        if (Test(pos.X - 1, pos.Y))
+                            FillTriangle(pos, new Pos(pos.X - 1, pos.Y + 1), new Pos(pos.X - 1, pos.Y), Player);
+                    }
+                    else if (Test(pos.X, pos.Y + 1) && Test(pos.X - 1, pos.Y))
+                    {
+                        FillTriangle(pos, new Pos(pos.X, pos.Y + 1), new Pos(pos.X - 1, pos.Y), Player);
+                    }
+                    // Помечаем саму точку и всех ее соседей.
+                    p[pos.X - 1, pos.Y - 1] = true;
+                    p[pos.X    , pos.Y - 1] = true;
+                    p[pos.X + 1, pos.Y - 1] = true;
+                    p[pos.X - 1, pos.Y    ] = true;
+                    p[pos.X    , pos.Y    ] = true;
+                    p[pos.X + 1, pos.Y    ] = true;
+                    p[pos.X - 1, pos.Y + 1] = true;
+                    p[pos.X    , pos.Y + 1] = true;
+                    p[pos.X + 1, pos.Y + 1] = true;
+                }
                 if (Field.Points[pos.X, pos.Y].Bound)
                     continue;
-                if (!Field.Points[pos.X + 1, pos.Y].Bad)
+                if (!Field.Points[pos.X + 1, pos.Y].Bad && !p_queue[pos.X + 1, pos.Y])
+                {
                     queue.Enqueue(new Pos(pos.X + 1, pos.Y));
-                if (!Field.Points[pos.X - 1, pos.Y].Bad)
+                    p_queue[pos.X + 1, pos.Y] = true;
+                }
+                if (!Field.Points[pos.X - 1, pos.Y].Bad && !p_queue[pos.X - 1, pos.Y])
+                {
                     queue.Enqueue(new Pos(pos.X - 1, pos.Y));
-                if (!Field.Points[pos.X, pos.Y + 1].Bad)
+                    p_queue[pos.X - 1, pos.Y] = true;
+                }
+                if (!Field.Points[pos.X, pos.Y + 1].Bad && !p_queue[pos.X, pos.Y + 1])
+                {
                     queue.Enqueue(new Pos(pos.X, pos.Y + 1));
-                if (!Field.Points[pos.X, pos.Y - 1].Bad)
+                    p_queue[pos.X, pos.Y + 1] = true;
+                }
+                if (!Field.Points[pos.X, pos.Y - 1].Bad && !p_queue[pos.X, pos.Y - 1])
+                {
                     queue.Enqueue(new Pos(pos.X, pos.Y - 1));
+                    p_queue[pos.X, pos.Y - 1] = true;
+                }
             }
         }
 
@@ -332,8 +432,8 @@ namespace PointsShell
             foreach (var chain in Field.LastChains)
             {
                 var GraphicsPoints = new PointCollection(chain.Count);
-                for (var i = 0; i < chain.Count; i++)
-                    GraphicsPoints.Add(new Point((chain[i].X - 1) * Preferences.CellSize + Preferences.CellSize / 2, (chain[i].Y - 1) * Preferences.CellSize + Preferences.CellSize / 2));
+                foreach (var pos in chain)
+                    GraphicsPoints.Add(ConvertToGraphicsPoint(pos));
 
                 var Poly = new Polygon { Points = GraphicsPoints };
                 if (Field.Points[chain[0].X, chain[0].Y].Color == PlayerColor.Red)
