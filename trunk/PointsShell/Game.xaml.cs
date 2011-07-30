@@ -400,6 +400,59 @@ namespace PointsShell
                 }
             }
         }
+        private void UpdateFullFill(Pos pos, PlayerColor Player)
+        {
+            // Более компактная проверка, нужная дальше.
+            Func<int, int, bool> Test = (X, Y) => Field.Points[X, Y].Enabled(Player);
+
+            if (Test(pos.X, pos.Y - 1) && Test(pos.X + 1, pos.Y))
+            {
+                FillTriangle(pos, new Pos(pos.X, pos.Y - 1), new Pos(pos.X + 1, pos.Y), Player);
+            }
+            else
+            {
+                if (Test(pos.X, pos.Y - 1) && Test(pos.X + 1, pos.Y - 1))
+                    FillTriangle(pos, new Pos(pos.X, pos.Y - 1), new Pos(pos.X + 1, pos.Y - 1), Player);
+                if (Test(pos.X + 1, pos.Y) && Test(pos.X + 1, pos.Y - 1))
+                    FillTriangle(pos, new Pos(pos.X + 1, pos.Y), new Pos(pos.X + 1, pos.Y - 1), Player);
+            }
+
+            if (Test(pos.X + 1, pos.Y) && Test(pos.X, pos.Y + 1))
+            {
+                FillTriangle(pos, new Pos(pos.X + 1, pos.Y), new Pos(pos.X, pos.Y + 1), Player);
+            }
+            else
+            {
+                if (Test(pos.X + 1, pos.Y) && Test(pos.X + 1, pos.Y + 1))
+                    FillTriangle(pos, new Pos(pos.X + 1, pos.Y), new Pos(pos.X + 1, pos.Y + 1), Player);
+                if (Test(pos.X, pos.Y + 1) && Test(pos.X + 1, pos.Y + 1))
+                    FillTriangle(pos, new Pos(pos.X, pos.Y + 1), new Pos(pos.X + 1, pos.Y + 1), Player);
+            }
+
+            if (Test(pos.X, pos.Y + 1) && Test(pos.X - 1, pos.Y))
+            {
+                FillTriangle(pos, new Pos(pos.X, pos.Y + 1), new Pos(pos.X - 1, pos.Y), Player);
+            }
+            else
+            {
+                if (Test(pos.X, pos.Y + 1) && Test(pos.X - 1, pos.Y + 1))
+                    FillTriangle(pos, new Pos(pos.X, pos.Y + 1), new Pos(pos.X - 1, pos.Y + 1), Player);
+                if (Test(pos.X - 1, pos.Y) && Test(pos.X - 1, pos.Y + 1))
+                    FillTriangle(pos, new Pos(pos.X - 1, pos.Y), new Pos(pos.X - 1, pos.Y + 1), Player);
+            }
+
+            if (Test(pos.X - 1, pos.Y) && Test(pos.X, pos.Y - 1))
+            {
+                FillTriangle(pos, new Pos(pos.X - 1, pos.Y), new Pos(pos.X, pos.Y - 1), Player);
+            }
+            else
+            {
+                if (Test(pos.X - 1, pos.Y) && Test(pos.X - 1, pos.Y - 1))
+                    FillTriangle(pos, new Pos(pos.X - 1, pos.Y), new Pos(pos.X - 1, pos.Y - 1), Player);
+                if (Test(pos.X, pos.Y - 1) && Test(pos.X - 1, pos.Y - 1))
+                    FillTriangle(pos, new Pos(pos.X, pos.Y - 1), new Pos(pos.X - 1, pos.Y - 1), Player);
+            }
+        }
 
         public bool PutPoint(Pos Point, PlayerColor Player)
         {
@@ -448,6 +501,9 @@ namespace PointsShell
                 }
                 canvas.Children.Add(Poly);
             }
+
+            if (Preferences.FullFill)
+                UpdateFullFill(Point, Player);
 
             // Обводим последнюю поставленную точку.
             E = new Ellipse

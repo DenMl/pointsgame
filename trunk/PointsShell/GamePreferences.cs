@@ -41,6 +41,7 @@ namespace PointsShell
         public Color BackgroundColor = Colors.White;
         public bool Sounds = true;
         public string Language = "English.xml";
+        public bool FullFill = true;
         public int CellSize = 18;
 
         public string Header
