@@ -47,6 +47,7 @@ namespace PointsShell
         public string BlackColor = "Black color";
         public string FillingAlpha = "Filling alpha";
         public string BackgroundColor = "Background color";
+        public string FullFill = "Full fill";
         public string Sounds = "Sounds";
         public string NewGame = "New game";
         public string preferences = "preferences";

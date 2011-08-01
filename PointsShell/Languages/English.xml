@@ -42,6 +42,7 @@
   <BlackColor>Black color</BlackColor>
   <FillingAlpha>Filling alpha</FillingAlpha>
   <BackgroundColor>Background color</BackgroundColor>
+  <FullFill>Full fill</FullFill>
   <Sounds>Sounds</Sounds>
   <NewGame>New game</NewGame>
   <preferences>preferences</preferences>
