@@ -65,7 +65,7 @@ class Field
 	inline const bool IsBound(const p_int Pos, const p_int BoundCond) { return (Points[Pos] & BoundMask) == BoundCond; }
 	// ѕроверка на то, не захвачено ли поле.
 	inline const bool IsNotBound(const p_int Pos, const p_int BoundCond) { return (Points[Pos] & BoundMask) != BoundCond; }
-	// ѕровека на то,возможно ли поставить точку в полке.
+	// ѕровека на то, возможно ли поставить точку в полке.
 	inline const bool PuttingAllow(const p_int Pos) { return !(Points[Pos] & (PutBit | SurBit | BadValue)); }
 
 	// Set state functions.
