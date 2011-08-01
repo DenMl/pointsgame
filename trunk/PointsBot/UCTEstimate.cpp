@@ -127,63 +127,34 @@ p_int PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &Po
 	return randomresult;
 }
 
-inline void SetDefaultRect(Field &CurrentField, Rect &rect)
+inline void GeneratePossibleMoves(Field &CurField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
 {
-	rect.Left = CurrentField.FieldWidth;
-	rect.Right = -1;
-	rect.Top = CurrentField.FieldHeight;
-	rect.Bottom = -1;
-}
-
-inline void SetRect(Field &CurrentField, Rect &rect)
-{
-	p_int X, Y;
-	for (p_int i = 0; i < CurrentField.PointsSeq.Count; i++)
-	{
-		CurrentField.ConvertToXY(CurrentField.PointsSeq.Stack[i], X, Y);
-		if (X < rect.Left)
-			rect.Left = X;
-		if (X > rect.Right)
-			rect.Right = X;
-		if (Y < rect.Top)
-			rect.Top = Y;
-		if (Y > rect.Bottom)
-			rect.Bottom = Y;
-	}
-}
-
-inline void IncreaseRect(Field &CurrentField, Rect &rect)
-{
-	if (rect.Left > 0)
-		rect.Left--;
-	if (rect.Right < CurrentField.FieldWidth)
-		rect.Right++;
-	if (rect.Top > 0)
-		rect.Top--;
-	if (rect.Bottom < CurrentField.FieldHeight)
-		rect.Bottom++;
-}
-
-inline void GeneratePossibleMoves(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Rect &rect)
-{
+	p_int TempField[PointsLength22] = {0};
 	PossibleMoves.Clear();
-	for (p_int i = rect.Left; i <= rect.Right; i++)
-		for (p_int j = rect.Top; j <= rect.Bottom; j++)
-		{
-			p_int Pos = CurrentField.UnsafeConvertToPos(i, j);
-			if (CurrentField.PuttingAllow(Pos))
-				PossibleMoves.Push(Pos);
-		}
-}
+	for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
+		if (CurField.IsPutted(i))
+			TempField[i] = 1;
 
-inline void InitUCT(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
-{
-	Rect rect;
+	p_int r = 1;
+	while (r <= UCTRadius)
+	{
+		for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
+			if (TempField[i] == 0 && CurField.PuttingAllow(i) &&
+				(	TempField[i - FieldWidth2 - 1] == r ||
+					TempField[i - FieldWidth2] == r ||
+					TempField[i - FieldWidth2 + 1] == r ||
+					TempField[i - 1] == r ||
+					TempField[i + 1] == r ||
+					TempField[i + FieldWidth2 - 1] == r ||
+					TempField[i + FieldWidth2] == r ||
+					TempField[i + FieldWidth2 + 1] == r	))
+				TempField[i] = r + 1;
+		r++;
+	}
 
-	SetDefaultRect(CurrentField, rect);
-	SetRect(CurrentField, rect);
-	IncreaseRect(CurrentField, rect);
-	GeneratePossibleMoves(CurrentField, PossibleMoves, rect);
+	for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
+		if (TempField[i] > 1)
+			PossibleMoves.Push(i);
 }
 
 void RecursiveFinalUCT(Node *n)
@@ -208,7 +179,7 @@ void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CH
 	// Список всех возможных ходов для UCT.
 	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
 
-	InitUCT(MainField, PossibleMoves);
+	GeneratePossibleMoves(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
 
 	#pragma omp parallel
@@ -259,6 +230,6 @@ void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CH
 				BestMoves.Push(Moves.Stack[i]);
 			}
 		}
-		if (BestMoves.Count != 0)
-			Moves.Copy(BestMoves);
+	if (BestMoves.Count != 0)
+		Moves.Copy(BestMoves);
 }

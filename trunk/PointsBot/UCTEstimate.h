@@ -3,6 +3,8 @@
 #include "Field.h"
 
 const p_int UCTK = 1;
+// Радиус, внутри которого происходит анализ.
+const p_int UCTRadius = 2;
 
 struct Node
 {
@@ -20,11 +22,6 @@ struct Node
 		Child = NULL;
 		Sibling = NULL;
 	}
-};
-
-struct Rect
-{
-	p_int Left, Right, Top, Bottom;
 };
 
 void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
