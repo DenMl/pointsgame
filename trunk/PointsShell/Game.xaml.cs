@@ -38,7 +38,7 @@ namespace PointsShell
                 _preferences.BackgroundColor = value.BackgroundColor;
                 canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 
-                if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha || _preferences.CellSize != value.CellSize)
+                if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha || _preferences.CellSize != value.CellSize || _preferences.FullFill != value.FullFill)
                 {
                     _preferences.Sounds = false;
 
@@ -46,6 +46,7 @@ namespace PointsShell
                     _preferences.BlackColor = value.BlackColor;
                     _preferences.FillingAlpha = value.FillingAlpha;
                     _preferences.CellSize = value.CellSize;
+                    _preferences.FullFill = value.FullFill;
 
                     ReDraw();
                 }
@@ -298,6 +299,8 @@ namespace PointsShell
                                                                                      Preferences.BlackColor.B))
                                     });
         }
+
+        /*
         private void FullFill(PlayerColor Player)
         {
             // Пользуемся тем свойством, что заливка происходит по минимальной площади, а значит рядом с точкой, которая что-то окружает, не может находиться точки того же цвета в окружении.
@@ -400,6 +403,8 @@ namespace PointsShell
                 }
             }
         }
+        */
+
         private void UpdateFullFill(Pos pos, PlayerColor Player)
         {
             // Более компактная проверка, нужная дальше.

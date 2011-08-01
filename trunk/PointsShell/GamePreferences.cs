@@ -77,6 +77,7 @@ namespace PointsShell
             FillingAlpha = Preferences.FillingAlpha;
             BackgroundColor = Preferences.BackgroundColor;
             Sounds = Preferences.Sounds;
+            FullFill = Preferences.FullFill;
             CellSize = Preferences.CellSize;
         }
 

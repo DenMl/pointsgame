@@ -43,6 +43,7 @@ namespace PointsShell
             BlackColorPicker.SelectedColor = preferences.BlackColor;
             FillingAlphaBox.Text = preferences.FillingAlpha.ToString();
             BackgroundColorPicker.SelectedColor = preferences.BackgroundColor;
+            FullFillCheckBox.IsChecked = preferences.FullFill;
             SoundsCheckBox.IsChecked = preferences.Sounds;
             switch (preferences.SurCond)
             {
@@ -97,6 +98,7 @@ namespace PointsShell
             BlackColorTextBlock.Text = language.BlackColor;
             FillingAlphaTextBlock.Text = language.FillingAlpha;
             BackgroundColorTextBlock.Text = language.BackgroundColor;
+            FullFillCheckBox.Content = language.FullFill;
             SoundsCheckBox.Content = language.Sounds;
         }
 
@@ -117,6 +119,7 @@ namespace PointsShell
                 preferences.BlackColor = BlackColorPicker.SelectedColor;
                 preferences.FillingAlpha = byte.Parse(FillingAlphaBox.Text);
                 preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
+                preferences.FullFill = (bool) FullFillCheckBox.IsChecked;
                 preferences.Sounds = (bool)SoundsCheckBox.IsChecked;
 
                 if (StandartRadioButton.IsChecked == true)
