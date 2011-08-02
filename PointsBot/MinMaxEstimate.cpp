@@ -90,6 +90,7 @@ inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectorie
 // Depth - глубина просчета.
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
+// На выходе оценка позиции для CurPlayer (до хода Pos).
 p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, p_int alpha, p_int beta)
 {
 	p_int BestEstimate = -INFINITY;
@@ -100,15 +101,15 @@ p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos
 
 	if (Depth == 0)
 	{
-		BestEstimate = -(CurField.CaptureCount[CurField.CurPlayer] - CurField.CaptureCount[CurField.EnemyPlayer]);
+		BestEstimate = CurField.GetScore(CurField.CurPlayer);
 		CurField.UndoStep();
-		return BestEstimate;
+		return -BestEstimate;
 	}
 
 	if (CurField.DCaptureCount < 0) // Если точка поставлена в окружение.
 	{
 		CurField.UndoStep();
-		return -(INFINITY); // Для CurPlayer это хорошо, то есть оценка Infinity.
+		return -INFINITY; // Для CurPlayer это хорошо, то есть оценка Infinity.
 	}
 
 	if (Depth > 1)
@@ -132,11 +133,11 @@ p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos
 		}
 	}
 	if (BestEstimate == -INFINITY)
-		BestEstimate = CurField.CaptureCount[CurField.CurPlayer] - CurField.CaptureCount[CurField.EnemyPlayer];
+		BestEstimate = CurField.GetScore(CurField.CurPlayer);
 
 	CurField.UndoStep();
 
-	return -(BestEstimate);
+	return -BestEstimate;
 }
 
 p_int GetEnemyEstimate(Field &CurrentField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, p_int TrajectoriesBoard[], p_int Depth)
@@ -161,7 +162,7 @@ p_int GetEnemyEstimate(Field &CurrentField, TrajectoryList &CurrentTrajectories,
 		#pragma omp for schedule(dynamic, 1)
 		for (p_int i = 0; i < Moves.Count; i++)
 		{
-			CurrentScore = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, -INFINITY, INFINITY);
+			CurrentScore = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, -INFINITY, INFINITY); //  !!!!!!!!!!!!!!!!ALPHABETA!!!!!!!!
 			if (CurrentScore > MaxScore)
 				MaxScore = CurrentScore;
 		}
@@ -181,43 +182,45 @@ p_int GetEnemyEstimate(Field &CurrentField, TrajectoryList &CurrentTrajectories,
 	return -Result;
 }
 
-// MainField - поле, на котором производится оценка.
+// CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
-p_int MinMaxEstimate(Field &MainField, p_int Depth, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+// Moves - на входе возможные ходы, на выходе лучшие из них.
+p_int MinMaxEstimate(Field &CurField, p_int Depth, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
 	// Минимально и максимально возможная оценка.
-	p_int Result = -INFINITY;
+	p_int BestEstimate = -INFINITY;
 	// Главные траектории - свои и вражеские.
 	TrajectoryList Trajectories[2];
 	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
 	p_int TrajectoriesBoard[PointsLength22] = {0};
 	GameStack<p_int, MAX_CHAIN_POINTS> PotentialMoves, OutMoves;
+	// Доска с оценками ходов.
+	p_int ScoreBoard[PointsLength22];
 
-	// Делаем что-то только когда глубина просчета положительная.
-	if (Depth <= 0)
+	// Делаем что-то только когда глубина просчета положительная и колическтво возможных ходов на входе не равно 0.
+	if (Depth <= 0 || Moves.Count == 0)
 		return 0;
-
 	// Строим свои траектоии.
-	Trajectories[MainField.CurPlayer].BuildTrajectories(MainField, (Depth + 1) / 2, MainField.CurPlayer);
+	Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	// Строим траектории противника.
 	if (Depth > 1)
-		Trajectories[MainField.EnemyPlayer].BuildTrajectories(MainField, Depth / 2, MainField.EnemyPlayer);
-
+		Trajectories[CurField.EnemyPlayer].BuildTrajectories(CurField, Depth / 2, CurField.EnemyPlayer);
+	// Получаем ходы из траекторий (которые имеет смысл рассматривать), и находим пересечение со входными возможными точками.
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, PotentialMoves);
 	PotentialMoves.Intersect(Moves);
-
+	// Если нет возможных ходов, входящих в траектории - выходим.
 	if (PotentialMoves.Count == 0)
 		return 0;
+	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
+	p_int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], TrajectoriesBoard, Depth);
+	for (p_int i = 0; i < Moves.Count; i++)
+		ScoreBoard[Moves.Stack[i]] = EnemyEstimate;
 
 	p_int alpha = -INFINITY + 1;
-	omp_lock_t lock;
-	omp_init_lock(&lock);
 	#pragma omp parallel
 	{
-		Field* LocalField = new Field(MainField);
+		Field* LocalField = new Field(CurField);
 		p_int TrajectoriesBoard[PointsLength22] = {0};
-		p_int BestEstimate = -INFINITY;
-		GameStack<p_int, MAX_CHAIN_POINTS> BestMoves;
 
 		#pragma omp for schedule(dynamic, 1)
 		for (p_int i = 0; i < PotentialMoves.Count; i++)
@@ -225,35 +228,23 @@ p_int MinMaxEstimate(Field &MainField, p_int Depth, GameStack<p_int, MAX_CHAIN_P
 			p_int CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth - 1, PotentialMoves.Stack[i], Trajectories[LocalField->CurPlayer], Trajectories[LocalField->EnemyPlayer], -INFINITY, -alpha + 1);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
-			if (CurEstimate > BestEstimate)
-			{
-				BestEstimate = CurEstimate;
-				BestMoves.Clear();
-				BestMoves.Push(PotentialMoves.Stack[i]);
-			}
-			else if (CurEstimate == BestEstimate)
-			{
-				BestMoves.Push(PotentialMoves.Stack[i]);
-			}
+			ScoreBoard[PotentialMoves.Stack[i]] = CurEstimate;
 		}
-
-		omp_set_lock(&lock);
-		if (BestEstimate > Result)
-		{
-			Result = BestEstimate;
-			OutMoves.Copy(BestMoves);
-		}
-		else if (BestEstimate == Result)
-		{
-			OutMoves.Union(BestMoves);
-		}
-		omp_unset_lock(&lock);
 
 		delete LocalField;
 	}
-	omp_destroy_lock(&lock);
 
-	if (Result > GetEnemyEstimate(MainField, Trajectories[MainField.CurPlayer], Trajectories[MainField.EnemyPlayer], TrajectoriesBoard, Depth))
-		Moves.Copy(OutMoves);
-	return Result;
+	for (p_int i = 0; i < Moves.Count; i++)
+		if (ScoreBoard[Moves.Stack[i]] > BestEstimate)
+		{
+			BestEstimate = ScoreBoard[Moves.Stack[i]];
+			OutMoves.Clear();
+			OutMoves.Push(Moves.Stack[i]);
+		}
+		else if (ScoreBoard[Moves.Stack[i]] == BestEstimate)
+		{
+			OutMoves.Push(Moves.Stack[i]);
+		}
+	Moves.Copy(OutMoves);
+	return BestEstimate;
 }
