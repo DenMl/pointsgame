@@ -140,42 +140,45 @@ p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos
 	return -BestEstimate;
 }
 
-p_int GetEnemyEstimate(Field &CurrentField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, p_int TrajectoriesBoard[], p_int Depth)
+p_int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, p_int TrajectoriesBoard[], p_int Depth)
 {
 	TrajectoryList TempTrajectories;
 	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
 	p_int Result = 0;
 
-	TempTrajectories.BuildEnemyTrajectories(CurrentField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
+	TempTrajectories.BuildEnemyTrajectories(CurField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
 	GetPoints(EnemyTrajectories, TempTrajectories, TrajectoriesBoard, Moves);
 
-	CurrentField.SetNextPlayer();
+	p_int alpha = -INFINITY;
+	CurField.SetNextPlayer();
 	Depth -= 2;
 	omp_lock_t lock;
 	omp_init_lock(&lock);
 	#pragma omp parallel
 	{
-		p_int MaxScore = 0, CurrentScore;
-		Field* LocalField = new Field(CurrentField);
+		p_int MaxEstimate = -INFINITY, CurEstimate;
+		Field* LocalField = new Field(CurField);
 		p_int TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
 		for (p_int i = 0; i < Moves.Count; i++)
 		{
-			CurrentScore = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, -INFINITY, INFINITY); //  !!!!!!!!!!!!!!!!ALPHABETA!!!!!!!!
-			if (CurrentScore > MaxScore)
-				MaxScore = CurrentScore;
+			CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, -INFINITY, -alpha);
+			if (CurEstimate > alpha) // Обновляем нижнюю границу.
+				alpha = CurEstimate;
+			if (CurEstimate > MaxEstimate)
+				MaxEstimate = CurEstimate;
 		}
 
 		delete LocalField;
 
 		omp_set_lock(&lock);
-		if (MaxScore > Result)
-			Result = MaxScore;
+		if (MaxEstimate > Result)
+			Result = MaxEstimate;
 		omp_unset_lock(&lock);
 	}
 	omp_destroy_lock(&lock);
-	CurrentField.SetNextPlayer();
+	CurField.SetNextPlayer();
 
 	EnemyTrajectories.IncludeAllTrajectories();
 
@@ -216,7 +219,7 @@ p_int MinMaxEstimate(Field &CurField, p_int Depth, GameStack<p_int, MAX_CHAIN_PO
 	for (p_int i = 0; i < Moves.Count; i++)
 		ScoreBoard[Moves.Stack[i]] = EnemyEstimate;
 
-	p_int alpha = -INFINITY + 1;
+	p_int alpha = -(INFINITY - 1);
 	#pragma omp parallel
 	{
 		Field* LocalField = new Field(CurField);
