@@ -765,6 +765,11 @@ public:
 		MaxPos = Orig.MaxPos;
 	}
 
+	inline const p_int GetScore(p_int Player)
+	{
+		return CaptureCount[Player] - CaptureCount[NextPlayer(Player)];
+	}
+
 	// Функции конвертации координат.
 	inline const p_int ConvertToPos(const p_int X, const p_int Y)
 	{
