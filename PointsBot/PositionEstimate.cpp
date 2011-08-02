@@ -1,6 +1,7 @@
 #include "BasicTypes.h"
 #include "Config.h"
 #include "AuxFunc.h"
+#include "Player.h"
 #include "Field.h"
 
 // Учет позиционных эвристик.
@@ -12,9 +13,9 @@ p_int PositionEstimate(Field &MainField, p_int TestedPoint, p_int Player)
 	p_int Result;
 
 	g1 = MainField.NumberNearGroups(TestedPoint, Player);
-	g2 = MainField.NumberNearGroups(TestedPoint, Field::NextPlayer(Player));
+	g2 = MainField.NumberNearGroups(TestedPoint, NextPlayer(Player));
 	c1 = cgSumma[MainField.NumberNearPoints(TestedPoint, Player)];
-	c2 = cgSumma[MainField.NumberNearPoints(TestedPoint, Field::NextPlayer(Player))];
+	c2 = cgSumma[MainField.NumberNearPoints(TestedPoint, NextPlayer(Player))];
 	Result = (g1 * 3 + g2 * 2) * (5 - Abs(g1 - g2)) - c1 - c2;
 	if (MainField.PointsSeq.Count > 0)
 		Result += Field::IsNear(MainField.PointsSeq.Stack[MainField.PointsSeq.Count - 1], TestedPoint) * 5;

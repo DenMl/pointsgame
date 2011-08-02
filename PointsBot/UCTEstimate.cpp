@@ -2,6 +2,7 @@
 #include "UCTEstimate.h"
 #include "Field.h"
 #include "Random.h"
+#include <queue>
 
 #if DEBUG
 #include <assert.h>
@@ -130,31 +131,62 @@ p_int PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &Po
 inline void GeneratePossibleMoves(Field &CurField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	p_int TempField[PointsLength22] = {0};
+	std::queue<p_int> q;
+
 	PossibleMoves.Clear();
 	for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
 		if (CurField.IsPutted(i))
-			TempField[i] = 1;
+			q.push(i);
 
-	p_int r = 1;
-	while (r <= UCTRadius)
+	while (!q.empty())
 	{
-		for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
-			if (TempField[i] == 0 && CurField.PuttingAllow(i) &&
-				(	TempField[i - FieldWidth2 - 1] == r ||
-					TempField[i - FieldWidth2] == r ||
-					TempField[i - FieldWidth2 + 1] == r ||
-					TempField[i - 1] == r ||
-					TempField[i + 1] == r ||
-					TempField[i + FieldWidth2 - 1] == r ||
-					TempField[i + FieldWidth2] == r ||
-					TempField[i + FieldWidth2 + 1] == r	))
-				TempField[i] = r + 1;
-		r++;
+		if (CurField.PuttingAllow(q.front()))
+			PossibleMoves.Push(q.front());
+		if (TempField[q.front()] < UCTRadius)
+		{
+			if (CurField.PuttingAllow(q.front() - FieldWidth2 - 1) && TempField[q.front() - FieldWidth2 - 1] == 0)
+			{
+				TempField[q.front() - FieldWidth2 - 1] = TempField[q.front()] + 1;
+				q.push(q.front() - FieldWidth2 - 1);
+			}
+			if (CurField.PuttingAllow(q.front() - FieldWidth2) && TempField[q.front() - FieldWidth2] == 0)
+			{
+				TempField[q.front() - FieldWidth2] = TempField[q.front()] + 1;
+				q.push(q.front() - FieldWidth2);
+			}
+			if (CurField.PuttingAllow(q.front() - FieldWidth2 + 1) && TempField[q.front() - FieldWidth2 + 1] == 0)
+			{
+				TempField[q.front() - FieldWidth2 + 1] = TempField[q.front()] + 1;
+				q.push(q.front() - FieldWidth2 + 1);
+			}
+			if (CurField.PuttingAllow(q.front() - 1) && TempField[q.front() - 1] == 0)
+			{
+				TempField[q.front() - 1] = TempField[q.front()] + 1;
+				q.push(q.front() - 1);
+			}
+			if (CurField.PuttingAllow(q.front() + 1) && TempField[q.front() + 1] == 0)
+			{
+				TempField[q.front() + 1] = TempField[q.front()] + 1;
+				q.push(q.front() + 1);
+			}
+			if (CurField.PuttingAllow(q.front() + FieldWidth2 - 1) && TempField[q.front() + FieldWidth2 - 1] == 0)
+			{
+				TempField[q.front() + FieldWidth2 - 1] = TempField[q.front()] + 1;
+				q.push(q.front() + FieldWidth2 - 1);
+			}
+			if (CurField.PuttingAllow(q.front() + FieldWidth2) && TempField[q.front() + FieldWidth2] == 0)
+			{
+				TempField[q.front() + FieldWidth2] = TempField[q.front()] + 1;
+				q.push(q.front() + FieldWidth2);
+			}
+			if (CurField.PuttingAllow(q.front() + FieldWidth2 + 1) && TempField[q.front() + FieldWidth2 + 1] == 0)
+			{
+				TempField[q.front() + FieldWidth2 + 1] = TempField[q.front()] + 1;
+				q.push(q.front() + FieldWidth2 + 1);
+			}
+		}
+		q.pop();
 	}
-
-	for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
-		if (TempField[i] > 1)
-			PossibleMoves.Push(i);
 }
 
 void RecursiveFinalUCT(Node *n)
