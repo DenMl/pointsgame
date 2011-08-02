@@ -5,16 +5,13 @@
 #include "GameStack.h"
 #include "Zobrist.h"
 #include "AuxFunc.h"
+#include "Player.h"
 #include <stdio.h>
 
 class Field
 {
 #pragma region State bits and masks
 	private:
-	// «начение бита первого игрока.
-	static const p_int PlayerRed = 0x0;
-	// «начение бита второго игрока.
-	static const p_int PlayerBlack = 0x1;
 
 	// Ѕит, указывающий номер игрока.
 	static const p_int PlayerBit = 0x1;
@@ -25,11 +22,11 @@ class Field
 	// Ѕит, указывающий на то, захватывает ли что-нибудь точка в поле.
 	static const p_int BoundBit = 0x8;
 	// Ѕит, указывающий на пустую базу.
-	static const p_int EmptyBaseBit = 0x20;
+	static const p_int EmptyBaseBit = 0x10;
 	// Ѕит дл€ временных пометок полей.
-	static const p_int TagBit = 0x80;
+	static const p_int TagBit = 0x20;
 	// Ѕит, которым помечаютс€ границы пол€.
-	static const p_int BadValue = 0x8;
+	static const p_int BadValue = 0x40;
 
 	// ћаски дл€ определени€ условий.
 	static const p_int EnableMask = SurBit | PutBit | PlayerBit;
@@ -43,8 +40,6 @@ class Field
 
 	// ѕолучить по координате игрока, чь€ точка там поставлена.
 	inline const p_int GetPlayer(const p_int Pos) { return Points[Pos] & PlayerBit; }
-	// ѕолучить по игроку следующего игрока.
-	inline static p_int NextPlayer(const p_int Player) { return Player ^ PlayerBit; }
 	// ѕроверить по координате, поставлена ли там точка.
 	inline const p_int IsPutted(const p_int Pos) { return Points[Pos] & PutBit; }
 	// ѕрверить по координате, €вл€етс€ ли точка окружающей базу.
