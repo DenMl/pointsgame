@@ -216,8 +216,8 @@ float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_C
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	// Создаем по одному потоку на каждый ход. Динамическое создание потоков должно быть выключено!
-	omp_set_num_threads(Moves.Count);
+	if (omp_get_max_threads() > Moves.Count)
+		omp_set_num_threads(Moves.Count);
 	#pragma omp parallel
 	{
 		Node n;
@@ -228,24 +228,33 @@ float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_C
 		LocalField->CaptureCount[1] = 0;
 #endif
 
-		n.Move = Moves.Stack[omp_get_thread_num()];
-		LocalField->DoUnsafeStep(n.Move);
+		Node **CurChild = &n.Child;
+		for (int i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
+		{
+			*CurChild = new Node();
+			(*CurChild)->Move = Moves.Stack[i];
+			CurChild = &(*CurChild)->Sibling;
+		}
 
-		#pragma omp for
 		for (p_int i = 0; i < MaxSimulations; i++)
 			PlaySimulation(*LocalField, PossibleMoves, n);
 
-		float CurEstimate = (float)n.Wins / n.Visits;
 		omp_set_lock(&lock);
-		if (CurEstimate > BestEstimate)
+		Node *next = n.Child; 
+		while (next != NULL)
 		{
-			BestEstimate = CurEstimate;
-			Moves.Clear();
-			Moves.Push(n.Move);
-		}
-		else if (CurEstimate == BestEstimate)
-		{
-			Moves.Push(n.Move);
+			float CurEstimate = (float)next->Wins / next->Visits;
+			if (CurEstimate > BestEstimate)
+			{
+				BestEstimate = CurEstimate;
+				Moves.Clear();
+				Moves.Push(next->Move);
+			}
+			else if (CurEstimate == BestEstimate)
+			{
+				Moves.Push(next->Move);
+			}
+			next = next->Sibling;
 		}
 		omp_unset_lock(&lock);
 
