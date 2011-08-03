@@ -55,3 +55,36 @@ p_int SearchBestMove(Field &MainField, p_int Depth, p_int UCTIterations)
 	else // Если в конце несколько возможных лучших ходов - возвращаем случайный.
 		return Moves.Stack[rand() % Moves.Count];
 }
+
+p_int SearchBestMove(Field &MainField, p_int Time)
+{
+	p_int MaxScore = -INFINITY;
+
+	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
+	BuildAllMoves(MainField, Moves);
+
+	// Если на доске не стоит ни одной точки - возвращаем случайный ход.
+	if (MainField.PointsSeq.Count == 0)
+		return Moves.Stack[rand() % Moves.Count];
+
+	if (Moves.Count == 1) // Если возможный ход один - возвращаем его.
+		return Moves.Stack[0];
+	else if (Moves.Count == 0) // Если нет возможных ходов - возвращаем ошибку -1.
+		return -1;
+
+	UCTEstimateWithTime(MainField, Time, Moves);
+
+	if (Moves.Count == 1) // Если возможный ход один - возвращаем его.
+		return Moves.Stack[0];
+	else if (Moves.Count == 0) // Если нет возможных ходов - возвращаем ошибку -1.
+		return -1;
+
+	PositionEstimate(MainField, Moves);
+
+	if (Moves.Count == 1) // Если возможный ход один - возвращаем его.
+		return Moves.Stack[0];
+	else if (Moves.Count == 0) // Если нет возможных ходов - возвращаем ошибку -1.
+		return -1;
+	else // Если в конце несколько возможных лучших ходов - возвращаем случайный.
+		return Moves.Stack[rand() % Moves.Count];
+}

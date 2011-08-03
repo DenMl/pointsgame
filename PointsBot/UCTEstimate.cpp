@@ -4,6 +4,7 @@
 #include "Random.h"
 #include <queue>
 #include <omp.h>
+#include <ctime>
 
 #if DEBUG
 #include <assert.h>
@@ -237,6 +238,68 @@ float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_C
 		}
 
 		for (p_int i = 0; i < MaxSimulations; i++)
+			PlaySimulation(*LocalField, PossibleMoves, n);
+
+		omp_set_lock(&lock);
+		Node *next = n.Child; 
+		while (next != NULL)
+		{
+			float CurEstimate = (float)next->Wins / next->Visits;
+			if (CurEstimate > BestEstimate)
+			{
+				BestEstimate = CurEstimate;
+				Moves.Clear();
+				Moves.Push(next->Move);
+			}
+			else if (CurEstimate == BestEstimate)
+			{
+				Moves.Push(next->Move);
+			}
+			next = next->Sibling;
+		}
+		omp_unset_lock(&lock);
+
+		FinalUCT(&n);
+		delete LocalField;
+	}
+	omp_destroy_lock(&lock);
+
+	return BestEstimate;
+}
+
+float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+{
+	// Список всех возможных ходов для UCT.
+	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
+	float BestEstimate = -1;
+	clock_t t0 = clock();
+
+	GeneratePossibleMoves(MainField, PossibleMoves);
+	Moves.Intersect(PossibleMoves);
+
+	omp_lock_t lock;
+	omp_init_lock(&lock);
+	if (omp_get_max_threads() > Moves.Count)
+		omp_set_num_threads(Moves.Count);
+#pragma omp parallel
+	{
+		Node n;
+
+		Field *LocalField = new Field(MainField);
+#if !ABSOLUTE_UCT
+		LocalField->CaptureCount[0] = 0;
+		LocalField->CaptureCount[1] = 0;
+#endif
+
+		Node **CurChild = &n.Child;
+		for (int i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
+		{
+			*CurChild = new Node();
+			(*CurChild)->Move = Moves.Stack[i];
+			CurChild = &(*CurChild)->Sibling;
+		}
+
+		while ((clock() - t0) * 1000 / CLOCKS_PER_SEC < Time)
 			PlaySimulation(*LocalField, PossibleMoves, n);
 
 		omp_set_lock(&lock);
