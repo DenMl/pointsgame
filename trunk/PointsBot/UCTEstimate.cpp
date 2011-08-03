@@ -3,6 +3,7 @@
 #include "Field.h"
 #include "Random.h"
 #include <queue>
+#include <omp.h>
 
 #if DEBUG
 #include <assert.h>
@@ -135,12 +136,12 @@ inline void GeneratePossibleMoves(Field &CurField, GameStack<p_int, MAX_CHAIN_PO
 
 	PossibleMoves.Clear();
 	for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
-		if (CurField.IsPutted(i))
+		if (CurField.IsPutted(i)) //TODO: Классть соседей, а не сами точки.
 			q.push(i);
 
 	while (!q.empty())
 	{
-		if (CurField.PuttingAllow(q.front()))
+		if (CurField.PuttingAllow(q.front())) //TODO: Убрать условие.
 			PossibleMoves.Push(q.front());
 		if (TempField[q.front()] < UCTRadius)
 		{
@@ -204,16 +205,19 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
-	p_int Wins[PointsLength22] = {0};
-	p_int Visits[PointsLength22] = {0};
 	// Список всех возможных ходов для UCT.
 	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
+	float BestEstimate = -1;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
 
+	omp_lock_t lock;
+	omp_init_lock(&lock);
+	// Создаем по одному потоку на каждый ход. Динамическое создание потоков должно быть выключено!
+	omp_set_num_threads(Moves.Count);
 	#pragma omp parallel
 	{
 		Node n;
@@ -224,44 +228,31 @@ void UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CH
 		LocalField->CaptureCount[1] = 0;
 #endif
 
-		CreateChildren(*LocalField, Moves, n);
+		n.Move = Moves.Stack[omp_get_thread_num()];
+		LocalField->DoUnsafeStep(n.Move);
 
 		#pragma omp for
 		for (p_int i = 0; i < MaxSimulations; i++)
 			PlaySimulation(*LocalField, PossibleMoves, n);
 
-		Node *next = n.Child;
-		while (next != NULL)
+		float CurEstimate = (float)n.Wins / n.Visits;
+		omp_set_lock(&lock);
+		if (CurEstimate > BestEstimate)
 		{
-			Wins[next->Move] += next->Wins;
-			Visits[next->Move] += next->Visits;
-
-			next = next->Sibling;
+			BestEstimate = CurEstimate;
+			Moves.Clear();
+			Moves.Push(n.Move);
 		}
+		else if (CurEstimate == BestEstimate)
+		{
+			Moves.Push(n.Move);
+		}
+		omp_unset_lock(&lock);
 
 		FinalUCT(&n);
-
 		delete LocalField;
 	}
+	omp_destroy_lock(&lock);
 
-	float BestScore = 0;
-	GameStack<p_int, MAX_CHAIN_POINTS> BestMoves;
-	BestMoves.Clear();
-	for (p_int i = 0; i < Moves.Count; i++)
-		if (Visits[Moves.Stack[i]] != 0)
-		{
-			float TempScore = (float)Wins[Moves.Stack[i]] / Visits[Moves.Stack[i]];
-			if (TempScore > BestScore)
-			{
-				BestScore = TempScore;
-				BestMoves.Clear();
-				BestMoves.Push(Moves.Stack[i]);
-			}
-			else if (TempScore == BestScore)
-			{
-				BestMoves.Push(Moves.Stack[i]);
-			}
-		}
-	if (BestMoves.Count != 0)
-		Moves.Copy(BestMoves);
+	return BestEstimate;
 }
