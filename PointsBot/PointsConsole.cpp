@@ -29,21 +29,7 @@ inline p_int GetUCTIterations(p_int P)
 	return (P - min_P) * (max_UCTIterations - min_UCTIterations) / (max_P - min_P) + min_UCTIterations;
 }
 
-inline void FillCodes(map<string, p_int> &codes)
-{
-	codes["boardsize"] = 1;
-	codes["echo"] = 2;
-	codes["genmove"] = 3;
-	codes["list_commands"] = 4;
-	codes["name"] = 5;
-	codes["play"] = 6;
-	codes["quit"] = 7;
-	codes["reg_genmove"] = 8;
-	codes["undo"] = 9;
-	codes["version"] = 10;
-}
-
-inline void boardsize()
+void boardsize()
 {
 	p_int X, Y;
 	cin >> X >> Y;
@@ -53,14 +39,14 @@ inline void boardsize()
 		MainField = new Field(X, Y, Field::Standart, Field::CleanPattern);
 }
 
-inline void echo()
+void echo()
 {
 	string s;
 	getline(cin, s);
 	cout << "message" << s << endl;
 }
 
-inline void genmove()
+void genmove()
 {
 	p_int X, Y, color, P, pos;
 	cin >> color >> P;
@@ -73,17 +59,17 @@ inline void genmove()
 	cout << "play " << X << " " << Y << " " << color << endl;
 }
 
-inline void list_commands()
+void list_commands()
 {
 	cout << "list_commands boardsize echo genmove list_commands name play quit reg_genmove undo version" << endl;
 }
 
-inline void name()
+void name()
 {
 	cout << "name kkai" << endl;
 }
 
-inline void play()
+void play()
 {
 	p_int X, Y, color;
 	cin >> X >> Y >> color;
@@ -92,7 +78,12 @@ inline void play()
 	cout << "play " << X << " " << Y << " " << color << endl;
 }
 
-inline void reg_genmove()
+void quit()
+{
+	exit(0);
+}
+
+void reg_genmove()
 {
 	p_int X, Y, color, P;
 	cin >> color >> P;
@@ -103,22 +94,36 @@ inline void reg_genmove()
 	cout << "reg_genmove " << X << " " << Y << " " << color << endl;
 }
 
-inline void undo()
+void undo()
 {
 	if (MainField == NULL || MainField->PointsSeq.Count == 0)
 		return;
 	MainField->UndoStep();
 }
 
-inline void version()
+void version()
 {
 	cout << "version 1.4.0.0" << endl;
+}
+
+inline void FillCodes(map<string, void(*)()> &codes)
+{
+	codes["boardsize"] = boardsize;
+	codes["echo"] = echo;
+	codes["genmove"] = genmove;
+	codes["list_commands"] = list_commands;
+	codes["name"] = name;
+	codes["play"] = play;
+	codes["quit"] = quit;
+	codes["reg_genmove"] = reg_genmove;
+	codes["undo"] = undo;
+	codes["version"] = version;
 }
 
 p_int main(p_int argc, char* argv[])
 {
 	string s;
-	map<string, p_int> codes;
+	map<string, void(*)()> codes;
 
 	MainField = NULL;
 	FillCodes(codes);
@@ -130,43 +135,9 @@ p_int main(p_int argc, char* argv[])
 	while (true)
 	{
 		cin >> s;
-		map<string, p_int>::iterator i = codes.find(s);
+		map<string, void(*)()>::iterator i = codes.find(s);
 		if (i == codes.end())
 			continue;
-		switch (i->second)
-		{
-		case 1:
-			boardsize();
-			break;
-		case 2:
-			echo();
-			break;
-		case 3:
-			genmove();
-			break;
-		case 4:
-			list_commands();
-			break;
-		case 5:
-			name();
-			break;
-		case 6:
-			play();
-			break;
-		case 7:
-			if (MainField != NULL)
-				delete MainField;
-			return 0;
-			break;
-		case 8:
-			reg_genmove();
-			break;
-		case 9:
-			undo();
-			break;
-		case 10:
-			version();
-			break;
-		}
+		i->second();
 	}
 }
