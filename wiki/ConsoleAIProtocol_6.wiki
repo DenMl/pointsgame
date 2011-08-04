@@ -7,52 +7,68 @@ The communication between the AI and the GUI interface is done via messages to *
 
 `GUI -->>> thrown in to AI input -->>> analyzed by AI`
 
-==GUI -> AI message types:==
+More precise, every GUI->AI message must have the form:
 
-`id list_commands` — request a space-separated list of known GUI->AI commands
+`id command_name arguments\n`
 
-`id quit`  — request for the AI to exit
+And the AI must reply to it with one message of the form:
 
-`id boardsize X Y` — initialization. X - field width (number of crosses), Y - field height
+`isOk id command_name arguments\n`
 
-`id name` — request to return name of the AI, like "keij&kvanttt AI", "kropkiAI"
+"isOk" is a single letter. It is "=" in case of a success and "?" in case of an error.
 
-`id version` — request to return version of the AI, like "1.2.1"
+"id" is an int. It must be copied by the AI into his reply.
 
-`id play X Y Color` — play move. It's not a move to be answered, just place it. AI must return this move if it's Ok.
+"\n" means "end of line".
 
-`id genmove color` — request to calculate an AI move and return it.
+==Command names==
 
-`id reg_genmove color` — request to calculate an AI move, but do NOT make it on the field. The AI should reply with a "suggested move" message.
+*`list_commands`*
 
-`id reg_genmove_with_complexity color complexity` — request to calculate an AI move with the given complexity, but NOT to make it on the field. The AI should reply with a "suggested move" message. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
+return arguments — a space separated list of commands that the AI supports (can accept).
 
-`id reg_genmove_with_time color time` — equest to calculate an AI move within the given time (milliseconds), but NOT to make it on the field. The AI should reply with a "suggested move" message.
+*`quit`*  — request for the AI to exit.
 
-`id undo` — undo move.
+return arguments — none.
 
-==AI -> GUI message types:==
+*`boardsize X Y`* — initialization. X - field width (number of crosses), Y - field height.
 
-`resultLetter id list_commands [command1 command2 ...]` — to send a space-separated list of known GUI->AI commands.
+return arguments — none.
 
-`resultLetter id name` — to send the name of the AI, like "keij&kvanttt AI", "kropkiAI".
+*`name`*
 
-`resultLetter id version` — to send version of the AI, like "1.2.1".
+return arguments — name of the AI, like "keij&kvanttt AI", "kropkiAI".
 
-`resultLetter id play X Y Color` — to send a played move to the GUI.
+*`version`*
 
-`resultLetter id reg_genmove X Y color` — to send a "suggested" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
+return arguments — version of the AI, like "1.2.1".
+
+*`play X Y Color`*
+
+return arguments — X, Y, Color  of a played move.
+
+*`genmove color`* — request to calculate an AI move, play it on the field and return it.
+
+return arguments — X, Y, Color of the played move.
+
+*`reg_genmove color`* — request to calculate an AI move, but do NOT make it on the field.
+
+return arguments — X, Y, Color of the suggested move.
+
+*`reg_genmove_with_complexity color complexity`* — request to calculate an AI move with the given complexity, but NOT to make it on the field. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
+
+return arguments — X, Y, Color of the suggested move.
+
+*`reg_genmove_with_time color time`* — request to calculate an AI move within the given time (milliseconds), but NOT to make it on the field.
+
+return arguments — X, Y, Color of the suggested move.
+
+*`undo`* — undo move.
+
+return arguments — none.
 
 ===Explanations:===
-
-  * id is a number. It is sent to the AI, and must be returned by the AI in his reply (if a reply is actually needed).
-
-  * resultLetter is one single letter. It must be "=" if everything is all right or "?" if something's wrong.
 
   * X is a number from 0 to fieldSizeX - 1. For Y it's the same, of course.
 
   * color is a boolean value typed as "0" or "1".
-
-  * in "echo" command, the message may contain spaces.
-
-  * every message must end with the "end of line" sign (also known as "\n").
