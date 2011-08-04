@@ -185,5 +185,7 @@ p_int main(p_int argc, char* argv[])
 			i->second(id);
 		else
 			cout << "?" << " " << id << " " << s << endl;
+		// Очищаем cin до конца строки.
+		while (cin.get() != 10) {}
 	}
 }
