@@ -9,45 +9,49 @@ The communication between the AI and the GUI interface is done via messages to *
 
 ==GUI -> AI message types:==
 
-`list_commands` — request a space-separated list of known GUI->AI commands
+`id list_commands` — request a space-separated list of known GUI->AI commands
 
-`quit`  — request for the AI to exit
+`id quit`  — request for the AI to exit
 
-`boardsize X Y` — initialization. X - field width (number of crosses), Y - field height
+`id boardsize X Y` — initialization. X - field width (number of crosses), Y - field height
 
-`name` — request to return name of the AI, like "keij&kvanttt AI", "kropkiAI"
+`id name` — request to return name of the AI, like "keij&kvanttt AI", "kropkiAI"
 
-`version` — request to return version of the AI, like "1.2.1"
+`id version` — request to return version of the AI, like "1.2.1"
 
-`play X Y Color` — play move. It's not a move to be answered, just place it. AI must return this move if it's Ok.
+`id play X Y Color` — play move. It's not a move to be answered, just place it. AI must return this move if it's Ok.
 
-`genmove color` — request to calculate an AI move and return it.
+`id genmove color` — request to calculate an AI move and return it.
 
-`reg_genmove color` — request to calculate an AI move, but do NOT make it on the field. The AI should reply with a "suggested move" message.
+`id reg_genmove color` — request to calculate an AI move, but do NOT make it on the field. The AI should reply with a "suggested move" message.
 
-`reg_genmove_with_complexity color complexity` — request to calculate an AI move with the given complexity, but NOT to make it on the field. The AI should reply with a "suggested move" message. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
+`id reg_genmove_with_complexity color complexity` — request to calculate an AI move with the given complexity, but NOT to make it on the field. The AI should reply with a "suggested move" message. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
 
-`reg_genmove_with_time color time` — equest to calculate an AI move within the given time (milliseconds), but NOT to make it on the field. The AI should reply with a "suggested move" message.
+`id reg_genmove_with_time color time` — equest to calculate an AI move within the given time (milliseconds), but NOT to make it on the field. The AI should reply with a "suggested move" message.
 
-`undo` — undo move.
+`id undo` — undo move.
 
-`echo messagetext` — echoes the message. Send the received message back to the GUI with the "message" command. This can be needed for debugging purposes.
+`id echo messagetext` — echoes the message. Send the received message back to the GUI with the "message" command. This can be needed for debugging purposes.
 
 ==AI -> GUI message types:==
 
-`list_commands [command1 command2 ...]` — to send a space-separated list of known GUI->AI commands
+`resultLetter id list_commands [command1 command2 ...]` — to send a space-separated list of known GUI->AI commands
 
-`name` — to send the name of the AI, like "keij&kvanttt AI", "kropkiAI"
+`resultLetter id name` — to send the name of the AI, like "keij&kvanttt AI", "kropkiAI"
 
-`version` — to send version of the AI, like "1.2.1"
+`resultLetter id version` — to send version of the AI, like "1.2.1"
 
-`play X Y Color` — to send a played move to the GUI.
+`resultLetter id play X Y Color` — to send a played move to the GUI.
 
-`reg_genmove X Y color` — to send a "suggested" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
+`resultLetter id reg_genmove X Y color` — to send a "suggested" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
 
-`message messagetext` — to send a message to the GUI.
+`resultLetter id message messagetext` — to send a message to the GUI.
 
 ===Explanations:===
+
+  * id is a number. It is sent to the AI, and must be returned by the AI in his reply (if a reply is actually needed).
+
+  * resultLetter is one single letter. It must be "=" if everything is all right or "?" if something's wrong.
 
   * X is a number from 0 to fieldSizeX - 1. For Y it's the same, of course.
 
