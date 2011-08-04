@@ -21,7 +21,7 @@ The communication between the AI and the GUI interface is done via messages to *
 
 `play X Y Color` — play move. It's not a move to be answered, just place it. AI must return this move if it's Ok.
 
-`genmove color complexity` — request to calculate an AI move and return it.
+`genmove color` — request to calculate an AI move and return it.
 
 `reg_genmove color` — request to calculate an AI move, but do NOT make it on the field. The AI should reply with a "suggested move" message.
 
