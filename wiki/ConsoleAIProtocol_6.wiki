@@ -31,21 +31,17 @@ The communication between the AI and the GUI interface is done via messages to *
 
 `id undo` — undo move.
 
-`id echo messagetext` — echoes the message. Send the received message back to the GUI with the "message" command. This can be needed for debugging purposes.
-
 ==AI -> GUI message types:==
 
-`resultLetter id list_commands [command1 command2 ...]` — to send a space-separated list of known GUI->AI commands
+`resultLetter id list_commands [command1 command2 ...]` — to send a space-separated list of known GUI->AI commands.
 
-`resultLetter id name` — to send the name of the AI, like "keij&kvanttt AI", "kropkiAI"
+`resultLetter id name` — to send the name of the AI, like "keij&kvanttt AI", "kropkiAI".
 
-`resultLetter id version` — to send version of the AI, like "1.2.1"
+`resultLetter id version` — to send version of the AI, like "1.2.1".
 
 `resultLetter id play X Y Color` — to send a played move to the GUI.
 
 `resultLetter id reg_genmove X Y color` — to send a "suggested" move to the GUI. This "suggested" move is not played on the desk or kept in history, it is only calculated.
-
-`resultLetter id message messagetext` — to send a message to the GUI.
 
 ===Explanations:===
 
