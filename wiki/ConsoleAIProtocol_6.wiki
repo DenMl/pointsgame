@@ -56,7 +56,3 @@ The communication between the AI and the GUI interface is done via messages to *
   * in "echo" command, the message may contain spaces.
 
   * every message must end with the "end of line" sign (also known as "\n").
-
-===Restrictions:===
-
-  * when the AI is started it *must* print it's list of acceptable commands (list_commands).
