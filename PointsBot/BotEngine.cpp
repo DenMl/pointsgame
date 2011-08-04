@@ -56,7 +56,7 @@ p_int SearchBestMove(Field &MainField, p_int Depth, p_int UCTIterations)
 		return Moves.Stack[rand() % Moves.Count];
 }
 
-p_int SearchBestMove(Field &MainField, p_int Time)
+p_int SearchBestMoveWithTime(Field &MainField, p_int Time)
 {
 	p_int MaxScore = -INFINITY;
 

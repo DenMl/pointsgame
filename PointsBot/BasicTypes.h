@@ -14,7 +14,3 @@ struct Point
 {
 	p_int X, Y;
 };
-
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
