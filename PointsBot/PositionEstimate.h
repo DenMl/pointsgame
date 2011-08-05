@@ -2,4 +2,4 @@
 #include "BasicTypes.h"
 #include "Field.h"
 
-void PositionEstimate(Field &MainField, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
+void PositionEstimate(Field &MainField, GameStack<uint, MAX_CHAIN_POINTS> &Moves);

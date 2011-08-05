@@ -2,4 +2,4 @@
 #include "BasicTypes.h"
 #include "Field.h"
 
-p_int MinMaxEstimate(Field &MainField, p_int Depth, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
+int MinMaxEstimate(Field &MainField, uint Depth, GameStack<uint, MAX_CHAIN_POINTS> &Moves);

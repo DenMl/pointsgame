@@ -122,7 +122,7 @@ class Field
 
 	// History points sequance.
 	// Последовательность поставленных точек.
-	GameStack<p_int, MAX_CHAIN_POINTS> PointsSeq;
+	GameStack<uint, MAX_CHAIN_POINTS> PointsSeq;
 
 	// Правила обработки пустых баз.
 	// SurStandart = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.

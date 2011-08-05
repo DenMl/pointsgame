@@ -27,5 +27,5 @@ struct Node
 	}
 };
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
-double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHAIN_POINTS> &Moves);

@@ -11,9 +11,9 @@
 #include <assert.h>
 #endif
 
-inline short PlayRandomGame(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
+inline short PlayRandomGame(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves)
 {
-	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
+	GameStack<uint, MAX_CHAIN_POINTS> Moves;
 	uint Putted = 0;
 	short result;
 
@@ -47,7 +47,7 @@ inline short PlayRandomGame(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POIN
 	return result;
 }
 
-inline void CreateChildren(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+inline void CreateChildren(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	Node **CurrentChild = &n.Child;
 
@@ -88,7 +88,7 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-short PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+short PlaySimulation(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	short randomresult;
 
@@ -131,9 +131,9 @@ short PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &Po
 	return randomresult;
 }
 
-inline void GeneratePossibleMoves(Field &CurField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
+inline void GeneratePossibleMoves(Field &CurField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves)
 {
-	short TempField[PointsLength22] = {0};
+	ushort TempField[PointsLength22] = {0};
 	std::queue<uint> q;
 
 	PossibleMoves.Clear();
@@ -207,10 +207,10 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
-	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
+	GameStack<uint, MAX_CHAIN_POINTS> PossibleMoves;
 	double BestEstimate = -1;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
@@ -268,10 +268,10 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<p_int, MAX_
 	return BestEstimate;
 }
 
-double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
-	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
+	GameStack<uint, MAX_CHAIN_POINTS> PossibleMoves;
 	double BestEstimate = -1;
 	ulong t0 = GetTime();
 
