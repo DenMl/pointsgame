@@ -2,9 +2,9 @@
 #include "UCTEstimate.h"
 #include "Field.h"
 #include "Random.h"
+#include "Time.h"
 #include <queue>
 #include <omp.h>
-#include <ctime>
 
 #if DEBUG
 #include <assert.h>
@@ -272,7 +272,7 @@ float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHA
 	// Список всех возможных ходов для UCT.
 	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
 	float BestEstimate = -1;
-	clock_t t0 = clock();
+	unsigned long t0 = GetTime();
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
@@ -299,7 +299,7 @@ float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHA
 			CurChild = &(*CurChild)->Sibling;
 		}
 
-		while ((clock() - t0) * 1000 / CLOCKS_PER_SEC < Time)
+		while (GetTime() - t0 < Time)
 			PlaySimulation(*LocalField, PossibleMoves, n);
 
 		omp_set_lock(&lock);
