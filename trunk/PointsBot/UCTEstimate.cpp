@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "BasicTypes.h"
 #include "UCTEstimate.h"
 #include "Field.h"
 #include "Random.h"
@@ -10,23 +11,23 @@
 #include <assert.h>
 #endif
 
-inline p_int PlayRandomGame(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
+inline short PlayRandomGame(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
-	p_int Putted = 0;
-	p_int result;
+	uint Putted = 0;
+	short result;
 
 	Moves.Count = PossibleMoves.Count;
 
 	Moves.Stack[0] = PossibleMoves.Stack[0];
-	for (p_int i = 1; i < PossibleMoves.Count; i++)
+	for (uint i = 1; i < PossibleMoves.Count; i++)
 	{
-		p_int j = rand() % (i + 1);
+		uint j = rand() % (i + 1);
 		Moves.Stack[i] = Moves.Stack[j];
 		Moves.Stack[j] = PossibleMoves.Stack[i];
 	}
 
-	for (p_int i = 0; i < Moves.Count; i++)
+	for (uint i = 0; i < Moves.Count; i++)
 		if (CurrentField.PuttingAllow(Moves.Stack[i]))
 		{
 			CurrentField.DoUnsafeStep(Moves.Stack[i]);
@@ -40,7 +41,7 @@ inline p_int PlayRandomGame(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POIN
 	else
 		result = -1;
 
-	for (p_int i = 0; i < Putted; i++)
+	for (uint i = 0; i < Putted; i++)
 		CurrentField.UndoStep();
 
 	return result;
@@ -50,7 +51,7 @@ inline void CreateChildren(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINT
 {
 	Node **CurrentChild = &n.Child;
 
-	for (p_int i = 0; i < PossibleMoves.Count; i++)
+	for (uint i = 0; i < PossibleMoves.Count; i++)
 		if (CurrentField.PuttingAllow(PossibleMoves.Stack[i]))
 		{
 			*CurrentChild = new Node();
@@ -87,9 +88,9 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-p_int PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+short PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
-	p_int randomresult;
+	short randomresult;
 
 	if (n.Visits == 0)
 	{
@@ -132,11 +133,11 @@ p_int PlaySimulation(Field &CurrentField, GameStack<p_int, MAX_CHAIN_POINTS> &Po
 
 inline void GeneratePossibleMoves(Field &CurField, GameStack<p_int, MAX_CHAIN_POINTS> &PossibleMoves)
 {
-	p_int TempField[PointsLength22] = {0};
-	std::queue<p_int> q;
+	short TempField[PointsLength22] = {0};
+	std::queue<uint> q;
 
 	PossibleMoves.Clear();
-	for (p_int i = CurField.MinPos; i <= CurField.MaxPos; i++)
+	for (uint i = CurField.MinPos; i <= CurField.MaxPos; i++)
 		if (CurField.IsPutted(i)) //TODO: Классть соседей, а не сами точки.
 			q.push(i);
 
@@ -206,11 +207,11 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
 	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
-	float BestEstimate = -1;
+	double BestEstimate = -1;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
@@ -230,21 +231,21 @@ float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_C
 #endif
 
 		Node **CurChild = &n.Child;
-		for (int i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
+		for (uint i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
 			(*CurChild)->Move = Moves.Stack[i];
 			CurChild = &(*CurChild)->Sibling;
 		}
 
-		for (p_int i = 0; i < MaxSimulations; i++)
+		for (ulong i = 0; i < MaxSimulations; i++)
 			PlaySimulation(*LocalField, PossibleMoves, n);
 
 		omp_set_lock(&lock);
 		Node *next = n.Child; 
 		while (next != NULL)
 		{
-			float CurEstimate = (float)next->Wins / next->Visits;
+			double CurEstimate = (double)next->Wins / next->Visits;
 			if (CurEstimate > BestEstimate)
 			{
 				BestEstimate = CurEstimate;
@@ -267,12 +268,12 @@ float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_C
 	return BestEstimate;
 }
 
-float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
 	GameStack<p_int, MAX_CHAIN_POINTS> PossibleMoves;
-	float BestEstimate = -1;
-	unsigned long t0 = GetTime();
+	double BestEstimate = -1;
+	ulong t0 = GetTime();
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
@@ -292,7 +293,7 @@ float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHA
 #endif
 
 		Node **CurChild = &n.Child;
-		for (int i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
+		for (uint i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
 			(*CurChild)->Move = Moves.Stack[i];
@@ -300,14 +301,14 @@ float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHA
 		}
 
 		while (GetTime() - t0 < Time)
-			for (int i = 0; i < IterationsBeforeCheckTime; i++)
+			for (uint i = 0; i < IterationsBeforeCheckTime; i++)
 				PlaySimulation(*LocalField, PossibleMoves, n);
 
 		omp_set_lock(&lock);
 		Node *next = n.Child; 
 		while (next != NULL)
 		{
-			float CurEstimate = (float)next->Wins / next->Visits;
+			double CurEstimate = (double)next->Wins / next->Visits;
 			if (CurEstimate > BestEstimate)
 			{
 				BestEstimate = CurEstimate;

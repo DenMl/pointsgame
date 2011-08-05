@@ -1,17 +1,19 @@
 #pragma once
+
+#include "Config.h"
 #include "BasicTypes.h"
 #include "Field.h"
 
-const p_int UCTK = 1;
+const double UCTK = 1;
 // Радиус, внутри которого происходит анализ.
-const p_int UCTRadius = 2;
-const int IterationsBeforeCheckTime = 100;
+const ushort UCTRadius = 2;
+const uint IterationsBeforeCheckTime = 100;
 
 struct Node
 {
-	p_int Wins;
-	p_int Visits;
-	p_int Move;
+	ulong Wins;
+	ulong Visits;
+	uint Move;
 	Node *Child;
 	Node *Sibling;
 
@@ -25,5 +27,5 @@ struct Node
 	}
 };
 
-float UCTEstimate(Field &MainField, p_int MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
-float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<p_int, MAX_CHAIN_POINTS> &Moves);
