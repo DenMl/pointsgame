@@ -300,7 +300,8 @@ float UCTEstimateWithTime(Field &MainField, p_int Time, GameStack<p_int, MAX_CHA
 		}
 
 		while (GetTime() - t0 < Time)
-			PlaySimulation(*LocalField, PossibleMoves, n);
+			for (int i = 0; i < IterationsBeforeCheckTime; i++)
+				PlaySimulation(*LocalField, PossibleMoves, n);
 
 		omp_set_lock(&lock);
 		Node *next = n.Child; 

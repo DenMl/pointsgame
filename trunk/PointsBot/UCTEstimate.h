@@ -5,6 +5,7 @@
 const p_int UCTK = 1;
 // Радиус, внутри которого происходит анализ.
 const p_int UCTRadius = 2;
+const int IterationsBeforeCheckTime = 100;
 
 struct Node
 {
