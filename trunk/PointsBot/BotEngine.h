@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Field.h"
+#include "Config.h"
 #include "BasicTypes.h"
+#include "Field.h"
 
 // Возвращает лучший найденный ход.
 // Если не найдено - 0.
-p_int SearchBestMove(Field &MainField, p_int Depth, p_int UCTIterations);
-
-p_int SearchBestMoveWithTime(Field &MainField, p_int Time);
+uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations);
+uint SearchBestMoveWithTime(Field &MainField, ulong Time);

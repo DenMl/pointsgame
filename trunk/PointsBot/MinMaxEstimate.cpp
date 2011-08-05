@@ -3,60 +3,79 @@
 #include "Field.h"
 #include "TrajectoryList.h"
 #include <omp.h>
+#include <algorithm>
+#include <vector>
 
-// inc[] - массив, в который заносятся инкременты.
-// size - размерность этого массива.
-p_int increment(p_int inc[], p_int size)
+using namespace std;
+
+// // inc[] - массив, в который заносятся инкременты.
+// // size - размерность этого массива.
+// p_int increment(p_int inc[], p_int size)
+// {
+// 	p_int p1 = 1, p2 = 1, p3 = 1, s = -1;
+// 
+// 	// Заполняем массив элементов по формуле Роберта Седжвика.
+// 	do
+// 	{
+// 		if (++s % 2)
+// 		{
+// 			inc[s] = 8*p1 - 6*p2 + 1;
+// 		}
+// 		else
+// 		{
+// 			inc[s] = 9*p1 - 9*p3 + 1;
+// 			p2 *= 2;
+// 			p3 *= 2;
+// 		}
+// 		p1 *= 2;
+// 	} while (3*inc[s] < size); // Заполняем массив, пока текущая инкремента хотя бы в 3 раза меньше количества элементов в массиве.
+// 
+// 	// Возвращаем количество элементов в массиве.
+// 	return s > 0 ? --s : 0;
+// }
+// void ShellSort(p_int a[], p_int values[], p_int size)
+// {
+// 	// inc - инкремент, расстояние между элементами сравнения.
+// 	// i и j - стандартные переменные цикла.
+// 	// seq[40] - массив, в котором хранятся инкременты.
+// 	p_int inc, j, seq[40];
+// 
+// 	// Вычисление последовательности приращений.
+// 	p_int s = increment(seq, size);
+// 	while (s >= 0)
+// 	{
+// 		// Извлекаем из массива очередную инкременту.
+// 		inc = seq[s--];
+// 
+// 		// Сортировка вставками с инкрементами inc[].
+// 		for (p_int i = inc; i < size; i++)
+// 		{
+// 			p_int temp = a[i];
+// 			// Сдвигаем элементы до тех пор, пока не дойдем до конца или не упорядочим в нужном порядке.
+// 			for (j = i-inc; (j >= 0) && (values[a[j]] < values[temp]); j -= inc)
+// 				a[j+inc] = a[j];
+// 			// После всех сдвигов ставим на место j+inc элемент, который находился на i месте.
+// 			a[j+inc] = temp;
+// 		}
+// 	}
+// }
+
+struct MovesComparer
 {
-	p_int p1 = 1, p2 = 1, p3 = 1, s = -1;
+	uint *TrajectoriesBoard;
 
-	// Заполняем массив элементов по формуле Роберта Седжвика.
-	do
+	MovesComparer(uint *Board)
 	{
-		if (++s % 2)
-		{
-			inc[s] = 8*p1 - 6*p2 + 1;
-		}
-		else
-		{
-			inc[s] = 9*p1 - 9*p3 + 1;
-			p2 *= 2;
-			p3 *= 2;
-		}
-		p1 *= 2;
-	} while (3*inc[s] < size); // Заполняем массив, пока текущая инкремента хотя бы в 3 раза меньше количества элементов в массиве.
-
-	// Возвращаем количество элементов в массиве.
-	return s > 0 ? --s : 0;
-}
-void ShellSort(p_int a[], p_int values[], p_int size)
-{
-	// inc - инкремент, расстояние между элементами сравнения.
-	// i и j - стандартные переменные цикла.
-	// seq[40] - массив, в котором хранятся инкременты.
-	p_int inc, j, seq[40];
-
-	// Вычисление последовательности приращений.
-	p_int s = increment(seq, size);
-	while (s >= 0)
-	{
-		// Извлекаем из массива очередную инкременту.
-		inc = seq[s--];
-
-		// Сортировка вставками с инкрементами inc[].
-		for (p_int i = inc; i < size; i++)
-		{
-			p_int temp = a[i];
-			// Сдвигаем элементы до тех пор, пока не дойдем до конца или не упорядочим в нужном порядке.
-			for (j = i-inc; (j >= 0) && (values[a[j]] < values[temp]); j -= inc)
-				a[j+inc] = a[j];
-			// После всех сдвигов ставим на место j+inc элемент, который находился на i месте.
-			a[j+inc] = temp;
-		}
+		TrajectoriesBoard = Board;
 	}
-}
 
-inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, p_int TrajectoriesBoard[], GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+	bool operator() (int i, int j)
+	{
+		return (TrajectoriesBoard[i] < TrajectoriesBoard[j]);
+	}
+};
+
+inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	Trajectories1.ExcludeCompositeTrajectories();
 	Trajectories2.ExcludeCompositeTrajectories();
@@ -73,7 +92,10 @@ inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectorie
 
 #if ALPHABETA_SORT
 	// Сортируем точки по убыванию количества траекторий, в которые они входят.
-	ShellSort(Moves.Stack, TrajectoriesBoard, Moves.Count);
+	//ShellSort(Moves.Stack, TrajectoriesBoard, Moves.Count);
+	vector<uint> v(Moves.Stack, Moves.Stack + Moves.Count);
+	MovesComparer mc (TrajectoriesBoard);
+	sort(v.begin(), v.end(), mc); //TODO: ПРОВЕРИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #endif
 
 	// Очищаем доску от проекций.
@@ -91,9 +113,9 @@ inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectorie
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, p_int alpha, p_int beta)
+p_int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, int alpha, int beta)
 {
-	p_int BestEstimate = -INFINITY;
+	int BestEstimate = -INFINITY;
 	TrajectoryList Trajectories[2];
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
@@ -117,12 +139,12 @@ p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos
 	Trajectories[CurField.CurPlayer].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.CurPlayer);
 	//Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	
-	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
+	GameStack<uint, MAX_CHAIN_POINTS> Moves;
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, Moves);
 
-	for (p_int i = 0; i < Moves.Count; i++)
+	for (uint i = 0; i < Moves.Count; i++)
 	{
-		p_int CurEstimate = Negamax(CurField, TrajectoriesBoard, Depth - 1, Moves.Stack[i], Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], -beta, -alpha);
+		int CurEstimate = Negamax(CurField, TrajectoriesBoard, Depth - 1, Moves.Stack[i], Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], -beta, -alpha);
 		if (CurEstimate > BestEstimate)
 		{
 			BestEstimate = CurEstimate;
@@ -140,28 +162,28 @@ p_int Negamax(Field &CurField, p_int TrajectoriesBoard[], p_int Depth, p_int Pos
 	return -BestEstimate;
 }
 
-p_int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, p_int TrajectoriesBoard[], p_int Depth)
+int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, uint TrajectoriesBoard[], uint Depth)
 {
 	TrajectoryList TempTrajectories;
-	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
-	p_int Result = 0;
+	GameStack<uint, MAX_CHAIN_POINTS> Moves;
+	int Result = -INFINITY;
 
 	TempTrajectories.BuildEnemyTrajectories(CurField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
 	GetPoints(EnemyTrajectories, TempTrajectories, TrajectoriesBoard, Moves);
 
-	p_int alpha = -INFINITY;
+	int alpha = -INFINITY;
 	CurField.SetNextPlayer();
 	Depth -= 2;
 	omp_lock_t lock;
 	omp_init_lock(&lock);
 	#pragma omp parallel
 	{
-		p_int MaxEstimate = -INFINITY, CurEstimate;
-		Field* LocalField = new Field(CurField);
-		p_int TrajectoriesBoard[PointsLength22] = {0};
+		int MaxEstimate = -INFINITY, CurEstimate;
+		Field *LocalField = new Field(CurField);
+		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
-		for (p_int i = 0; i < Moves.Count; i++)
+		for (uint i = 0; i < Moves.Count; i++)
 		{
 			CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, -INFINITY, -alpha);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
@@ -188,17 +210,17 @@ p_int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Tra
 // CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
 // Moves - на входе возможные ходы, на выходе лучшие из них.
-p_int MinMaxEstimate(Field &CurField, p_int Depth, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+int MinMaxEstimate(Field &CurField, uint Depth, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Минимально и максимально возможная оценка.
-	p_int BestEstimate = -INFINITY;
+	int BestEstimate = -INFINITY;
 	// Главные траектории - свои и вражеские.
 	TrajectoryList Trajectories[2];
 	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
-	p_int TrajectoriesBoard[PointsLength22] = {0};
-	GameStack<p_int, MAX_CHAIN_POINTS> PotentialMoves, OutMoves;
+	uint TrajectoriesBoard[PointsLength22] = {0};
+	GameStack<uint, MAX_CHAIN_POINTS> PotentialMoves, OutMoves;
 	// Доска с оценками ходов.
-	p_int ScoreBoard[PointsLength22];
+	int ScoreBoard[PointsLength22];
 
 	// Делаем что-то только когда глубина просчета положительная и колическтво возможных ходов на входе не равно 0.
 	if (Depth <= 0 || Moves.Count == 0)
@@ -215,20 +237,20 @@ p_int MinMaxEstimate(Field &CurField, p_int Depth, GameStack<p_int, MAX_CHAIN_PO
 	if (PotentialMoves.Count == 0)
 		return 0;
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
-	p_int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], TrajectoriesBoard, Depth);
-	for (p_int i = 0; i < Moves.Count; i++)
+	int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], TrajectoriesBoard, Depth);
+	for (uint i = 0; i < Moves.Count; i++)
 		ScoreBoard[Moves.Stack[i]] = EnemyEstimate;
 
-	p_int alpha = -(INFINITY - 1);
+	int alpha = -(INFINITY - 1);
 	#pragma omp parallel
 	{
 		Field* LocalField = new Field(CurField);
-		p_int TrajectoriesBoard[PointsLength22] = {0};
+		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
-		for (p_int i = 0; i < PotentialMoves.Count; i++)
+		for (uint i = 0; i < PotentialMoves.Count; i++)
 		{
-			p_int CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth - 1, PotentialMoves.Stack[i], Trajectories[LocalField->CurPlayer], Trajectories[LocalField->EnemyPlayer], -INFINITY, -alpha + 1);
+			int CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth - 1, PotentialMoves.Stack[i], Trajectories[LocalField->CurPlayer], Trajectories[LocalField->EnemyPlayer], -INFINITY, -alpha + 1);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
 			ScoreBoard[PotentialMoves.Stack[i]] = CurEstimate;
@@ -237,7 +259,7 @@ p_int MinMaxEstimate(Field &CurField, p_int Depth, GameStack<p_int, MAX_CHAIN_PO
 		delete LocalField;
 	}
 
-	for (p_int i = 0; i < Moves.Count; i++)
+	for (uint i = 0; i < Moves.Count; i++)
 		if (ScoreBoard[Moves.Stack[i]] > BestEstimate)
 		{
 			BestEstimate = ScoreBoard[Moves.Stack[i]];

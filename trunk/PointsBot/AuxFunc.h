@@ -1,16 +1,18 @@
 #pragma once
+
+#include "Config.h"
 #include "BasicTypes.h"
 
 // Возвращает модуль числа x.
-inline p_int Abs(p_int x)
+template<typename TYPE> inline TYPE Abs(TYPE x)
 {
 	return x >= 0 ? x : -x;
 }
 
 // Меняет местами значения переменных a и b.
-inline void Swap(p_int &a, p_int &b)
+template<typename TYPE> inline void Swap(TYPE &a, TYPE &b)
 {
-	p_int c = a;
+	TYPE c = a;
 	a = b;
 	b = c;
 }

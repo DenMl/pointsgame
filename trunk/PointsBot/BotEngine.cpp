@@ -1,26 +1,24 @@
-#include "BasicTypes.h"
-#include "Field.h"
 #include "Config.h"
+#include "BasicTypes.h"
 #include "BotEngine.h"
+#include "Field.h"
 #include "MinMaxEstimate.h"
 #include "UCTEstimate.h"
 #include "PositionEstimate.h"
 #include "LadderEstimate.h"
 #include "Random.h"
 
-void BuildAllMoves(Field &MainField, GameStack<p_int, MAX_CHAIN_POINTS> &Moves)
+void BuildAllMoves(Field &MainField, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	Moves.Clear();
-	for (p_int i = MainField.MinPos; i <= MainField.MaxPos; i++)
+	for (uint i = MainField.MinPos; i <= MainField.MaxPos; i++)
 		if (MainField.PuttingAllow(i))
 			Moves.Push(i);
 }
 
-p_int SearchBestMove(Field &MainField, p_int Depth, p_int UCTIterations)
+uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 {
-	p_int MaxScore = -INFINITY;
-
-	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
+	GameStack<uint, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.
@@ -56,11 +54,9 @@ p_int SearchBestMove(Field &MainField, p_int Depth, p_int UCTIterations)
 		return Moves.Stack[rand() % Moves.Count];
 }
 
-p_int SearchBestMoveWithTime(Field &MainField, p_int Time)
+uint SearchBestMoveWithTime(Field &MainField, ulong Time)
 {
-	p_int MaxScore = -INFINITY;
-
-	GameStack<p_int, MAX_CHAIN_POINTS> Moves;
+	GameStack<uint, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.

@@ -1,6 +1,10 @@
 #pragma once
 #include <limits.h>
 
+typedef unsigned short ushort;
+typedef unsigned int uint;
+typedef unsigned long ulong;
+
 // Следующие 3 определения задаются вручную и зависят от конкретного компилятора и параметров компиляции.
 // Определение типа p_int.
 typedef int p_int;
@@ -12,9 +16,5 @@ typedef int p_int;
 // Структура координат точки.
 struct Point
 {
-	p_int X, Y;
+	ushort X, Y;
 };
-
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
