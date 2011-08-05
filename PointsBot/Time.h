@@ -16,5 +16,7 @@ inline unsigned long GetTime()
 	tiespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return ts.tv_sec * 1000 + tv_nsec / 1000000;
+#else
+#error Unknown OS
 #endif
 }
