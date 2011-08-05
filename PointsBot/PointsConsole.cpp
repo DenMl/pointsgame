@@ -165,7 +165,7 @@ inline void FillCodes(map<string, void(*)(int)> &codes)
 	codes["version"] = version;
 }
 
-p_int main(p_int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 	string s;
 	int id;

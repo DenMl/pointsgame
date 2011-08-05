@@ -13,7 +13,7 @@ inline unsigned long GetTime()
 #if WINDOWS
 	return GetTickCount();
 #elif LINUX
-	tiespec ts;
+	timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return ts.tv_sec * 1000 + tv_nsec / 1000000;
 #else
