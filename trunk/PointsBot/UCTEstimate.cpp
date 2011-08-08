@@ -274,7 +274,7 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHA
 	// Список всех возможных ходов для UCT.
 	GameStack<uint, MAX_CHAIN_POINTS> PossibleMoves;
 	double BestEstimate = -1;
-	ulong t0 = GetTime();
+	Timer t;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 	Moves.Intersect(PossibleMoves);
@@ -301,7 +301,7 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHA
 			CurChild = &(*CurChild)->Sibling;
 		}
 
-		while (GetTime() - t0 < Time)
+		while (t.Get() < Time)
 			for (uint i = 0; i < IterationsBeforeCheckTime; i++)
 				PlaySimulation(*LocalField, PossibleMoves, n);
 

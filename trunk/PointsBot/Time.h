@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config.h"
+#include <limits>
 
 #if WINDOWS
 #include <Windows.h>
@@ -20,3 +21,29 @@ inline unsigned long GetTime()
 #error Unknown OS
 #endif
 }
+
+class Timer
+{
+private:
+	ulong LastTime;
+
+public:
+	inline Timer()
+	{
+		Set();
+	}
+
+	inline void Set()
+	{
+		LastTime = GetTime();
+	}
+
+	inline ulong Get()
+	{
+		ulong CurTime = GetTime();
+		if (CurTime > LastTime)
+			return CurTime - LastTime;
+		else
+			return ULONG_MAX - LastTime + CurTime + 1;
+	}
+};
