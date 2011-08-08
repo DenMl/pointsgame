@@ -20,7 +20,7 @@ short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 	c1 = cgSumma[MainField.NumberNearPoints(TestedPoint, Player)];
 	c2 = cgSumma[MainField.NumberNearPoints(TestedPoint, NextPlayer(Player))];
 	Result = (g1 * 3 + g2 * 2) * (5 - Abs(g1 - g2)) - c1 - c2;
-	if (MainField.PointsSeq.Count > 0 && Field::IsNear(MainField.PointsSeq.Stack[MainField.PointsSeq.Count - 1], TestedPoint))
+	if (MainField.PointsSeq.size() > 0 && Field::IsNear(MainField.PointsSeq.back(), TestedPoint))
 		Result += 5;
 	// Эмпирическая формула оценки важности точки при просчете ходов.
 	return Result;

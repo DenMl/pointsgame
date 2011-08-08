@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Config.h"
-#include "BasicTypes.h"
 
 // Возвращает модуль числа x.
 template<typename TYPE> inline TYPE Abs(TYPE x)

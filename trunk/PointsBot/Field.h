@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Config.h"
 #include "BasicTypes.h"
 #include "BasicConstants.h"
@@ -6,7 +7,9 @@
 #include "Zobrist.h"
 #include "AuxFunc.h"
 #include "Player.h"
-#include <stdio.h>
+#include <vector>
+
+using namespace std;
 
 class Field
 {
@@ -122,7 +125,7 @@ class Field
 
 	// History points sequance.
 	// Последовательность поставленных точек.
-	GameStack<uint, MAX_CHAIN_POINTS> PointsSeq;
+	vector<uint> PointsSeq;
 
 	// Правила обработки пустых баз.
 	// SurStandart = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.
@@ -175,7 +178,7 @@ class Field
 
 	private:
 	// Возвращает косое произведение векторов Pos1 и Pos2.
-	inline static uint Square(const uint Pos1, const uint Pos2)
+	inline static int Square(const uint Pos1, const uint Pos2)
 	{
 		return (Pos1 % FieldWidth2) * (Pos2 / FieldWidth2) - (Pos1 / FieldWidth2) * (Pos2 % FieldWidth2);
 	}
@@ -494,7 +497,7 @@ class Field
 		Pos = InpChainPoint;
 		uint CenterPos = StartPos;
 		// Площадь базы.
-		uint TempSquare = Square(CenterPos, Pos);
+		int TempSquare = Square(CenterPos, Pos);
 		do
 		{
 			if (IsTagged(Pos))
@@ -707,7 +710,7 @@ public:
 
 		this->FieldWidth = FieldWidth;
 		this->FieldHeight = FieldHeight;
-		PointsSeq.Clear();
+		PointsSeq.clear();
 #if SURROUND_CONDITIONS
 		this->SurCond = SurCond;
 #endif
@@ -741,7 +744,7 @@ public:
 
 		FieldWidth = Orig.FieldWidth;
 		FieldHeight = Orig.FieldHeight;
-		PointsSeq.Copy(Orig.PointsSeq);
+		PointsSeq.assign(Orig.PointsSeq.begin(), Orig.PointsSeq.end());
 #if SURROUND_CONDITIONS
 		SurCond = Orig.SurCond;
 #endif
@@ -838,7 +841,7 @@ public:
 		SetPlayer(Pos, CurPlayer);
 		SetPutted(Pos);
 
-		PointsSeq.Push(Pos);
+		PointsSeq.push_back(Pos);
 
 		SetNextPlayer();
 
@@ -865,7 +868,7 @@ public:
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
 
-		PointsSeq.Push(Pos);
+		PointsSeq.push_back(Pos);
 
 		CheckClosure(Pos);
 
@@ -891,7 +894,7 @@ public:
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
 
-		PointsSeq.Push(Pos);
+		PointsSeq.push_back(Pos);
 		
 		bool result = CheckClosure(Pos, CheckedPos);
 
@@ -903,7 +906,7 @@ public:
 	// Откат хода.
 	inline void UndoStep()
 	{
-		PointsSeq.Count--;
+		PointsSeq.pop_back();
 		uint ChangeNumber = PointsChange.Pop();
 		for (uint i = 0; i < ChangeNumber; i++)
 		{
