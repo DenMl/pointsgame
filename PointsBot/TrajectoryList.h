@@ -78,20 +78,20 @@ public:
 	uint Count;
 
 private:
-	inline void AddNewTrajectory(Field &CurrentField, const uint Points[], uint Length, short Player)
+	inline void AddNewTrajectory(Field &CurrentField, vector<uint>::iterator begin, vector<uint>::iterator end, short Player)
 	{
 		ulong TempHash = 0;
 
 		// Эвристические проверки.
 		// Каждая точка траектории должна окружать что-либо и иметь рядом хотя бы 2 группы точек.
 		// Если нет - не добавляем эту траекторию.
-		for (uint i = 0; i < Length; i++)
-			if (!CurrentField.IsBaseBound(Points[i]) || (CurrentField.NumberNearGroups(Points[i], Player) < 2))
+		for (vector<uint>::iterator i = begin; i < end; i++)
+			if (!CurrentField.IsBaseBound(*i) || (CurrentField.NumberNearGroups(*i, Player) < 2))
 				return;
 
 		// Высчитываем хеш траектории и сравниваем с уже существующими для исключения повторов.
-		for (uint i = 0; i < Length; i++)
-			TempHash ^= GetZobristHash(Points[i]);
+		for (vector<uint>::iterator i = begin; i < end; i++)
+			TempHash ^= GetZobristHash(*i);
 		for (uint i = 0; i < Count; i++)
 			if (TempHash == Trajectories[i].Hash)
 				return; // В теории возможны коллизии. Неплохо было бы сделать точную проверку.
@@ -100,13 +100,12 @@ private:
 		// Запоминаем хеш новой траектории.
 		Trajectories[Count].Hash = TempHash;
 
-		for (uint i = 0; i < Length; i++)
+		Trajectories[Count].Clear();
+		for (vector<uint>::iterator i = begin; i < end; i++)
 		{
 			// Добавляем точку в PointsSeq траектории.
-			Trajectories[Count].Points[i] = Points[i];
+			Trajectories[Count].Push(*i);
 		}
-		// Запоминаем количество точек в траектории.
-		Trajectories[Count].Count = Length;
 		// Увеличиваем на 1 количество траекторий.
 		Count++;
 	}
@@ -153,7 +152,7 @@ private:
 				{
 					CurField.DoUnsafeStep(Pos, Player);
 					if (CurField.DCaptureCount > 0)
-						AddNewTrajectory(CurField, &CurField.PointsSeq.Stack[CurField.PointsSeq.Count - (CurrentDepth - Depth)], CurrentDepth - Depth, Player);
+						AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
 					CurField.UndoStep();
 				}
 				else
@@ -169,7 +168,7 @@ private:
 #endif
 
 					if (CurField.DCaptureCount > 0)
-						AddNewTrajectory(CurField, &CurField.PointsSeq.Stack[CurField.PointsSeq.Count - (CurrentDepth - Depth)], CurrentDepth - Depth, Player);
+						AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
 					else if (Depth > 0)
 						BuildTrajectoriesRecursive(CurField, Depth - 1, Player);
 
@@ -185,7 +184,7 @@ private:
 			if (CurField.PuttingAllow(Pos) && CurField.IsNearPoints(Pos, Player))
 			{
 				if (CurField.DoUnsafeStepAndCheckPoint(Pos, Player, CheckedPos))
-					AddNewTrajectory(CurField, &CurField.PointsSeq.Stack[CurField.PointsSeq.Count - (CurrentDepth - Depth)], CurrentDepth - Depth, Player);
+					AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
 				else if (!CurField.IsInEmptyBase(Pos) && Depth > 0)
 					BuildCurrentTrajectoriesRecursive(CurField, Depth - 1, Player, CheckedPos);
 

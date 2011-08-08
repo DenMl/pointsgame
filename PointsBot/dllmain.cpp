@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Config.h"
 #include "Random.h"
 #include "Zobrist.h"

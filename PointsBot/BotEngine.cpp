@@ -21,7 +21,7 @@ uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 	BuildAllMoves(MainField, Moves);
 
 	// ≈сли на доске не стоит ни одной точки - возвращаем случайный ход.
-	if (MainField.PointsSeq.Count == 0)
+	if (MainField.PointsSeq.size() == 0)
 		return Moves.Stack[rand() % Moves.Count];
 
 	if (Moves.Count == 1) // ≈сли возможный ход один - возвращаем его.
@@ -59,7 +59,7 @@ uint SearchBestMoveWithTime(Field &MainField, ulong Time)
 	BuildAllMoves(MainField, Moves);
 
 	// ≈сли на доске не стоит ни одной точки - возвращаем случайный ход.
-	if (MainField.PointsSeq.Count == 0)
+	if (MainField.PointsSeq.size() == 0)
 		return Moves.Stack[rand() % Moves.Count];
 
 	if (Moves.Count == 1) // ≈сли возможный ход один - возвращаем его.

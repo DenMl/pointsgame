@@ -1,5 +1,6 @@
 #pragma once
-#include <limits.h>
+
+#include "Config.h"
 
 typedef unsigned short ushort;
 typedef unsigned int uint;
