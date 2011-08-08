@@ -8,8 +8,31 @@
 #include "AuxFunc.h"
 #include "Player.h"
 #include <vector>
+#include <queue>
+#include <stack>
 
 using namespace std;
+
+enum SurroundCondition
+{
+	Standart,
+	Always,
+	AlwaysEnemy
+};
+
+enum BeginPattern
+{
+	CleanPattern,
+	CrosswisePattern,
+	SquarePattern
+};
+
+class BoardChange
+{
+	uint CaptureCount[2];
+	short Player;
+	stack<Pair<uint, ushort>> Changes;
+};
 
 class Field
 {
@@ -125,29 +148,19 @@ class Field
 
 	// History points sequance.
 	// Последовательность поставленных точек.
-	vector<uint> PointsSeq;
+	vector<uint> *PointsSeq;
 
 	// Правила обработки пустых баз.
 	// SurStandart = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.
 	// SurAlways = 1 - обводить базу, даже если нет вражеских точек внутри.
 	// SurAlwaysEnemy = 2 - обводит всегда PlayerBlack, если PlayerRed поставил точку в пустую базу.
-	enum SurroundCondition
-	{
-		Standart,
-		Always,
-		AlwaysEnemy
-	} SurCond;
+	SurroundCondition SurCond;
 
 	// Используемый шаблон в начале игры.
 	// Crosswise = 0 - Crosswise.
 	// Clean = 1 - Clean.
 	// Square = 2 - Square.
-	enum Pattern
-	{
-		CleanPattern,
-		CrosswisePattern,
-		SquarePattern
-	} BeginPattern;
+	BeginPattern Pattern;
 
 	// Размеры границ поля.
 	ushort ExpandWidth, ExpandHeight;
@@ -156,11 +169,6 @@ class Field
 
 	// Current player color.
 	// Текущий цвет игроков.
-	enum PlayerColor
-	{
-		PlayerColorRed,
-		PlayerColorBlack
-	};
 	short CurPlayer, EnemyPlayer;
 
 	// Capture points count.
@@ -319,7 +327,7 @@ class Field
 	inline void PlaceBeginPattern()
 	{
 		Point point;
-		switch (BeginPattern)
+		switch (Pattern)
 		{
 		case (CrosswisePattern):
 			point.X = FieldWidth / 2 - 1;
@@ -666,19 +674,7 @@ class Field
 
 public:
 	// Конструктор.
-	inline Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const Pattern BeginPattern)
-	{
-		Initialize(FieldWidth, FieldHeight, SurCond, BeginPattern);
-	}
-
-	// Конструктор копирования.
-	inline Field(const Field &Orig)
-	{
-		Copy(Orig);
-	}
-
-	// Инициализация поля.
-	inline void Initialize(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const Pattern BeginPattern)
+	inline Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)
 	{
 		// Очищаем массив изменений доски.
 		PointsChange.Clear();
@@ -710,13 +706,13 @@ public:
 
 		this->FieldWidth = FieldWidth;
 		this->FieldHeight = FieldHeight;
-		PointsSeq.clear();
+		PointsSeq = new vector<uint>();
 #if SURROUND_CONDITIONS
 		this->SurCond = SurCond;
 #endif
-		this->BeginPattern = BeginPattern;
-		CurPlayer = (PlayerColor)0x0;
-		EnemyPlayer = (PlayerColor)0x1;
+		this->Pattern = BeginPattern;
+		CurPlayer = PlayerRed;
+		EnemyPlayer = PlayerBlack;
 		CaptureCount[0] = 0;
 		CaptureCount[1] = 0;
 
@@ -728,8 +724,8 @@ public:
 		PlaceBeginPattern();
 	}
 
-	// Копирование доски.
-	inline void Copy(const Field &Orig)
+	// Конструктор копирования.
+	inline Field(const Field &Orig)
 	{
 		PointsChange.Copy(Orig.PointsChange);
 		CurrentBoardChangesNumber = Orig.CurrentBoardChangesNumber;
@@ -744,11 +740,11 @@ public:
 
 		FieldWidth = Orig.FieldWidth;
 		FieldHeight = Orig.FieldHeight;
-		PointsSeq.assign(Orig.PointsSeq.begin(), Orig.PointsSeq.end());
+		PointsSeq = new vector<uint>(*Orig.PointsSeq);
 #if SURROUND_CONDITIONS
 		SurCond = Orig.SurCond;
 #endif
-		BeginPattern = Orig.BeginPattern;
+		Pattern = Orig.Pattern;
 		CurPlayer = Orig.CurPlayer;
 		EnemyPlayer = Orig.EnemyPlayer;
 		CaptureCount[0] = Orig.CaptureCount[0];
@@ -758,6 +754,11 @@ public:
 
 		MinPos = Orig.MinPos;
 		MaxPos = Orig.MaxPos;
+	}
+
+	~Field()
+	{
+		delete PointsSeq;
 	}
 
 	inline const int GetScore(short Player)
@@ -841,7 +842,7 @@ public:
 		SetPlayer(Pos, CurPlayer);
 		SetPutted(Pos);
 
-		PointsSeq.push_back(Pos);
+		PointsSeq->push_back(Pos);
 
 		SetNextPlayer();
 
@@ -868,7 +869,7 @@ public:
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
 
-		PointsSeq.push_back(Pos);
+		PointsSeq->push_back(Pos);
 
 		CheckClosure(Pos);
 
@@ -894,7 +895,7 @@ public:
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
 
-		PointsSeq.push_back(Pos);
+		PointsSeq->push_back(Pos);
 		
 		bool result = CheckClosure(Pos, CheckedPos);
 
@@ -906,7 +907,7 @@ public:
 	// Откат хода.
 	inline void UndoStep()
 	{
-		PointsSeq.pop_back();
+		PointsSeq->pop_back();
 		uint ChangeNumber = PointsChange.Pop();
 		for (uint i = 0; i < ChangeNumber; i++)
 		{

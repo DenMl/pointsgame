@@ -152,7 +152,7 @@ private:
 				{
 					CurField.DoUnsafeStep(Pos, Player);
 					if (CurField.DCaptureCount > 0)
-						AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
+						AddNewTrajectory(CurField, CurField.PointsSeq->end() - (CurrentDepth - Depth), CurField.PointsSeq->end(), Player);
 					CurField.UndoStep();
 				}
 				else
@@ -168,7 +168,7 @@ private:
 #endif
 
 					if (CurField.DCaptureCount > 0)
-						AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
+						AddNewTrajectory(CurField, CurField.PointsSeq->end() - (CurrentDepth - Depth), CurField.PointsSeq->end(), Player);
 					else if (Depth > 0)
 						BuildTrajectoriesRecursive(CurField, Depth - 1, Player);
 
@@ -184,7 +184,7 @@ private:
 			if (CurField.PuttingAllow(Pos) && CurField.IsNearPoints(Pos, Player))
 			{
 				if (CurField.DoUnsafeStepAndCheckPoint(Pos, Player, CheckedPos))
-					AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
+					AddNewTrajectory(CurField, CurField.PointsSeq->end() - (CurrentDepth - Depth), CurField.PointsSeq->end(), Player);
 				else if (!CurField.IsInEmptyBase(Pos) && Depth > 0)
 					BuildCurrentTrajectoriesRecursive(CurField, Depth - 1, Player, CheckedPos);
 
