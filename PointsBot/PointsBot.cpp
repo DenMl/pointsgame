@@ -47,8 +47,8 @@ void SetNextPlayer(Field *MainField)
 	MainField->SetNextPlayer();
 }
 
-void GetBotMove(Field *MainField, uint MinMaxDepth, ulong UCTIterations, ushort *X, ushort *Y)
+void GetBotMove(Field *MainField, uint MinMaxDepth, ulong UCTIterations, ushort &X, ushort &Y)
 {
 	Randomize();
-	MainField->ConvertToXY(SearchBestMove(*MainField, MinMaxDepth, UCTIterations), *X, *Y);
+	MainField->ConvertToXY(SearchBestMove(*MainField, MinMaxDepth, UCTIterations), X, Y);
 }
