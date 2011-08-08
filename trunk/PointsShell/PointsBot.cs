@@ -13,27 +13,27 @@ namespace PointsShell
         private readonly int Handle;
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int InitField(int Width, int Height, int SurCond, int BeginPattern);
+        private static extern int InitField(ushort Width, ushort Height, int SurCond, int BeginPattern);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void FinalField(int Field);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void PutPoint(int Field, int X, int Y);
+        private static extern void PutPoint(int Field, ushort X, ushort Y);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void PutPlayersPoint(int Field, int X, int Y, PlayerColor Player);
+        private static extern void PutPlayersPoint(int Field, ushort X, ushort Y, PlayerColor Player);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void RemoveLastPoint(int Field);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void GetBotMove(int Field, int MinMaxDepth, int UCTIterations, ref int X, ref int Y);
+        private static extern void GetBotMove(int Field, uint MinMaxDepth, uint UCTIterations, ref ushort X, ref ushort Y);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SetCurrentPlayer(int Field, int Player);
+        private static extern void SetCurrentPlayer(int Field, PlayerColor Player);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int GetCurrentPlayer(int Field);
+        private static extern short GetCurrentPlayer(int Field);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void SetNextPlayer(int Field);
 
         public PointsBot(int Width, int Height, SurroundCond SurCond, BeginPattern BeginPattern)
         {
-            Handle = InitField(Width, Height, (int)SurCond, (int)BeginPattern);
+            Handle = InitField((ushort)Width, (ushort)Height, (int)SurCond, (int)BeginPattern);
         }
 
         ~PointsBot()
@@ -43,12 +43,12 @@ namespace PointsShell
 
         public void PutPoint(Pos pos)
         {
-            PutPoint(Handle, pos.X - 1, pos.Y - 1);
+            PutPoint(Handle, (ushort)(pos.X - 1), (ushort)(pos.Y - 1));
         }
 
         public void PutPoint(Pos pos, PlayerColor Player)
         {
-            PutPlayersPoint(Handle, pos.X - 1, pos.Y - 1, Player);
+            PutPlayersPoint(Handle, (ushort)(pos.X - 1), (ushort)(pos.Y - 1), Player);
         }
 
         public void RemoveLastPoint()
@@ -58,16 +58,16 @@ namespace PointsShell
 
         public Pos GetBotMovie(int MinMaxDepth, int UCTIterations)
         {
-            var Result = new Pos();
-            GetBotMove(Handle, MinMaxDepth, UCTIterations, ref Result.X, ref Result.Y);
-            Result.X++;
-            Result.Y++;
-            return Result;
+            ushort X = 0, Y = 0;
+            GetBotMove(Handle, (uint)MinMaxDepth, (uint)UCTIterations, ref X, ref Y);
+            X++;
+            Y++;
+            return new Pos(X, Y);
         }
 
         public void SetCurrentPlayer(PlayerColor Player)
         {
-            SetCurrentPlayer(Handle, (int)Player);
+            SetCurrentPlayer(Handle, Player);
         }
 
         public PlayerColor GetCurrentPlayer()

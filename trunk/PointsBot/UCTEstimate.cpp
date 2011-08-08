@@ -4,6 +4,7 @@
 #include "Field.h"
 #include "Random.h"
 #include "Time.h"
+#include <limits>
 #include <queue>
 #include <omp.h>
 
@@ -105,9 +106,9 @@ short PlaySimulation(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &Pos
 
 		if (next == NULL)
 		{
-			n.Visits = INFINITY;
+			n.Visits = ULONG_MAX;
 			if (CurrentField.CaptureCount[CurrentField.EnemyPlayer] > CurrentField.CaptureCount[CurrentField.CurPlayer])
-				n.Wins = INFINITY;
+				n.Wins = ULONG_MAX;
 
 			if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
 				return 0;

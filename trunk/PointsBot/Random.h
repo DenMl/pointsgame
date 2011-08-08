@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include <random>
+#include <limits>
 
 #if WINDOWS
 #include <Windows.h>
@@ -21,41 +22,29 @@ inline void Randomize()
 }
 
 // Генерирует случайное p_int (все биты принимают случайное значение).
-inline p_int Random()
+inline ulong Random()
 {
 #if RAND_MAX == 0x7FFF // В этом случае rand() генерирует 15 случайных бит. Смещениями можно получить 32/64 бита.
 
-#if SIZEOF_P_INT == 4
-	return (rand() << 17) | (rand() << 2) | (rand() & 3);
-#elif SIZEOF_P_INT == 8
-	return (rand() << 49) | (rand() << 34) | (rand() << 19) | (rand() << 4) | (rand() & 15);
+#if ULONG_MAX == 0xFFFFFFFFUL
+	return ((ulong)rand() << 17) | ((ulong)rand() << 2) | ((ulong)rand() & 3);
+#elif ULONG_MAX == 0xFFFFFFFFFFFFFFFFUL
+	return ((ulong)rand() << 49) | ((ulong)rand() << 34) | ((ulong)rand() << 19) | ((ulong)rand() << 4) | ((ulong)rand() & 15);
 #else
-#error Unknown SIZEOF_P_INT
+#error Unknown ULONG_MAX
 #endif
 
 #elif RAND_MAX == 0x7FFFFFFF // В этом случае rand() генерирует 31 случайный бит. Смещениями можно получить 32/64 бита.
 
-#if SIZEOF_P_INT == 4
-	return (rand() << 1) | (rand() & 1);
-#elif SIZEOF_P_INT == 8
-	return (rand() << 33) | (rand() << 2) | (rand() & 3);
+#if ULONG_MAX == 0xFFFFFFFFUL
+	return ((ulong)rand() << 1) | ((ulong)rand() & 1);
+#elif ULONG_MAX == 0xFFFFFFFFFFFFFFFFUL
+	return ((ulong)rand() << 33) | ((ulong)rand() << 2) | ((ulong)rand() & 3);
 #else
-#error Unknown SIZEOF_P_INT
+#error Unknown ULONG_MAX
 #endif
 
 #else
 #error Unknown RAND_MAX
 #endif
-}
-
-// Генерирует случайное число от 0 до max-1. Если необходимо случайное число, не превосходящее RAND_MAX, лучше пользоваться FastRandom.
-inline p_int Random(p_int max)
-{
-	return Random() % max;
-}
-
-// Генерирует случайное число от 0 до max-1. max <= RAND_MAX.
-inline p_int FastRandom(p_int max)
-{
-	return rand() % max;
 }

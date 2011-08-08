@@ -113,9 +113,9 @@ inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectorie
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-p_int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, int alpha, int beta)
+int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, int alpha, int beta)
 {
-	int BestEstimate = -INFINITY;
+	int BestEstimate = INT_MIN + 1;
 	TrajectoryList Trajectories[2];
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
@@ -131,7 +131,7 @@ p_int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, T
 	if (CurField.DCaptureCount < 0) // Если точка поставлена в окружение.
 	{
 		CurField.UndoStep();
-		return -INFINITY; // Для CurPlayer это хорошо, то есть оценка Infinity.
+		return INT_MIN + 1; // Для CurPlayer это хорошо, то есть оценка Infinity.
 	}
 
 	if (Depth > 1)
@@ -154,7 +154,7 @@ p_int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, T
 				alpha = BestEstimate;
 		}
 	}
-	if (BestEstimate == -INFINITY)
+	if (BestEstimate == INT_MIN + 1)
 		BestEstimate = CurField.GetScore(CurField.CurPlayer);
 
 	CurField.UndoStep();
@@ -166,26 +166,26 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 {
 	TrajectoryList TempTrajectories;
 	GameStack<uint, MAX_CHAIN_POINTS> Moves;
-	int Result = -INFINITY;
+	int Result = INT_MIN + 1;
 
 	TempTrajectories.BuildEnemyTrajectories(CurField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
 	GetPoints(EnemyTrajectories, TempTrajectories, TrajectoriesBoard, Moves);
 
-	int alpha = -INFINITY;
+	int alpha = INT_MIN + 1;
 	CurField.SetNextPlayer();
 	Depth -= 2;
 	omp_lock_t lock;
 	omp_init_lock(&lock);
 	#pragma omp parallel
 	{
-		int MaxEstimate = -INFINITY, CurEstimate;
+		int MaxEstimate = INT_MIN + 1, CurEstimate;
 		Field *LocalField = new Field(CurField);
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
 		for (uint i = 0; i < Moves.Count; i++)
 		{
-			CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, -INFINITY, -alpha);
+			CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves.Stack[i], EnemyTrajectories, CurrentTrajectories, INT_MIN + 1, -alpha);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
 			if (CurEstimate > MaxEstimate)
@@ -213,7 +213,7 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 int MinMaxEstimate(Field &CurField, uint Depth, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Минимально и максимально возможная оценка.
-	int BestEstimate = -INFINITY;
+	int BestEstimate = INT_MIN + 1;
 	// Главные траектории - свои и вражеские.
 	TrajectoryList Trajectories[2];
 	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
@@ -241,7 +241,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, GameStack<uint, MAX_CHAIN_POINTS
 	for (uint i = 0; i < Moves.Count; i++)
 		ScoreBoard[Moves.Stack[i]] = EnemyEstimate;
 
-	int alpha = -(INFINITY - 1);
+	int alpha = INT_MIN + 2;
 	#pragma omp parallel
 	{
 		Field* LocalField = new Field(CurField);
@@ -250,7 +250,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, GameStack<uint, MAX_CHAIN_POINTS
 		#pragma omp for schedule(dynamic, 1)
 		for (uint i = 0; i < PotentialMoves.Count; i++)
 		{
-			int CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth - 1, PotentialMoves.Stack[i], Trajectories[LocalField->CurPlayer], Trajectories[LocalField->EnemyPlayer], -INFINITY, -alpha + 1);
+			int CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth - 1, PotentialMoves.Stack[i], Trajectories[LocalField->CurPlayer], Trajectories[LocalField->EnemyPlayer], INT_MIN + 1, -alpha + 1);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
 			ScoreBoard[PotentialMoves.Stack[i]] = CurEstimate;
