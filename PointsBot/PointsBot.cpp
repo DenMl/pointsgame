@@ -6,7 +6,7 @@
 #include <omp.h>
 #include "Random.h"
 
-Field* InitField(p_int FieldWidth, p_int FieldHeight, p_int SurCond, p_int BeginPattern)
+Field* InitField(ushort FieldWidth, ushort FieldHeight, Field::SurroundCondition SurCond, Field::Pattern BeginPattern)
 {
 	return new Field(FieldWidth, FieldHeight, SurCond, BeginPattern);
 }
@@ -17,12 +17,12 @@ void FinalField(Field *MainField)
 		delete MainField;
 }
 
-void PutPoint(Field *MainField, p_int X, p_int Y)
+void PutPoint(Field *MainField, ushort X, ushort Y)
 {
 	MainField->DoStep(MainField->ConvertToPos(X, Y));
 }
 
-void PutPlayersPoint(Field *MainField, p_int X, p_int Y, p_int Player)
+void PutPlayersPoint(Field *MainField, ushort X, ushort Y, short Player)
 {
 	MainField->DoStep(MainField->ConvertToPos(X, Y), Player);
 }
@@ -32,12 +32,12 @@ void RemoveLastPoint(Field *MainField)
 	MainField->UndoStep();
 }
 
-void SetCurrentPlayer(Field *MainField, p_int Player)
+void SetCurrentPlayer(Field *MainField, short Player)
 {
 	MainField->SetCurrentPlayer(Player);
 }
 
-p_int GetCurrentPlayer(Field *MainField)
+short GetCurrentPlayer(Field *MainField)
 {
 	return MainField->CurPlayer;
 }
@@ -47,8 +47,8 @@ void SetNextPlayer(Field *MainField)
 	MainField->SetNextPlayer();
 }
 
-void GetBotMove(Field *MainField, p_int MinMaxDepth, p_int UCTIterations, p_int &X, p_int &Y)
+void GetBotMove(Field *MainField, uint MinMaxDepth, ulong UCTIterations, ushort *X, ushort *Y)
 {
 	Randomize();
-	MainField->ConvertToXY(SearchBestMove(*MainField, MinMaxDepth, UCTIterations), X, Y);
+	MainField->ConvertToXY(SearchBestMove(*MainField, MinMaxDepth, UCTIterations), *X, *Y);
 }

@@ -43,9 +43,6 @@
     <ClInclude Include="GameStack.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="LadderEstimate.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="MinMaxEstimate.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -85,9 +82,6 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="BotEngine.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="LadderEstimate.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="MinMaxEstimate.cpp">

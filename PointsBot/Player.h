@@ -2,12 +2,12 @@
 #include "BasicTypes.h"
 
 // Значение бита первого игрока.
-static const p_int PlayerRed = 0x0;
+static const short PlayerRed = 0x0;
 // Значение бита второго игрока.
-static const p_int PlayerBlack = 0x1;
+static const short PlayerBlack = 0x1;
 
 // Получить по игроку следующего игрока.
-inline p_int NextPlayer(const p_int Player)
+inline short NextPlayer(const short Player)
 {
 	return Player ^ 1;
 }

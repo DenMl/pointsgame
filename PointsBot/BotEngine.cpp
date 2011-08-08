@@ -5,7 +5,6 @@
 #include "MinMaxEstimate.h"
 #include "UCTEstimate.h"
 #include "PositionEstimate.h"
-#include "LadderEstimate.h"
 #include "Random.h"
 
 void BuildAllMoves(Field &MainField, GameStack<uint, MAX_CHAIN_POINTS> &Moves)

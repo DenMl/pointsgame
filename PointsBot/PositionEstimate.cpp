@@ -28,7 +28,7 @@ short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 
 void PositionEstimate(Field &MainField, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
 {
-	short BestScore = numeric_limits<short>::min();
+	short BestScore = SHRT_MIN;
 	GameStack<uint, MAX_CHAIN_POINTS> BestMoves;
 	for (uint i = 0; i < Moves.Count; i++)
 	{

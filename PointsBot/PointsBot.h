@@ -4,17 +4,17 @@
 #define DLLEXPORT extern "C" __declspec(dllexport)
 
 // Экспортируемая функция инициализации поля.
-DLLEXPORT Field* InitField(p_int FieldWidth, p_int FieldHeight, p_int SurCond, p_int BeginPattern);
+DLLEXPORT Field* InitField(ushort FieldWidth, ushort FieldHeight, Field::SurroundCondition SurCond, Field::Pattern BeginPattern);
 // Экспортируемя функция финализации поля.
 DLLEXPORT void FinalField(Field *MainField);
 // Экспортируемая функция постановки точки.
-DLLEXPORT void PutPoint(Field *MainField, p_int X, p_int Y);
+DLLEXPORT void PutPoint(Field *MainField, ushort X, ushort Y);
 // Экспортируемая функция постановки точки игрока Player.
-DLLEXPORT void PutPlayersPoint(Field *MainField, p_int X, p_int Y, p_int Player);
+DLLEXPORT void PutPlayersPoint(Field *MainField, ushort X, ushort Y, short Player);
 // Экспортируемая функция отката хода.
 DLLEXPORT void RemoveLastPoint(Field *MainField);
 // Экспортируемая функция получения наилучшего хода по мнению ИИ.
-DLLEXPORT void GetBotMove(Field *MainField, p_int MinMaxDepth, p_int UCTIterations, p_int &X, p_int &Y);
-DLLEXPORT void SetCurrentPlayer(Field *MainField, p_int Player);
-DLLEXPORT p_int GetCurrentPlayer(Field *MainField);
+DLLEXPORT void GetBotMove(Field *MainField, uint MinMaxDepth, ulong UCTIterations, ushort *X, ushort *Y);
+DLLEXPORT void SetCurrentPlayer(Field *MainField, short Player);
+DLLEXPORT short GetCurrentPlayer(Field *MainField);
 DLLEXPORT void SetNextPlayer(Field *MainField);
