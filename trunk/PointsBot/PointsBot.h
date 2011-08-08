@@ -4,7 +4,7 @@
 #define DLLEXPORT extern "C" __declspec(dllexport)
 
 // Экспортируемая функция инициализации поля.
-DLLEXPORT Field* InitField(ushort FieldWidth, ushort FieldHeight, Field::SurroundCondition SurCond, Field::Pattern BeginPattern);
+DLLEXPORT Field* InitField(ushort FieldWidth, ushort FieldHeight, SurroundCondition SurCond, BeginPattern Pattern);
 // Экспортируемя функция финализации поля.
 DLLEXPORT void FinalField(Field *MainField);
 // Экспортируемая функция постановки точки.

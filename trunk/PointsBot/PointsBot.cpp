@@ -6,9 +6,9 @@
 #include <omp.h>
 #include "Random.h"
 
-Field* InitField(ushort FieldWidth, ushort FieldHeight, Field::SurroundCondition SurCond, Field::Pattern BeginPattern)
+Field* InitField(ushort FieldWidth, ushort FieldHeight, SurroundCondition SurCond, BeginPattern Pattern)
 {
-	return new Field(FieldWidth, FieldHeight, SurCond, BeginPattern);
+	return new Field(FieldWidth, FieldHeight, SurCond, Pattern);
 }
 
 void FinalField(Field *MainField)
