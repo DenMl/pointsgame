@@ -1,7 +1,5 @@
 #pragma once
 
-#include "GameStack.h"
-
 #include "Config.h"
 #include "BasicTypes.h"
 #include "BasicConstants.h"
@@ -11,6 +9,7 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <list>
 
 using namespace std;
 
@@ -99,7 +98,7 @@ class Field
 
 #pragma region MainVariables
 	public:
-	vector<BoardChange> *PointsChange;
+	vector<BoardChange> *Changes;
 
 	// Main points array (game board).
 	// ќсновной массив точек (игрова€ доска).
@@ -362,11 +361,11 @@ class Field
 	}
 
 	// «аливка захваченной области.
-	inline void CapturedAndFreedCount(const uint StartPos, const short Player, int &Captured, int &Freed, GameStack<uint, MAX_SUR_POINTS> &SurPoints)
+	inline void CapturedAndFreedCount(const uint StartPos, const short Player, int &Captured, int &Freed, list<uint> &SurPoints)
 	{
 		queue<uint> q;
 
-		SurPoints.Clear();
+		SurPoints.clear();
 
 		Captured = 0;
 		Freed = 0;
@@ -377,7 +376,7 @@ class Field
 		while (!q.empty())
 		{
 			CheckCapturedAndFreed(q.front(), Player, Captured, Freed);
-			SurPoints.Push(q.front());
+			SurPoints.push_back(q.front());
 
 			if (IsNotBound(q.front() - 1, BoundCond) && !IsTagged(q.front() - 1))
 			{
@@ -421,28 +420,28 @@ class Field
 			if (IsInEmptyBase(q.front() - 1))
 			{
 				q.push(q.front() - 1);
-				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() - 1, Points[q.front() - 1]));
+				Changes->back().Changes.push(Pair<uint, ushort>(q.front() - 1, Points[q.front() - 1]));
 				ClearEmptyBase(q.front() - 1);
 			}
 
 			if (IsInEmptyBase(q.front() - FieldWidth2))
 			{
 				q.push(q.front() - FieldWidth2);
-				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() - FieldWidth2, Points[q.front() - FieldWidth2]));
+				Changes->back().Changes.push(Pair<uint, ushort>(q.front() - FieldWidth2, Points[q.front() - FieldWidth2]));
 				ClearEmptyBase(q.front() - FieldWidth2);
 			}
 
 			if (IsInEmptyBase(q.front() + 1))
 			{
 				q.push(q.front() + 1);
-				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() + 1, Points[q.front() + 1]));
+				Changes->back().Changes.push(Pair<uint, ushort>(q.front() + 1, Points[q.front() + 1]));
 				ClearEmptyBase(q.front() + 1);
 			}
 
 			if (IsInEmptyBase(q.front() + FieldWidth2))
 			{
 				q.push(q.front() + FieldWidth2);
-				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() + FieldWidth2, Points[q.front() + FieldWidth2]));
+				Changes->back().Changes.push(Pair<uint, ushort>(q.front() + FieldWidth2, Points[q.front() + FieldWidth2]));
 				ClearEmptyBase(q.front() + FieldWidth2);
 			}
 
@@ -450,14 +449,14 @@ class Field
 		}
 	}
 
-	bool BuildChain(const uint StartPos, const uint InpChainPoint, GameStack<uint, MAX_CHAIN_POINTS> &Chain)
+	bool BuildChain(const uint StartPos, const uint InpChainPoint, list<uint> &Chain)
 	{
 		short Player = GetPlayer(StartPos);
 
 		uint Pos;
 
-		Chain.Clear();
-		Chain.Push(StartPos);
+		Chain.clear();
+		Chain.push_back(StartPos);
 		Pos = InpChainPoint;
 		uint CenterPos = StartPos;
 		// ѕлощадь базы.
@@ -466,16 +465,16 @@ class Field
 		{
 			if (IsTagged(Pos))
 			{
-				while (Chain.Stack[Chain.Count - 1] != Pos)
+				while (Chain.back() != Pos)
 				{
-					Chain.Count--;
-					ClearTag(Chain.Stack[Chain.Count]);
+					ClearTag(Chain.back());
+					Chain.pop_back();
 				}
 			}
 			else
 			{
 				SetTag(Pos);
-				Chain.Push(Pos);
+				Chain.push_back(Pos);
 			}
 			Swap(Pos, CenterPos);
 			GetFirstNextPos(CenterPos, Pos);
@@ -485,13 +484,13 @@ class Field
 		}
 		while (Pos != StartPos);
 
-		for (uint i = 0; i < Chain.Count; i++)
-			ClearTag(Chain.Stack[i]);
+		for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+			ClearTag(*i);
 
-		return (TempSquare < 0 && Chain.Count > 2);
+		return (TempSquare < 0 && Chain.size() > 2);
 	}
 
-	inline ushort BuildChains(const uint StartPos, const uint InpChainPoints[], const uint InpSurPoints[], const ushort InpPointsCount, GameStack<uint, MAX_CHAIN_POINTS> Chains[], uint InsidePoints[])
+	inline ushort BuildChains(const uint StartPos, const uint InpChainPoints[], const uint InpSurPoints[], const ushort InpPointsCount, list<uint> Chains[], uint InsidePoints[])
 	{
 		ushort Count = 0;
 		for (ushort i = 0; i < InpPointsCount; i++)
@@ -504,7 +503,7 @@ class Field
 			return Count;
 	}
 
-	inline ushort BuildChainsFast(const uint StartPos, const uint InpChainPoints[], const uint InpSurPoints[], const ushort InpPointsCount, GameStack<uint, MAX_CHAIN_POINTS> Chains[], uint InsidePoints[])
+	inline ushort BuildChainsFast(const uint StartPos, const uint InpChainPoints[], const uint InpSurPoints[], const ushort InpPointsCount, list<uint> Chains[], uint InsidePoints[])
 	{
 		ushort Count = 0;
 		for (ushort i = 0; i < InpPointsCount; i++)
@@ -520,18 +519,18 @@ class Field
 			return Count;
 	}
 
-	void FindSurround(GameStack<uint, MAX_CHAIN_POINTS> &Chain, uint InsidePoint, short Player)
+	void FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
 	{
 		//  оличество захваченных точек.
 		int CurCaptureCount = 0;
 		//  оличество захваченных пустых полей.
 		int CurFreedCount = 0;
 
-		GameStack<uint, MAX_SUR_POINTS> SurPoints;
+		list<uint> SurPoints;
 
 		// ѕомечаем точки цепочки.
-		for (uint i = 0; i < Chain.Count; i++)
-			SetTag(Chain.Stack[i]);
+		for (list<uint>::iterator i = Chain.begin(); i != Chain.end(); i++)
+			SetTag(*i);
 
 		// «аливка захваченной области.
 		CapturedAndFreedCount(InsidePoint, Player, CurCaptureCount, CurFreedCount, SurPoints);
@@ -546,43 +545,43 @@ class Field
 		if (CurCaptureCount != 0) // ≈сли захватили точки.
 		#endif
 		{
-			for (uint i = 0; i < Chain.Count; i++)
+			for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
 			{
-				ClearTag(Chain.Stack[i]);
+				ClearTag(*i);
 				// ƒобавл€ем в список изменений точки цепочки.
-				PointsChange->back().Changes.push(Pair<uint, ushort>(Chain.Stack[i], Points[Chain.Stack[i]]));
+				Changes->back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
 				// ѕомечаем точки цепочки.
-				SetBaseBound(Chain.Stack[i]);
+				SetBaseBound(*i);
 			}
 
-			for (uint i = 0; i < SurPoints.Count; i++)
+			for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
 			{
-				ClearTag(SurPoints.Stack[i]);
+				ClearTag(*i);
 
-				PointsChange->back().Changes.push(Pair<uint, ushort>(SurPoints.Stack[i], Points[SurPoints.Stack[i]]));
+				Changes->back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
 
-				SetCaptureFreeState(SurPoints.Stack[i], Player);
+				SetCaptureFreeState(*i, Player);
 			}
 		}
 		else // ≈сли ничего не захватили.
 		{
-			for (uint i = 0; i < Chain.Count; i++)
-				ClearTag(Chain.Stack[i]);
+			for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+				ClearTag(*i);
 
-			for (uint i = 0; i < SurPoints.Count; i++)
+			for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
 			{
-				ClearTag(SurPoints.Stack[i]);
+				ClearTag(*i);
 
-				PointsChange->back().Changes.push(Pair<uint, ushort>(SurPoints.Stack[i], Points[SurPoints.Stack[i]]));
+				Changes->back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
 
-				if (!IsPutted(SurPoints.Stack[i]))
-					SetEmptyBase(SurPoints.Stack[i]);
+				if (!IsPutted(*i))
+					SetEmptyBase(*i);
 			}
 		}
 
 	}
 
-	inline void FindSurrounds(GameStack<uint, MAX_CHAIN_POINTS> Chains[], uint InsidePoints[], ushort ChainsCount, short Player)
+	inline void FindSurrounds(list<uint> Chains[], uint InsidePoints[], ushort ChainsCount, short Player)
 	{
 		for (ushort i = 0; i < ChainsCount; i++)
 			FindSurround(Chains[i], InsidePoints[i], Player);
@@ -626,7 +625,7 @@ public:
 	//  онструктор.
 	inline Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)
 	{
-		PointsChange = new vector<BoardChange>;
+		Changes = new vector<BoardChange>;
 
 		ExpandWidth = (FieldWidth2 - FieldWidth) / 2;
 		ParityWidth = (FieldWidth2 - FieldWidth) % 2;
@@ -674,7 +673,7 @@ public:
 	//  онструктор копировани€.
 	inline Field(const Field &Orig)
 	{
-		PointsChange = new vector<BoardChange>(*Orig.PointsChange);
+		Changes = new vector<BoardChange>(*Orig.Changes);
 
 		ExpandWidth = Orig.ExpandWidth;
 		ParityWidth = Orig.ParityWidth;
@@ -705,6 +704,7 @@ public:
 	~Field()
 	{
 		delete PointsSeq;
+		delete Changes;
 	}
 
 	inline const int GetScore(short Player)
@@ -776,13 +776,13 @@ public:
 	// ѕоставить точку на поле максимально быстро (без дополнительных проверок).
 	inline void DoUnsafeStep(const uint Pos)
 	{
-		PointsChange->resize(PointsChange->size() + 1);
-		PointsChange->back().CaptureCount[0] = CaptureCount[0];
-		PointsChange->back().CaptureCount[1] = CaptureCount[1];
-		PointsChange->back().Player = CurPlayer;
+		Changes->resize(Changes->size() + 1);
+		Changes->back().CaptureCount[0] = CaptureCount[0];
+		Changes->back().CaptureCount[1] = CaptureCount[1];
+		Changes->back().Player = CurPlayer;
 
 		// ƒобавл€ем в изменени€ поставленную точку.
-		PointsChange->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
+		Changes->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, CurPlayer);
 		SetPutted(Pos);
@@ -800,13 +800,13 @@ public:
 	// ѕоставить точку на поле следующего по очереди игрока максимально быстро (без дополнительных проверок).
 	inline void DoUnsafeStep(const uint Pos, const short Player)
 	{
-		PointsChange->resize(PointsChange->size() + 1);
-		PointsChange->back().CaptureCount[0] = CaptureCount[0];
-		PointsChange->back().CaptureCount[1] = CaptureCount[1];
-		PointsChange->back().Player = CurPlayer;
+		Changes->resize(Changes->size() + 1);
+		Changes->back().CaptureCount[0] = CaptureCount[0];
+		Changes->back().CaptureCount[1] = CaptureCount[1];
+		Changes->back().Player = CurPlayer;
 
 		// ƒобавл€ем в изменени€ поставленную точку.
-		PointsChange->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
+		Changes->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
@@ -823,13 +823,13 @@ public:
 	// ƒелает ход и провер€ет на окруженность только точку CheckedPos.
 	inline bool DoUnsafeStepAndCheckPoint(const uint Pos, const short Player, const uint CheckedPos)
 	{
-		PointsChange->resize(PointsChange->size() + 1);
-		PointsChange->back().CaptureCount[0] = CaptureCount[0];
-		PointsChange->back().CaptureCount[1] = CaptureCount[1];
-		PointsChange->back().Player = CurPlayer;
+		Changes->resize(Changes->size() + 1);
+		Changes->back().CaptureCount[0] = CaptureCount[0];
+		Changes->back().CaptureCount[1] = CaptureCount[1];
+		Changes->back().Player = CurPlayer;
 
 		// ƒобавл€ем в изменени€ поставленную точку.
-		PointsChange->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
+		Changes->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
@@ -843,16 +843,16 @@ public:
 	inline void UndoStep()
 	{
 		PointsSeq->pop_back();
-		while (!PointsChange->back().Changes.empty())
+		while (!Changes->back().Changes.empty())
 		{
-			Points[PointsChange->back().Changes.top().first] = PointsChange->back().Changes.top().second;
-			PointsChange->back().Changes.pop();
+			Points[Changes->back().Changes.top().first] = Changes->back().Changes.top().second;
+			Changes->back().Changes.pop();
 		}
-		CurPlayer = PointsChange->back().Player;
+		CurPlayer = Changes->back().Player;
 		EnemyPlayer = NextPlayer(CurPlayer);
-		CaptureCount[0] = PointsChange->back().CaptureCount[0];
-		CaptureCount[1] = PointsChange->back().CaptureCount[1];
-		PointsChange->pop_back();
+		CaptureCount[0] = Changes->back().CaptureCount[0];
+		CaptureCount[1] = Changes->back().CaptureCount[1];
+		Changes->pop_back();
 	}
 
 	// ”становить следующего игрока как текущего.
@@ -979,15 +979,15 @@ public:
 		return k;
 	}
 
-	const bool PointInsideRing(const uint TestedPos, const GameStack<uint, MAX_CHAIN_POINTS> &Ring)
+	const bool PointInsideRing(const uint TestedPos, const list<uint> &Ring)
 	{
 		uint Intersections = 0;
 
 		IntersectionState State = ISNone;
 
-		for (uint i = 0; i < Ring.Count; i++)
+		for (list<uint>::const_iterator i = Ring.begin(); i != Ring.end(); i++)
 		{
-			switch (GetIntersectionState(TestedPos, Ring.Stack[i]))
+			switch (GetIntersectionState(TestedPos, *i))
 			{
 			case (ISNone):
 				State = ISNone;
@@ -1006,12 +1006,12 @@ public:
 		}
 		if (State == ISUp || State == ISDown)
 		{
-			IntersectionState TempState = GetIntersectionState(TestedPos, Ring.Stack[0]);
-			uint i = 0;
+			list<uint>::const_iterator i = Ring.begin();
+			IntersectionState TempState = GetIntersectionState(TestedPos, *i);
 			while (TempState == State || TempState == ISTarget)
 			{
 				i++;
-				TempState = GetIntersectionState(TestedPos, Ring.Stack[i]);
+				TempState = GetIntersectionState(TestedPos, *i);
 			}
 			if (TempState != ISNone)
 				Intersections++;
@@ -1026,7 +1026,7 @@ public:
 		ushort InpPointsCount;
 		uint InpChainPoints[4], InpSurPoints[4];
 
-		GameStack<uint, MAX_CHAIN_POINTS> Chains[4];
+		list<uint> Chains[4];
 		uint InsidePoints[4];
 		ushort ChainsCount;
 
@@ -1100,7 +1100,7 @@ public:
 	{
 		uint InpChainPoints[4], InpSurPoints[4];
 
-		GameStack<uint, MAX_CHAIN_POINTS> Chains[4];
+		list<uint> Chains[4];
 		uint InsidePoints[4];
 
 		// ÷вет игрока, точка которого провер€етс€.
@@ -1113,12 +1113,12 @@ public:
 			for (ushort i = 0; i < ChainsCount; i++)
 				if (PointInsideRing(CheckedPos, Chains[i]))
 				{
-					for (uint j = 0; j < Chains[i].Count; j++)
+					for (list<uint>::const_iterator j = Chains[i].begin(); j != Chains[i].end(); j++)
 					{
 						// ƒобавл€ем в список изменений точки цепочки.
-						PointsChange->back().Changes.push(Pair<uint, ushort>(Chains[i].Stack[j], Points[Chains[i].Stack[j]]));
+						Changes->back().Changes.push(Pair<uint, ushort>(*j, Points[*j]));
 						// ѕомечаем точки цепочки.
-						SetBaseBound(Chains[i].Stack[j]);
+						SetBaseBound(*j);
 					}
 					return true;
 				}
