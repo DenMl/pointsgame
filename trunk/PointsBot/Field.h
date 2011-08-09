@@ -1,9 +1,10 @@
 #pragma once
 
+#include "GameStack.h"
+
 #include "Config.h"
 #include "BasicTypes.h"
 #include "BasicConstants.h"
-#include "GameStack.h"
 #include "Zobrist.h"
 #include "AuxFunc.h"
 #include "Player.h"
@@ -12,27 +13,6 @@
 #include <stack>
 
 using namespace std;
-
-enum SurroundCondition
-{
-	Standart,
-	Always,
-	AlwaysEnemy
-};
-
-enum BeginPattern
-{
-	CleanPattern,
-	CrosswisePattern,
-	SquarePattern
-};
-
-class BoardChange
-{
-	uint CaptureCount[2];
-	short Player;
-	stack<Pair<uint, ushort>> Changes;
-};
 
 class Field
 {
@@ -119,21 +99,7 @@ class Field
 
 #pragma region MainVariables
 	public:
-	// ‘ормат одного изменени€ состо€ний (при создании базы): 
-	// =================================
-	// CaptureCount[0]
-	// CaptureCount[1]
-	// CurPlayer
-	// «начение пол€ до изменени€.
-	//  оордината пол€.
-	// ...
-	//  оличество изменений.
-	// =================================
-	// »звлечение происходит соответственно в обратном пор€дке
-	GameStack<ulong, MAX_CHAIN_POINTS * MAX_CHAIN_POINTS> PointsChange;
-
-	//  оличество изменений доски за текущий ход.
-	uint CurrentBoardChangesNumber;
+	vector<BoardChange> *PointsChange;
 
 	// Main points array (game board).
 	// ќсновной массив точек (игрова€ доска).
@@ -398,46 +364,46 @@ class Field
 	// «аливка захваченной области.
 	inline void CapturedAndFreedCount(const uint StartPos, const short Player, int &Captured, int &Freed, GameStack<uint, MAX_SUR_POINTS> &SurPoints)
 	{
-		GameStack<uint, MAX_CHAIN_POINTS> TempStack;
+		queue<uint> q;
 
 		SurPoints.Clear();
 
 		Captured = 0;
 		Freed = 0;
 		ushort BoundCond = Player | PutBit | BoundBit;
-		TempStack.Clear();
-		TempStack.Push(StartPos);
+		q.push(StartPos);
 		SetTag(StartPos);
 
-		while (TempStack.Count != 0)
+		while (!q.empty())
 		{
-			uint Pos = TempStack.Pop();
-			CheckCapturedAndFreed(Pos, Player, Captured, Freed);
-			SurPoints.Push(Pos);
+			CheckCapturedAndFreed(q.front(), Player, Captured, Freed);
+			SurPoints.Push(q.front());
 
-			if (IsNotBound(Pos - 1, BoundCond) && !IsTagged(Pos - 1))
+			if (IsNotBound(q.front() - 1, BoundCond) && !IsTagged(q.front() - 1))
 			{
-				TempStack.Push(Pos - 1);
-				SetTag(Pos - 1);
+				q.push(q.front() - 1);
+				SetTag(q.front() - 1);
 			}
 
-			if (IsNotBound(Pos - FieldWidth2, BoundCond) && !IsTagged(Pos - FieldWidth2))
+			if (IsNotBound(q.front() - FieldWidth2, BoundCond) && !IsTagged(q.front() - FieldWidth2))
 			{
-				TempStack.Push(Pos - FieldWidth2);
-				SetTag(Pos - FieldWidth2);
+				q.push(q.front() - FieldWidth2);
+				SetTag(q.front() - FieldWidth2);
 			}
 
-			if (IsNotBound(Pos + 1, BoundCond) && !IsTagged(Pos + 1))
+			if (IsNotBound(q.front() + 1, BoundCond) && !IsTagged(q.front() + 1))
 			{
-				TempStack.Push(Pos + 1);
-				SetTag(Pos + 1);
+				q.push(q.front() + 1);
+				SetTag(q.front() + 1);
 			}
 
-			if (IsNotBound(Pos + FieldWidth2, BoundCond) && !IsTagged(Pos + FieldWidth2))
+			if (IsNotBound(q.front() + FieldWidth2, BoundCond) && !IsTagged(q.front() + FieldWidth2))
 			{
-				TempStack.Push(Pos + FieldWidth2);
-				SetTag(Pos + FieldWidth2);
+				q.push(q.front() + FieldWidth2);
+				SetTag(q.front() + FieldWidth2);
 			}
+
+			q.pop();
 		}
 	}
 
@@ -445,52 +411,42 @@ class Field
 	// StartPos не заноситс€ в список изменений пол€.
 	inline void RemoveEmptyBase(const uint StartPos)
 	{
-		GameStack<uint, MAX_CHAIN_POINTS> TempStack;
+		queue<uint> q;
 
-		uint Pos = StartPos;
-		TempStack.Clear();
-		TempStack.Push(StartPos);
+		q.push(StartPos);
 		ClearEmptyBase(StartPos);
 
-		while (TempStack.Count != 0)
+		while (!q.empty())
 		{
-			Pos = TempStack.Pop();
-
-			if (IsInEmptyBase(Pos - 1))
+			if (IsInEmptyBase(q.front() - 1))
 			{
-				TempStack.Push(Pos - 1);
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[Pos - 1]);
-				PointsChange.Push(Pos - 1);
-				ClearEmptyBase(Pos - 1);
+				q.push(q.front() - 1);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() - 1, Points[q.front() - 1]));
+				ClearEmptyBase(q.front() - 1);
 			}
 
-			if (IsInEmptyBase(Pos - FieldWidth2))
+			if (IsInEmptyBase(q.front() - FieldWidth2))
 			{
-				TempStack.Push(Pos - FieldWidth2);
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[Pos - FieldWidth2]);
-				PointsChange.Push(Pos - FieldWidth2);
-				ClearEmptyBase(Pos - FieldWidth2);
+				q.push(q.front() - FieldWidth2);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() - FieldWidth2, Points[q.front() - FieldWidth2]));
+				ClearEmptyBase(q.front() - FieldWidth2);
 			}
 
-			if (IsInEmptyBase(Pos + 1))
+			if (IsInEmptyBase(q.front() + 1))
 			{
-				TempStack.Push(Pos + 1);
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[Pos + 1]);
-				PointsChange.Push(Pos + 1);
-				ClearEmptyBase(Pos + 1);
+				q.push(q.front() + 1);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() + 1, Points[q.front() + 1]));
+				ClearEmptyBase(q.front() + 1);
 			}
 
-			if (IsInEmptyBase(Pos + FieldWidth2))
+			if (IsInEmptyBase(q.front() + FieldWidth2))
 			{
-				TempStack.Push(Pos + FieldWidth2);
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[Pos + FieldWidth2]);
-				PointsChange.Push(Pos + FieldWidth2);
-				ClearEmptyBase(Pos + FieldWidth2);
+				q.push(q.front() + FieldWidth2);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(q.front() + FieldWidth2, Points[q.front() + FieldWidth2]));
+				ClearEmptyBase(q.front() + FieldWidth2);
 			}
+
+			q.pop();
 		}
 	}
 
@@ -594,22 +550,18 @@ class Field
 			{
 				ClearTag(Chain.Stack[i]);
 				// ƒобавл€ем в список изменений точки цепочки.
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[Chain.Stack[i]]);
-				PointsChange.Push(Chain.Stack[i]);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(Chain.Stack[i], Points[Chain.Stack[i]]));
 				// ѕомечаем точки цепочки.
 				SetBaseBound(Chain.Stack[i]);
 			}
 
-			for (uint j = 0; j < SurPoints.Count; j++)
+			for (uint i = 0; i < SurPoints.Count; i++)
 			{
-				ClearTag(SurPoints.Stack[j]);
+				ClearTag(SurPoints.Stack[i]);
 
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[SurPoints.Stack[j]]);
-				PointsChange.Push(SurPoints.Stack[j]);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(SurPoints.Stack[i], Points[SurPoints.Stack[i]]));
 
-				SetCaptureFreeState(SurPoints.Stack[j], Player);
+				SetCaptureFreeState(SurPoints.Stack[i], Player);
 			}
 		}
 		else // ≈сли ничего не захватили.
@@ -621,9 +573,7 @@ class Field
 			{
 				ClearTag(SurPoints.Stack[i]);
 
-				CurrentBoardChangesNumber++;
-				PointsChange.Push(Points[SurPoints.Stack[i]]);
-				PointsChange.Push(SurPoints.Stack[i]);
+				PointsChange->back().Changes.push(Pair<uint, ushort>(SurPoints.Stack[i], Points[SurPoints.Stack[i]]));
 
 				if (!IsPutted(SurPoints.Stack[i]))
 					SetEmptyBase(SurPoints.Stack[i]);
@@ -676,10 +626,7 @@ public:
 	//  онструктор.
 	inline Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)
 	{
-		// ќчищаем массив изменений доски.
-		PointsChange.Clear();
-		// ќчищаем количество текущих изменений.
-		CurrentBoardChangesNumber = 0;
+		PointsChange = new vector<BoardChange>;
 
 		ExpandWidth = (FieldWidth2 - FieldWidth) / 2;
 		ParityWidth = (FieldWidth2 - FieldWidth) % 2;
@@ -706,7 +653,7 @@ public:
 
 		this->FieldWidth = FieldWidth;
 		this->FieldHeight = FieldHeight;
-		PointsSeq = new vector<uint>();
+		PointsSeq = new vector<uint>;
 #if SURROUND_CONDITIONS
 		this->SurCond = SurCond;
 #endif
@@ -727,8 +674,7 @@ public:
 	//  онструктор копировани€.
 	inline Field(const Field &Orig)
 	{
-		PointsChange.Copy(Orig.PointsChange);
-		CurrentBoardChangesNumber = Orig.CurrentBoardChangesNumber;
+		PointsChange = new vector<BoardChange>(*Orig.PointsChange);
 
 		ExpandWidth = Orig.ExpandWidth;
 		ParityWidth = Orig.ParityWidth;
@@ -830,14 +776,13 @@ public:
 	// ѕоставить точку на поле максимально быстро (без дополнительных проверок).
 	inline void DoUnsafeStep(const uint Pos)
 	{
-		PointsChange.Push(CaptureCount[0]);
-		PointsChange.Push(CaptureCount[1]);
-		PointsChange.Push(CurPlayer);
+		PointsChange->resize(PointsChange->size() + 1);
+		PointsChange->back().CaptureCount[0] = CaptureCount[0];
+		PointsChange->back().CaptureCount[1] = CaptureCount[1];
+		PointsChange->back().Player = CurPlayer;
 
-		// —брасываем текущее количество изменений доски и добавл€ем в изменени€ поставленную точку.
-		CurrentBoardChangesNumber = 1;
-		PointsChange.Push(Points[Pos]);
-		PointsChange.Push(Pos);
+		// ƒобавл€ем в изменени€ поставленную точку.
+		PointsChange->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, CurPlayer);
 		SetPutted(Pos);
@@ -847,8 +792,6 @@ public:
 		SetNextPlayer();
 
 		CheckClosure(Pos);
-
-		PointsChange.Push(CurrentBoardChangesNumber);
 	}
 	inline void DoUnsafeStep(const Point point)
 	{
@@ -857,14 +800,13 @@ public:
 	// ѕоставить точку на поле следующего по очереди игрока максимально быстро (без дополнительных проверок).
 	inline void DoUnsafeStep(const uint Pos, const short Player)
 	{
-		PointsChange.Push(CaptureCount[0]);
-		PointsChange.Push(CaptureCount[1]);
-		PointsChange.Push(CurPlayer);
+		PointsChange->resize(PointsChange->size() + 1);
+		PointsChange->back().CaptureCount[0] = CaptureCount[0];
+		PointsChange->back().CaptureCount[1] = CaptureCount[1];
+		PointsChange->back().Player = CurPlayer;
 
-		// —брасываем текущее количество изменений доски и добавл€ем в изменени€ поставленную точку.
-		CurrentBoardChangesNumber = 1;
-		PointsChange.Push(Points[Pos]);
-		PointsChange.Push(Pos);
+		// ƒобавл€ем в изменени€ поставленную точку.
+		PointsChange->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
@@ -872,8 +814,6 @@ public:
 		PointsSeq->push_back(Pos);
 
 		CheckClosure(Pos);
-
-		PointsChange.Push(CurrentBoardChangesNumber);
 	}
 	inline void DoUnsafeStep(const Point point, const short Player)
 	{
@@ -883,41 +823,36 @@ public:
 	// ƒелает ход и провер€ет на окруженность только точку CheckedPos.
 	inline bool DoUnsafeStepAndCheckPoint(const uint Pos, const short Player, const uint CheckedPos)
 	{
-		PointsChange.Push(CaptureCount[0]);
-		PointsChange.Push(CaptureCount[1]);
-		PointsChange.Push(CurPlayer);
+		PointsChange->resize(PointsChange->size() + 1);
+		PointsChange->back().CaptureCount[0] = CaptureCount[0];
+		PointsChange->back().CaptureCount[1] = CaptureCount[1];
+		PointsChange->back().Player = CurPlayer;
 
-		// —брасываем текущее количество изменений доски и добавл€ем в изменени€ поставленную точку.
-		CurrentBoardChangesNumber = 1;
-		PointsChange.Push(Points[Pos]);
-		PointsChange.Push(Pos);
+		// ƒобавл€ем в изменени€ поставленную точку.
+		PointsChange->back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
 
 		PointsSeq->push_back(Pos);
 		
-		bool result = CheckClosure(Pos, CheckedPos);
-
-		PointsChange.Push(CurrentBoardChangesNumber);
-
-		return result;
+		return CheckClosure(Pos, CheckedPos);
 	}
 
 	// ќткат хода.
 	inline void UndoStep()
 	{
 		PointsSeq->pop_back();
-		uint ChangeNumber = PointsChange.Pop();
-		for (uint i = 0; i < ChangeNumber; i++)
+		while (!PointsChange->back().Changes.empty())
 		{
-			uint temp = PointsChange.Pop();
-			Points[temp] = PointsChange.Pop();
+			Points[PointsChange->back().Changes.top().first] = PointsChange->back().Changes.top().second;
+			PointsChange->back().Changes.pop();
 		}
-		CurPlayer = PointsChange.Pop();
+		CurPlayer = PointsChange->back().Player;
 		EnemyPlayer = NextPlayer(CurPlayer);
-		CaptureCount[1] = PointsChange.Pop();
-		CaptureCount[0] = PointsChange.Pop();
+		CaptureCount[0] = PointsChange->back().CaptureCount[0];
+		CaptureCount[1] = PointsChange->back().CaptureCount[1];
+		PointsChange->pop_back();
 	}
 
 	// ”становить следующего игрока как текущего.
@@ -1181,9 +1116,7 @@ public:
 					for (uint j = 0; j < Chains[i].Count; j++)
 					{
 						// ƒобавл€ем в список изменений точки цепочки.
-						CurrentBoardChangesNumber++;
-						PointsChange.Push(Points[Chains[i].Stack[j]]);
-						PointsChange.Push(Chains[i].Stack[j]);
+						PointsChange->back().Changes.push(Pair<uint, ushort>(Chains[i].Stack[j], Points[Chains[i].Stack[j]]));
 						// ѕомечаем точки цепочки.
 						SetBaseBound(Chains[i].Stack[j]);
 					}
