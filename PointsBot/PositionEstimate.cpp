@@ -3,6 +3,7 @@
 #include "AuxFunc.h"
 #include "Player.h"
 #include "Field.h"
+#include "GameStack.h"
 #include <limits>
 
 using namespace std;
