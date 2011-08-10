@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Field.h"
 #include <list>
-#include <limits>
+#include <climits>
 
 using namespace std;
 

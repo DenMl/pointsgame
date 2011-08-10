@@ -4,7 +4,7 @@
 #include "Field.h"
 #include "Random.h"
 #include "Time.h"
-#include <limits>
+#include <climits>
 #include <queue>
 #include <vector>
 #include <list>

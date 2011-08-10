@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Config.h"
-#include <limits>
+#include <climits>
 
 #if WINDOWS
 #include <Windows.h>
