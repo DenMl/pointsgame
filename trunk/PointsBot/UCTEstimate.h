@@ -3,7 +3,6 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include "Field.h"
-#include "GameStack.h"
 
 const double UCTK = 1;
 // Радиус, внутри которого происходит анализ.
@@ -28,5 +27,5 @@ struct Node
 	}
 };
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_CHAIN_POINTS> &Moves);
-double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimate(Field &MainField, ulong MaxSimulations, vector<uint> &Moves);
+double UCTEstimateWithTime(Field &MainField, ulong Time, vector<uint> &Moves);

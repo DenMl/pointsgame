@@ -4,9 +4,10 @@
 #include "BasicConstants.h"
 #include "Zobrist.h"
 #include "Field.h"
-#include "GameStack.h"
 #include <assert.h>
 #include "Config.h"
+#include <vector>
+#include <algorithm>
 
 const uint MAX_TRAJECTORY_LENGTH = 8;
 const uint MAX_TRAJECTORIES_COUNT = 256;
@@ -237,13 +238,13 @@ public:
 		BuildCurrentTrajectoriesRecursive(CurField, Depth - 1, Player, Pos);
 	}
 
-	inline void GetPoints(GameStack<uint, MAX_CHAIN_POINTS> &Points)
+	inline void GetPoints(vector<uint> &Points)
 	{
 		for (uint i = 0; i < Count; i++)
 			if (!Trajectories[i].Excluded)
 				for (uint j = 0; j < Trajectories[i].Count; j++)
-					if (Points.Find(Trajectories[i].Points[j]) == -1)
-						Points.Push(Trajectories[i].Points[j]);
+					if (find(Points.begin(), Points.end(), Trajectories[i].Points[j]) == Points.end())
+						Points.push_back(Trajectories[i].Points[j]);
 	}
 
 	// Проецирует траектории на доску TrajectoriesBoard (для каждой точки Pos очередной траектории инкрементирует TrajectoriesBoard[Pos]).

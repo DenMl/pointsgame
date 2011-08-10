@@ -3,7 +3,7 @@
 #include "AuxFunc.h"
 #include "Player.h"
 #include "Field.h"
-#include "GameStack.h"
+#include <list>
 #include <limits>
 
 using namespace std;
@@ -27,23 +27,23 @@ short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 	return Result;
 }
 
-void PositionEstimate(Field &MainField, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
+void PositionEstimate(Field &MainField, vector<uint> &Moves)
 {
 	short BestScore = SHRT_MIN;
-	GameStack<uint, MAX_CHAIN_POINTS> BestMoves;
-	for (uint i = 0; i < Moves.Count; i++)
+	vector<uint> BestMoves;
+	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
 	{
-		short TempScore = PositionEstimate(MainField, Moves.Stack[i], MainField.CurPlayer);
+		short TempScore = PositionEstimate(MainField, *i, MainField.CurPlayer);
 		if (TempScore > BestScore)
 		{
 			BestScore = TempScore;
-			BestMoves.Clear();
-			BestMoves.Push(Moves.Stack[i]);
+			BestMoves.clear();
+			BestMoves.push_back(*i);
 		}
 		else if (TempScore == BestScore)
 		{
-			BestMoves.Push(Moves.Stack[i]);
+			BestMoves.push_back(*i);
 		}
 	}
-	Moves.Copy(BestMoves);
+	Moves.assign(BestMoves.begin(), BestMoves.end());
 }
