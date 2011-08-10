@@ -114,7 +114,7 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
-		for (uint i = 0; i < Moves.size(); i++)
+		for (int i = 0; i < Moves.size(); i++)
 		{
 			CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth, Moves[i], EnemyTrajectories, CurrentTrajectories, INT_MIN + 1, -alpha);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
@@ -179,7 +179,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
-		for (uint i = 0; i < FirstMoves.size(); i++)
+		for (int i = 0; i < FirstMoves.size(); i++)
 		{
 			int CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth - 1, FirstMoves[i], Trajectories[LocalField.CurPlayer], Trajectories[NextPlayer(LocalField.CurPlayer)], INT_MIN + 1, -alpha + 1);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.

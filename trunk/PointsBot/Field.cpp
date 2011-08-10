@@ -9,25 +9,25 @@ void Field::PlaceBeginPattern()
 	case (CrosswisePattern):
 		point.X = FieldWidth / 2 - 1;
 		point.Y = FieldHeight / 2 - 1;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		point.X++;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		point.Y++;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		point.X--;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		break;
 	case (SquarePattern):
 		point.X = FieldWidth / 2 - 1;
 		point.Y = FieldHeight / 2 - 1;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		point.X++;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		point.X--;
 		point.Y++;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		point.X++;
-		DoStep(point);
+		DoStep(ConvertToPos(point));
 		break;
 	}
 }
@@ -83,6 +83,71 @@ bool Field::BuildChain(const uint StartPos, short EnableCond, const uint Directi
 		ClearTag(*i);
 
 	return (TempSquare < 0 && Chain.size() > 2);
+}
+
+void Field::FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
+{
+	// Количество захваченных точек.
+	int CurCaptureCount = 0;
+	// Количество захваченных пустых полей.
+	int CurFreedCount = 0;
+
+	list<uint> SurPoints;
+
+	// Помечаем точки цепочки.
+	for (list<uint>::iterator i = Chain.begin(); i != Chain.end(); i++)
+		SetTag(*i);
+
+	Wave(	InsidePoint,
+		[&, Player](uint Pos)
+	{
+		return IsNotBound(Pos, Player | PutBit | BoundBit);
+	},
+		[&, Player](uint Pos)
+	{
+		CheckCapturedAndFreed(Pos, Player, CurCaptureCount, CurFreedCount);
+		SurPoints.push_back(Pos);
+	});
+	// Изменение счета игроков.
+	AddSubCapturedFreed(Player, CurCaptureCount, CurFreedCount);
+	DCaptureCount += CurCaptureCount;
+	DFreedCount += CurFreedCount;
+
+#if SURROUND_CONDITIONS
+	if ((CurCaptureCount != 0) || (SurCond == Always)) // Если захватили точки, или стоит опция захватывать всегда.
+#else
+	if (CurCaptureCount != 0) // Если захватили точки.
+#endif
+	{
+		for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+		{
+			ClearTag(*i);
+			// Добавляем в список изменений точки цепочки.
+			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
+			// Помечаем точки цепочки.
+			SetBaseBound(*i);
+		}
+
+		for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
+		{
+			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
+
+			SetCaptureFreeState(*i, Player);
+		}
+	}
+	else // Если ничего не захватили.
+	{
+		for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+			ClearTag(*i);
+
+		for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
+		{
+			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
+
+			if (!IsPutted(*i))
+				SetEmptyBase(*i);
+		}
+	}
 }
 
 Field::Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)

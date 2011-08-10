@@ -179,147 +179,13 @@ private:
 	inline void CheckCapturedAndFreed(const uint Pos, const short Player, int &Captured, int &Freed);
 	// Захватывает/освобождает окруженную точку.
 	inline void SetCaptureFreeState(const uint Pos, const short Player);
+	inline void Wave(uint StartPos, function<bool(int)> Condition, function<void(uint)> Action);
 	// Удаляет пометку пустой базы с поля точек, начиная с позиции StartPos.
-	// StartPos не заносится в список изменений поля.
 	void RemoveEmptyBase(const uint StartPos);
 	bool BuildChain(const uint StartPos, short EnableCond, const uint DirectionPos, list<uint> &Chain);
-
-	inline void Wave(uint StartPos, function<bool(int)> Condition, function<void(uint)> Action)
-	{
-		// Очередь для волнового алгоритма (обхода в ширину).
-		list<uint> q;
-		list<uint>::const_iterator it;
-
-		q.push_back(StartPos);
-		SetTag(StartPos);
-		it = q.begin();
-		while (it != q.end())
-		{
-			Action(*it);
-
-			if (Condition(*it - 1) && !IsTagged(*it - 1))
-			{
-				q.push_back(*it - 1);
-				SetTag(*it - 1);
-			}
-			if (Condition(*it - FieldWidth2) && !IsTagged(*it - FieldWidth2))
-			{
-				q.push_back(*it - FieldWidth2);
-				SetTag(*it - FieldWidth2);
-			}
-			if (Condition(*it + 1) && !IsTagged(*it + 1))
-			{
-				q.push_back(*it + 1);
-				SetTag(*it + 1);
-			}
-			if (Condition(*it + FieldWidth2) && !IsTagged(*it + FieldWidth2))
-			{
-				q.push_back(*it + FieldWidth2);
-				SetTag(*it + FieldWidth2);
-			}
-			it++;
-		}
-
-		for (it = q.begin(); it != q.end(); it++)
-			ClearTag(*it);
-	}
-
-	void FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
-	{
-		// Количество захваченных точек.
-		int CurCaptureCount = 0;
-		// Количество захваченных пустых полей.
-		int CurFreedCount = 0;
-
-		list<uint> SurPoints;
-
-		// Помечаем точки цепочки.
-		for (list<uint>::iterator i = Chain.begin(); i != Chain.end(); i++)
-			SetTag(*i);
-
-		Wave(	InsidePoint,
-				[&, Player](uint Pos)
-				{
-					return IsNotBound(Pos, Player | PutBit | BoundBit);
-				},
-				[&, Player](uint Pos)
-				{
-					CheckCapturedAndFreed(Pos, Player, CurCaptureCount, CurFreedCount);
-					SurPoints.push_back(Pos);
-				});
-		// Изменение счета игроков.
-		AddSubCapturedFreed(Player, CurCaptureCount, CurFreedCount);
-		DCaptureCount += CurCaptureCount;
-		DFreedCount += CurFreedCount;
-
-		#if SURROUND_CONDITIONS
-		if ((CurCaptureCount != 0) || (SurCond == Always)) // Если захватили точки, или стоит опция захватывать всегда.
-		#else
-		if (CurCaptureCount != 0) // Если захватили точки.
-		#endif
-		{
-			for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
-			{
-				ClearTag(*i);
-				// Добавляем в список изменений точки цепочки.
-				Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
-				// Помечаем точки цепочки.
-				SetBaseBound(*i);
-			}
-
-			for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
-			{
-				ClearTag(*i);
-
-				Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
-
-				SetCaptureFreeState(*i, Player);
-			}
-		}
-		else // Если ничего не захватили.
-		{
-			for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
-				ClearTag(*i);
-
-			for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
-			{
-				ClearTag(*i);
-
-				Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
-
-				if (!IsPutted(*i))
-					SetEmptyBase(*i);
-			}
-		}
-
-	}
-
-	inline void UpdateHash(short Player, short Surrounded, uint Pos)
-	{
-		Hash ^= GetZobristHash(Player, Surrounded, Pos);
-	}
-
-	inline const IntersectionState GetIntersectionState(const uint Pos, const uint NextPos)
-	{
-		Point a, b;
-		ConvertToXY(Pos, a);
-		ConvertToXY(NextPos, b);
-
-		if (b.X <= a.X)
-			switch (b.Y - a.Y)
-			{
-			case (1):
-				return ISUp;
-			case (0):
-				return ISTarget;
-			case (-1):
-				return ISDown;
-			default:
-				return ISNone;
-			}
-		else
-			return ISNone;
-	}
+	void FindSurround(list<uint> &Chain, uint InsidePoint, short Player);
+	inline void UpdateHash(short Player, short Surrounded, uint Pos);
+	inline const IntersectionState GetIntersectionState(const uint Pos, const uint NextPos);
 
 public:
 	// Конструктор.
@@ -375,10 +241,6 @@ public:
 		}
 		return false;
 	}
-	inline bool DoStep(const Point point)
-	{
-		return DoStep(ConvertToPos(point));
-	}
 	// Поставить точку на поле.
 	inline bool DoStep(const uint Pos, const short Player)
 	{
@@ -388,10 +250,6 @@ public:
 			return true;
 		}
 		return false;
-	}
-	inline bool DoStep(const Point point, const short Player)
-	{
-		return DoStep(ConvertToPos(point), Player);
 	}
 	// Поставить точку на поле максимально быстро (без дополнительных проверок).
 	inline void DoUnsafeStep(const uint Pos)
@@ -413,10 +271,6 @@ public:
 
 		SetNextPlayer();
 	}
-	inline void DoUnsafeStep(const Point point)
-	{
-		DoStep(UnsafeConvertToPos(point));
-	}
 	// Поставить точку на поле следующего по очереди игрока максимально быстро (без дополнительных проверок).
 	inline void DoUnsafeStep(const uint Pos, const short Player)
 	{
@@ -434,10 +288,6 @@ public:
 		PointsSeq.push_back(Pos);
 
 		CheckClosure(Pos, Player);
-	}
-	inline void DoUnsafeStep(const Point point, const short Player)
-	{
-		DoStep(UnsafeConvertToPos(point), Player);
 	}
 
 	// Делает ход и проверяет на окруженность только точку CheckedPos.
@@ -707,9 +557,15 @@ public:
 			InpPointsCount = GetInputPoints(StartPos, Player | PutBit, InpChainPoints, InpSurPoints);
 			if (InpPointsCount > 1)
 			{
+				ushort ChainsCount = 0;
 				for (ushort i = 0; i < InpPointsCount; i++)
 					if (BuildChain(StartPos, GetPlayer(StartPos) | PutBit, InpChainPoints[i], Chain))
+					{
 						FindSurround(Chain, InpSurPoints[i], Player);
+						ChainsCount++;
+						if (ChainsCount == InpPointsCount - 1)
+							break;
+					}
 			}
 		}
 	}
@@ -719,8 +575,7 @@ public:
 	{
 		uint InpChainPoints[4], InpSurPoints[4];
 
-		list<uint> Chains[4];
-		uint InsidePoints[4];
+		list<uint> Chain;
 
 		// Цвет игрока, точка которого проверяется.
 		short Player = GetPlayer(StartPos);
@@ -728,28 +583,19 @@ public:
 		ushort InpPointsCount = GetInputPoints(StartPos, Player | PutBit, InpChainPoints, InpSurPoints);
 		if (InpPointsCount > 1)
 		{
-			ushort ChainsCount = 0;
 			for (ushort i = 0; i < InpPointsCount; i++)
-				if (BuildChain(StartPos, GetPlayer(StartPos) | PutBit, InpChainPoints[i], Chains[ChainsCount]))
-				{
-					InsidePoints[ChainsCount] = InpSurPoints[i];
-					ChainsCount++;
-
-					if (ChainsCount == InpPointsCount - 1)
-						break;
-				}
-			for (ushort i = 0; i < ChainsCount; i++)
-				if (PointInsideRing(CheckedPos, Chains[i]))
-				{
-					for (list<uint>::const_iterator j = Chains[i].begin(); j != Chains[i].end(); j++)
+				if (BuildChain(StartPos, GetPlayer(StartPos) | PutBit, InpChainPoints[i], Chain))
+					if (PointInsideRing(CheckedPos, Chain))
 					{
-						// Добавляем в список изменений точки цепочки.
-						Changes.back().Changes.push(Pair<uint, ushort>(*j, Points[*j]));
-						// Помечаем точки цепочки.
-						SetBaseBound(*j);
+						for (list<uint>::const_iterator j = Chain.begin(); j != Chain.end(); j++)
+						{
+							// Добавляем в список изменений точки цепочки.
+							Changes.back().Changes.push(Pair<uint, ushort>(*j, Points[*j]));
+							// Помечаем точки цепочки.
+							SetBaseBound(*j);
+						}
+						return true;
 					}
-					return true;
-				}
 		}
 
 		return false;
@@ -760,6 +606,7 @@ public:
 		return Hash;
 	}
 };
+
 
 inline int Field::Square(const uint Pos1, const uint Pos2)
 {
@@ -919,4 +766,71 @@ inline void Field::SetCaptureFreeState(const uint Pos, const short Player)
 	}
 	else
 		Capture(Pos);
+}
+
+inline void Field::Wave(uint StartPos, function<bool(int)> Condition, function<void(uint)> Action)
+{
+	// Очередь для волнового алгоритма (обхода в ширину).
+	list<uint> q;
+	list<uint>::const_iterator it;
+
+	q.push_back(StartPos);
+	SetTag(StartPos);
+	it = q.begin();
+	while (it != q.end())
+	{
+		Action(*it);
+
+		if (Condition(*it - 1) && !IsTagged(*it - 1))
+		{
+			q.push_back(*it - 1);
+			SetTag(*it - 1);
+		}
+		if (Condition(*it - FieldWidth2) && !IsTagged(*it - FieldWidth2))
+		{
+			q.push_back(*it - FieldWidth2);
+			SetTag(*it - FieldWidth2);
+		}
+		if (Condition(*it + 1) && !IsTagged(*it + 1))
+		{
+			q.push_back(*it + 1);
+			SetTag(*it + 1);
+		}
+		if (Condition(*it + FieldWidth2) && !IsTagged(*it + FieldWidth2))
+		{
+			q.push_back(*it + FieldWidth2);
+			SetTag(*it + FieldWidth2);
+		}
+		it++;
+	}
+
+	for (it = q.begin(); it != q.end(); it++)
+		ClearTag(*it);
+}
+
+inline void Field::UpdateHash(short Player, short Surrounded, uint Pos)
+{
+	Hash ^= GetZobristHash(Player, Surrounded, Pos);
+}
+
+inline const IntersectionState Field::GetIntersectionState(const uint Pos, const uint NextPos)
+{
+	Point a, b;
+	ConvertToXY(Pos, a);
+	ConvertToXY(NextPos, b);
+
+	if (b.X <= a.X)
+		switch (b.Y - a.Y)
+	{
+		case (1):
+			return ISUp;
+		case (0):
+			return ISTarget;
+		case (-1):
+			return ISDown;
+		default:
+			return ISNone;
+	}
+	else
+		return ISNone;
 }
