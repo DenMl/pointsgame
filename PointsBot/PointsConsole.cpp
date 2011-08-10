@@ -12,37 +12,38 @@ using namespace std;
 
 Field *MainField;
 
-const p_int min_MinMaxDepth = 0;
-const p_int max_MinMaxDepth = 8;
-const p_int min_UCTIterations = 0;
-const p_int max_UCTIterations = 100000;
-const p_int min_P = 0;
-const p_int max_P = 100;
+const uint min_MinMaxDepth = 0;
+const uint max_MinMaxDepth = 8;
+const ulong min_UCTIterations = 0;
+const ulong max_UCTIterations = 100000;
+const ulong min_P = 0;
+const ulong max_P = 100;
 
-inline p_int GetMinMaxDepth(p_int P)
+inline uint GetMinMaxDepth(ulong P)
 {
 	return (P - min_P) * (max_MinMaxDepth - min_MinMaxDepth) / (max_P - min_P) + min_MinMaxDepth;
 }
 
-inline p_int GetUCTIterations(p_int P)
+inline ulong GetUCTIterations(ulong P)
 {
 	return (P - min_P) * (max_UCTIterations - min_UCTIterations) / (max_P - min_P) + min_UCTIterations;
 }
 
 void boardsize(int id)
 {
-	p_int X, Y;
+	ushort X, Y;
 	cin >> X >> Y;
 	if (MainField != NULL)
-		MainField->Initialize(X, Y, Field::Standart, Field::CleanPattern);
-	else
-		MainField = new Field(X, Y, Field::Standart, Field::CleanPattern);
+		delete MainField;
+	MainField = new Field(X, Y, Standart, CleanPattern);
 	cout << "=" << " " << id << " " << "boardsize" << endl;
 }
 
 void genmove(int id)
 {
-	p_int X, Y, color, pos;
+	ushort X, Y;
+	short color;
+	uint pos;
 	cin >> color;
 	if (MainField == NULL)
 	{
@@ -52,6 +53,11 @@ void genmove(int id)
 	{
 		MainField->SetCurrentPlayer(color);
 		pos = SearchBestMove(*MainField, 8, 100000);
+		if (pos == -1)
+		{
+			cout << "?" << " " << id << " " << "genmove" << endl;
+			return;
+		}
 		MainField->DoStep(pos);
 		MainField->ConvertToXY(pos, X, Y);
 		cout << "=" << " " << id << " " << "genmove" << " " << X << " " << Y << " " << color << endl;
@@ -70,7 +76,8 @@ void name(int id)
 
 void play(int id)
 {
-	p_int X, Y, color;
+	ushort X, Y;
+	short color;
 	cin >> X >> Y >> color;
 	if (MainField == NULL || !MainField->DoStep(MainField->ConvertToPos(X, Y), color))
 		cout << "?" << " " << id << " " << "play" << endl;
@@ -86,7 +93,9 @@ void quit(int id)
 
 void reg_genmove(int id)
 {
-	p_int X, Y, color;
+	ushort X, Y;
+	short color;
+	uint pos;
 	cin >> color;
 	if (MainField == NULL)
 	{
@@ -95,14 +104,23 @@ void reg_genmove(int id)
 	else
 	{
 		MainField->SetCurrentPlayer(color);
-		MainField->ConvertToXY(SearchBestMove(*MainField, 8, 100000), X, Y);
+		pos = SearchBestMove(*MainField, 8, 100000);
+		if (pos == -1)
+		{
+			cout << "?" << " " << id << " " << "reg_genmove" << endl;
+			return;
+		}
+		MainField->ConvertToXY(pos, X, Y);
 		cout << "=" << " " << id << " " << "reg_genmove" << " " << X << " " << Y << " " << color << endl;
 	}
 }
 
 void reg_genmove_with_complexity(int id)
 {
-	p_int X, Y, color, P;
+	ushort X, Y;
+	short color;
+	uint pos;
+	ulong P;
 	cin >> color >> P;
 	if (MainField == NULL)
 	{
@@ -111,14 +129,23 @@ void reg_genmove_with_complexity(int id)
 	else
 	{
 		MainField->SetCurrentPlayer(color);
-		MainField->ConvertToXY(SearchBestMove(*MainField, GetMinMaxDepth(P), GetUCTIterations(P)), X, Y);
+		pos = SearchBestMove(*MainField, GetMinMaxDepth(P), GetUCTIterations(P));
+		if (pos == -1)
+		{
+			cout << "?" << " " << id << " " << "reg_genmove_with_complexity" << endl;
+			return;
+		}
+		MainField->ConvertToXY(pos, X, Y);
 		cout << "=" << " " << id << " " << "reg_genmove_with_complexity" << " " << X << " " << Y << " " << color << endl;
 	}
 }
 
 void reg_genmove_with_time(int id)
 {
-	p_int X, Y, color, time;
+	ushort X, Y;
+	short color;
+	uint pos;
+	ulong time;
 	cin >> color >> time;
 	if (MainField == NULL)
 	{
@@ -127,14 +154,20 @@ void reg_genmove_with_time(int id)
 	else
 	{
 		MainField->SetCurrentPlayer(color);
-		MainField->ConvertToXY(SearchBestMoveWithTime(*MainField, time), X, Y);
+		pos = SearchBestMoveWithTime(*MainField, time);
+		if (pos == -1)
+		{
+			cout << "?" << " " << id << " " << "reg_genmove_with_time" << endl;
+			return;
+		}
+		MainField->ConvertToXY(pos, X, Y);
 		cout << "=" << " " << id << " " << "reg_genmove_with_time" << " " << X << " " << Y << " " << color << endl;
 	}
 }
 
 void undo(int id)
 {
-	if (MainField == NULL || MainField->PointsSeq.Count == 0)
+	if (MainField == NULL || MainField->PointsSeq.size() == 0)
 	{
 		cout << "?" << " " << id << " " << "undo" << endl;
 	}
