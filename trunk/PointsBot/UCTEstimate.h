@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include "Field.h"
+#include <vector>
 
 const double UCTK = 1;
 // Радиус, внутри которого происходит анализ.

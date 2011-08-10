@@ -29,6 +29,14 @@ enum BeginPattern
 	SquarePattern
 };
 
+enum IntersectionState
+{
+	ISNone,
+	ISUp,
+	ISDown,
+	ISTarget
+};
+
 template<typename T1, typename T2> struct Pair
 {
 	T1 first;

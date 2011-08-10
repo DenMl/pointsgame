@@ -198,6 +198,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="MinMaxEstimate.cpp" />
     <ClCompile Include="PointsBot.cpp" />
     <ClCompile Include="PositionEstimate.cpp" />

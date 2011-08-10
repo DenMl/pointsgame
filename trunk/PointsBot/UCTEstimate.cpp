@@ -109,7 +109,7 @@ short PlaySimulation(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
 		if (next == NULL)
 		{
 			n.Visits = ULONG_MAX;
-			if (CurrentField.CaptureCount[CurrentField.EnemyPlayer] > CurrentField.CaptureCount[CurrentField.CurPlayer])
+			if (CurrentField.CaptureCount[NextPlayer(CurrentField.CurPlayer)] > CurrentField.CaptureCount[CurrentField.CurPlayer])
 				n.Wins = ULONG_MAX;
 
 			if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
@@ -128,7 +128,7 @@ short PlaySimulation(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
 	}
 
 	n.Visits++;
-	if (randomresult == CurrentField.EnemyPlayer)
+	if (randomresult == NextPlayer(CurrentField.CurPlayer))
 		n.Wins++;
 
 	return randomresult;

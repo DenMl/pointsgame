@@ -1,5 +1,6 @@
 #pragma once
-#include "BasicTypes.h"
+
+#include "Config.h"
 
 // Значение бита первого игрока.
 static const short PlayerRed = 0x0;

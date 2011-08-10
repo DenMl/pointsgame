@@ -66,7 +66,7 @@ int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 	}
 
 	if (Depth > 1)
-		Trajectories[CurField.EnemyPlayer].BuildEnemyTrajectories(CurField, LastEnemyTrajectories, Pos, Depth / 2);
+		Trajectories[NextPlayer(CurField.CurPlayer)].BuildEnemyTrajectories(CurField, LastEnemyTrajectories, Pos, Depth / 2);
 	Trajectories[CurField.CurPlayer].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.CurPlayer);
 	//Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	
@@ -75,7 +75,7 @@ int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 
 	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
 	{
-		int CurEstimate = Negamax(CurField, TrajectoriesBoard, Depth - 1, *i, Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], -beta, -alpha);
+		int CurEstimate = Negamax(CurField, TrajectoriesBoard, Depth - 1, *i, Trajectories[CurField.CurPlayer], Trajectories[NextPlayer(CurField.CurPlayer)], -beta, -alpha);
 		if (CurEstimate > BestEstimate)
 		{
 			BestEstimate = CurEstimate;
@@ -110,20 +110,18 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 	#pragma omp parallel
 	{
 		int MaxEstimate = INT_MIN + 1, CurEstimate;
-		Field *LocalField = new Field(CurField);
+		Field LocalField(CurField);
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
 		for (uint i = 0; i < Moves.size(); i++)
 		{
-			CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth, Moves[i], EnemyTrajectories, CurrentTrajectories, INT_MIN + 1, -alpha);
+			CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth, Moves[i], EnemyTrajectories, CurrentTrajectories, INT_MIN + 1, -alpha);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
 			if (CurEstimate > MaxEstimate)
 				MaxEstimate = CurEstimate;
 		}
-
-		delete LocalField;
 
 		omp_set_lock(&lock);
 		if (MaxEstimate > Result)
@@ -160,7 +158,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 	Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	// Строим траектории противника.
 	if (Depth > 1)
-		Trajectories[CurField.EnemyPlayer].BuildTrajectories(CurField, Depth / 2, CurField.EnemyPlayer);
+		Trajectories[NextPlayer(CurField.CurPlayer)].BuildTrajectories(CurField, Depth / 2, NextPlayer(CurField.CurPlayer));
 	// Получаем ходы из траекторий (которые имеет смысл рассматривать), и находим пересечение со входными возможными точками.
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, PossibleMoves);
 	for (vector<uint>::const_iterator i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
@@ -170,26 +168,24 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 	if (FirstMoves.size() == 0)
 		return 0;
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
-	int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.CurPlayer], Trajectories[CurField.EnemyPlayer], TrajectoriesBoard, Depth);
+	int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.CurPlayer], Trajectories[NextPlayer(CurField.CurPlayer)], TrajectoriesBoard, Depth);
 	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
 		ScoreBoard[*i] = EnemyEstimate;
 
 	int alpha = INT_MIN + 2;
 	#pragma omp parallel
 	{
-		Field* LocalField = new Field(CurField);
+		Field LocalField(CurField);
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
 		for (uint i = 0; i < FirstMoves.size(); i++)
 		{
-			int CurEstimate = Negamax(*LocalField, TrajectoriesBoard, Depth - 1, FirstMoves[i], Trajectories[LocalField->CurPlayer], Trajectories[LocalField->EnemyPlayer], INT_MIN + 1, -alpha + 1);
+			int CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth - 1, FirstMoves[i], Trajectories[LocalField.CurPlayer], Trajectories[NextPlayer(LocalField.CurPlayer)], INT_MIN + 1, -alpha + 1);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
 			ScoreBoard[FirstMoves[i]] = CurEstimate;
 		}
-
-		delete LocalField;
 	}
 
 	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
