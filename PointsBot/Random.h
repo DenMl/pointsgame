@@ -3,7 +3,7 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include <random>
-#include <limits>
+#include <climits>
 
 #if WINDOWS
 #include <Windows.h>
