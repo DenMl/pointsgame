@@ -1,4 +1,6 @@
 #pragma once
+
+#include "Config.h"
 #include "Field.h"
 
 #define DLLEXPORT extern "C" __declspec(dllexport)
