@@ -34,43 +34,16 @@ void Field::PlaceBeginPattern()
 
 void Field::RemoveEmptyBase(const uint StartPos)
 {
-	queue<uint> q;
-
-	q.push(StartPos);
-	ClearEmptyBase(StartPos);
-
-	while (!q.empty())
-	{
-		if (IsInEmptyBase(q.front() - 1))
-		{
-			q.push(q.front() - 1);
-			Changes.back().Changes.push(Pair<uint, ushort>(q.front() - 1, Points[q.front() - 1]));
-			ClearEmptyBase(q.front() - 1);
-		}
-
-		if (IsInEmptyBase(q.front() - FieldWidth2))
-		{
-			q.push(q.front() - FieldWidth2);
-			Changes.back().Changes.push(Pair<uint, ushort>(q.front() - FieldWidth2, Points[q.front() - FieldWidth2]));
-			ClearEmptyBase(q.front() - FieldWidth2);
-		}
-
-		if (IsInEmptyBase(q.front() + 1))
-		{
-			q.push(q.front() + 1);
-			Changes.back().Changes.push(Pair<uint, ushort>(q.front() + 1, Points[q.front() + 1]));
-			ClearEmptyBase(q.front() + 1);
-		}
-
-		if (IsInEmptyBase(q.front() + FieldWidth2))
-		{
-			q.push(q.front() + FieldWidth2);
-			Changes.back().Changes.push(Pair<uint, ushort>(q.front() + FieldWidth2, Points[q.front() + FieldWidth2]));
-			ClearEmptyBase(q.front() + FieldWidth2);
-		}
-
-		q.pop();
-	}
+	Wave(	StartPos,
+			[&](uint Pos)
+			{
+				return IsInEmptyBase(Pos);
+			},
+			[&](uint Pos)
+			{
+				Changes.back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos] & !TagBit));
+				ClearEmptyBase(Pos);
+			});
 }
 
 bool Field::BuildChain(const uint StartPos, short EnableCond, const uint DirectionPos, list<uint> &Chain)
