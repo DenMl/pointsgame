@@ -237,7 +237,16 @@ private:
 		for (list<uint>::iterator i = Chain.begin(); i != Chain.end(); i++)
 			SetTag(*i);
 
-		Wave(InsidePoint, [=, &SurPoints, &CurCaptureCount, &CurFreedCount](uint Pos){ return IsNotBound(Pos, Player | PutBit | BoundBit); }, [&](uint Pos){ CheckCapturedAndFreed(Pos, Player, CurCaptureCount, CurFreedCount); SurPoints.push_back(Pos); });
+		Wave(	InsidePoint,
+				[&, Player](uint Pos)
+				{
+					return IsNotBound(Pos, Player | PutBit | BoundBit);
+				},
+				[&, Player](uint Pos)
+				{
+					CheckCapturedAndFreed(Pos, Player, CurCaptureCount, CurFreedCount);
+					SurPoints.push_back(Pos);
+				});
 		// Изменение счета игроков.
 		AddSubCapturedFreed(Player, CurCaptureCount, CurFreedCount);
 		DCaptureCount += CurCaptureCount;
