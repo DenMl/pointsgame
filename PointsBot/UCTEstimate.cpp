@@ -6,32 +6,34 @@
 #include "Time.h"
 #include <limits>
 #include <queue>
+#include <vector>
+#include <list>
+#include <algorithm>
 #include <omp.h>
 
 #if DEBUG
 #include <assert.h>
 #endif
 
-inline short PlayRandomGame(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves)
+inline short PlayRandomGame(Field &CurrentField, vector<uint> &PossibleMoves)
 {
-	GameStack<uint, MAX_CHAIN_POINTS> Moves;
+	vector<uint> Moves;
 	uint Putted = 0;
 	short result;
 
-	Moves.Count = PossibleMoves.Count;
-
-	Moves.Stack[0] = PossibleMoves.Stack[0];
-	for (uint i = 1; i < PossibleMoves.Count; i++)
+	Moves.reserve(PossibleMoves.size());
+	Moves[0] = PossibleMoves[0];
+	for (uint i = 1; i < PossibleMoves.size(); i++)
 	{
 		uint j = rand() % (i + 1);
-		Moves.Stack[i] = Moves.Stack[j];
-		Moves.Stack[j] = PossibleMoves.Stack[i];
+		Moves[i] = Moves[j];
+		Moves[j] = PossibleMoves[j];
 	}
 
-	for (uint i = 0; i < Moves.Count; i++)
-		if (CurrentField.PuttingAllow(Moves.Stack[i]))
+	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+		if (CurrentField.PuttingAllow(*i))
 		{
-			CurrentField.DoUnsafeStep(Moves.Stack[i]);
+			CurrentField.DoUnsafeStep(*i);
 			Putted++;
 		}
 
@@ -48,15 +50,15 @@ inline short PlayRandomGame(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINT
 	return result;
 }
 
-inline void CreateChildren(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+inline void CreateChildren(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
 {
 	Node **CurrentChild = &n.Child;
 
-	for (uint i = 0; i < PossibleMoves.Count; i++)
-		if (CurrentField.PuttingAllow(PossibleMoves.Stack[i]))
+	for (vector<uint>::iterator i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
+		if (CurrentField.PuttingAllow(*i))
 		{
 			*CurrentChild = new Node();
-			(*CurrentChild)->Move = PossibleMoves.Stack[i];
+			(*CurrentChild)->Move = *i;
 			CurrentChild = &(*CurrentChild)->Sibling;
 		}
 }
@@ -89,7 +91,7 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-short PlaySimulation(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+short PlaySimulation(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
 {
 	short randomresult;
 
@@ -132,20 +134,20 @@ short PlaySimulation(Field &CurrentField, GameStack<uint, MAX_CHAIN_POINTS> &Pos
 	return randomresult;
 }
 
-inline void GeneratePossibleMoves(Field &CurField, GameStack<uint, MAX_CHAIN_POINTS> &PossibleMoves)
+inline void GeneratePossibleMoves(Field &CurField, vector<uint> &PossibleMoves)
 {
 	ushort TempField[PointsLength22] = {0};
 	std::queue<uint> q;
 
-	PossibleMoves.Clear();
+	PossibleMoves.clear();
 	for (uint i = CurField.MinPos; i <= CurField.MaxPos; i++)
-		if (CurField.IsPutted(i)) //TODO: Классть соседей, а не сами точки.
+		if (CurField.IsPutted(i)) //TODO: Класть соседей, а не сами точки.
 			q.push(i);
 
 	while (!q.empty())
 	{
 		if (CurField.PuttingAllow(q.front())) //TODO: Убрать условие.
-			PossibleMoves.Push(q.front());
+			PossibleMoves.push_back(q.front());
 		if (TempField[q.front()] < UCTRadius)
 		{
 			if (CurField.PuttingAllow(q.front() - FieldWidth2 - 1) && TempField[q.front() - FieldWidth2 - 1] == 0)
@@ -208,19 +210,22 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimate(Field &MainField, ulong MaxSimulations, vector<uint> &Moves)
 {
 	// Список всех возможных ходов для UCT.
-	GameStack<uint, MAX_CHAIN_POINTS> PossibleMoves;
+	vector<uint> PossibleMoves;
+	vector<uint> FirstMoves;
 	double BestEstimate = -1;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
-	Moves.Intersect(PossibleMoves);
+	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+		if (find(PossibleMoves.begin(), PossibleMoves.end(), *i) != PossibleMoves.end())
+			FirstMoves.push_back(*i);
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > Moves.Count)
-		omp_set_num_threads(Moves.Count);
+	if (omp_get_max_threads() > Moves.size())
+		omp_set_num_threads(Moves.size());
 	#pragma omp parallel
 	{
 		Node n;
@@ -232,10 +237,10 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_C
 #endif
 
 		Node **CurChild = &n.Child;
-		for (uint i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
+		for (vector<uint>::const_iterator i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
-			(*CurChild)->Move = Moves.Stack[i];
+			(*CurChild)->Move = *i;
 			CurChild = &(*CurChild)->Sibling;
 		}
 
@@ -250,12 +255,12 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_C
 			if (CurEstimate > BestEstimate)
 			{
 				BestEstimate = CurEstimate;
-				Moves.Clear();
-				Moves.Push(next->Move);
+				Moves.clear();
+				Moves.push_back(next->Move);
 			}
 			else if (CurEstimate == BestEstimate)
 			{
-				Moves.Push(next->Move);
+				Moves.push_back(next->Move);
 			}
 			next = next->Sibling;
 		}
@@ -269,20 +274,24 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, GameStack<uint, MAX_C
 	return BestEstimate;
 }
 
-double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimateWithTime(Field &MainField, ulong Time, vector<uint> &Moves)
 {
 	// Список всех возможных ходов для UCT.
-	GameStack<uint, MAX_CHAIN_POINTS> PossibleMoves;
+	vector<uint> PossibleMoves;
+	vector<uint> FirstMoves;
 	double BestEstimate = -1;
 	Timer t;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
-	Moves.Intersect(PossibleMoves);
+
+	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+		if (find(PossibleMoves.begin(), PossibleMoves.end(), *i) != PossibleMoves.end())
+			FirstMoves.push_back(*i);
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > Moves.Count)
-		omp_set_num_threads(Moves.Count);
+	if (omp_get_max_threads() > Moves.size())
+		omp_set_num_threads(Moves.size());
 #pragma omp parallel
 	{
 		Node n;
@@ -294,10 +303,10 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHA
 #endif
 
 		Node **CurChild = &n.Child;
-		for (uint i = omp_get_thread_num(); i < Moves.Count; i += omp_get_num_threads())
+		for (vector<uint>::const_iterator i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
-			(*CurChild)->Move = Moves.Stack[i];
+			(*CurChild)->Move = *i;
 			CurChild = &(*CurChild)->Sibling;
 		}
 
@@ -313,12 +322,12 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, GameStack<uint, MAX_CHA
 			if (CurEstimate > BestEstimate)
 			{
 				BestEstimate = CurEstimate;
-				Moves.Clear();
-				Moves.Push(next->Move);
+				Moves.clear();
+				Moves.push_back(next->Move);
 			}
 			else if (CurEstimate == BestEstimate)
 			{
-				Moves.Push(next->Move);
+				Moves.push_back(next->Move);
 			}
 			next = next->Sibling;
 		}

@@ -171,7 +171,6 @@
     <ClInclude Include="BotEngine.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Field.h" />
-    <ClInclude Include="GameStack.h" />
     <ClInclude Include="MinMaxEstimate.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointsBot.h" />
