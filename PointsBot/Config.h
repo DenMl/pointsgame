@@ -17,3 +17,5 @@
 
 // 1, если компил€ци€ происходит дл€ Linux.
 #define LINUX 0
+
+using namespace std;

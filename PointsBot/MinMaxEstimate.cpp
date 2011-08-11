@@ -2,13 +2,12 @@
 #include "MinMaxEstimate.h"
 #include "Field.h"
 #include "TrajectoryList.h"
+#include "static_vector.h"
 #include <omp.h>
 #include <algorithm>
-#include <vector>
+#include <climits>
 
-using namespace std;
-
-inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], vector<uint> &Moves)
+inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	Trajectories1.ExcludeCompositeTrajectories();
 	Trajectories2.ExcludeCompositeTrajectories();
@@ -70,10 +69,10 @@ int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 	Trajectories[CurField.CurPlayer].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.CurPlayer);
 	//Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	
-	vector<uint> Moves;
+	static_vector<uint, MAX_CHAIN_POINTS> Moves;
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, Moves);
 
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 	{
 		int CurEstimate = Negamax(CurField, TrajectoriesBoard, Depth - 1, *i, Trajectories[CurField.CurPlayer], Trajectories[NextPlayer(CurField.CurPlayer)], -beta, -alpha);
 		if (CurEstimate > BestEstimate)
@@ -96,7 +95,7 @@ int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, uint TrajectoriesBoard[], uint Depth)
 {
 	TrajectoryList TempTrajectories;
-	vector<uint> Moves;
+	static_vector<uint, MAX_CHAIN_POINTS> Moves;
 	int Result = INT_MIN + 1;
 
 	TempTrajectories.BuildEnemyTrajectories(CurField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
@@ -139,7 +138,7 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 // CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
 // Moves - на входе возможные ходы, на выходе лучшие из них.
-int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
+int MinMaxEstimate(Field &CurField, uint Depth, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Минимально и максимально возможная оценка.
 	int BestEstimate = INT_MIN + 1;
@@ -147,7 +146,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 	TrajectoryList Trajectories[2];
 	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
 	uint TrajectoriesBoard[PointsLength22] = {0};
-	vector<uint> BestMoves, PossibleMoves, FirstMoves;
+	static_vector<uint, MAX_CHAIN_POINTS> BestMoves, PossibleMoves, FirstMoves;
 	// Доска с оценками ходов.
 	int ScoreBoard[PointsLength22];
 
@@ -161,7 +160,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 		Trajectories[NextPlayer(CurField.CurPlayer)].BuildTrajectories(CurField, Depth / 2, NextPlayer(CurField.CurPlayer));
 	// Получаем ходы из траекторий (которые имеет смысл рассматривать), и находим пересечение со входными возможными точками.
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, PossibleMoves);
-	for (vector<uint>::const_iterator i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
+	for (auto i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
 		if (find(Moves.begin(), Moves.end(), *i) != Moves.end())
 			FirstMoves.push_back(*i);
 	// Если нет возможных ходов, входящих в траектории - выходим.
@@ -169,7 +168,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 		return 0;
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
 	int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.CurPlayer], Trajectories[NextPlayer(CurField.CurPlayer)], TrajectoriesBoard, Depth);
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 		ScoreBoard[*i] = EnemyEstimate;
 
 	int alpha = INT_MIN + 2;
@@ -188,7 +187,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, vector<uint> &Moves)
 		}
 	}
 
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 		if (ScoreBoard[*i] > BestEstimate)
 		{
 			BestEstimate = ScoreBoard[*i];

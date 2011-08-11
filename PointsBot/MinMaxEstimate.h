@@ -3,6 +3,6 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include "Field.h"
-#include <vector>
+#include "static_vector.h"
 
-int MinMaxEstimate(Field &MainField, uint Depth, vector<uint> &Moves);
+int MinMaxEstimate(Field &MainField, uint Depth, static_vector<uint, MAX_CHAIN_POINTS> &Moves);

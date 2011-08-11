@@ -3,10 +3,9 @@
 #include "AuxFunc.h"
 #include "Player.h"
 #include "Field.h"
+#include "static_vector.h"
 #include <list>
 #include <climits>
-
-using namespace std;
 
 // Учет позиционных эвристик.
 short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
@@ -27,11 +26,11 @@ short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 	return Result;
 }
 
-void PositionEstimate(Field &MainField, vector<uint> &Moves)
+void PositionEstimate(Field &MainField, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	short BestScore = SHRT_MIN;
-	vector<uint> BestMoves;
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	static_vector<uint, MAX_CHAIN_POINTS> BestMoves;
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 	{
 		short TempScore = PositionEstimate(MainField, *i, MainField.CurPlayer);
 		if (TempScore > BestScore)

@@ -4,10 +4,9 @@
 #include "Field.h"
 #include "Random.h"
 #include "Time.h"
+#include "static_vector.h"
 #include <climits>
 #include <queue>
-#include <vector>
-#include <list>
 #include <algorithm>
 #include <omp.h>
 
@@ -15,13 +14,13 @@
 #include <assert.h>
 #endif
 
-inline short PlayRandomGame(Field &CurrentField, vector<uint> &PossibleMoves)
+inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves)
 {
-	vector<uint> Moves;
+	static_vector<uint, MAX_CHAIN_POINTS> Moves;
 	uint Putted = 0;
 	short result;
 
-	Moves.reserve(PossibleMoves.size());
+	Moves.fast_resize(PossibleMoves.size());
 	Moves[0] = PossibleMoves[0];
 	for (uint i = 1; i < PossibleMoves.size(); i++)
 	{
@@ -30,7 +29,7 @@ inline short PlayRandomGame(Field &CurrentField, vector<uint> &PossibleMoves)
 		Moves[j] = PossibleMoves[j];
 	}
 
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 		if (CurrentField.PuttingAllow(*i))
 		{
 			CurrentField.DoUnsafeStep(*i);
@@ -50,11 +49,11 @@ inline short PlayRandomGame(Field &CurrentField, vector<uint> &PossibleMoves)
 	return result;
 }
 
-inline void CreateChildren(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
+inline void CreateChildren(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	Node **CurrentChild = &n.Child;
 
-	for (vector<uint>::iterator i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
+	for (auto i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
 		if (CurrentField.PuttingAllow(*i))
 		{
 			*CurrentChild = new Node();
@@ -91,7 +90,7 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-short PlaySimulation(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
+short PlaySimulation(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	short randomresult;
 
@@ -134,7 +133,7 @@ short PlaySimulation(Field &CurrentField, vector<uint> &PossibleMoves, Node &n)
 	return randomresult;
 }
 
-inline void GeneratePossibleMoves(Field &CurField, vector<uint> &PossibleMoves)
+inline void GeneratePossibleMoves(Field &CurField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	ushort TempField[PointsLength22] = {0};
 	std::queue<uint> q;
@@ -210,15 +209,15 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, vector<uint> &Moves)
+double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
-	vector<uint> PossibleMoves;
-	vector<uint> FirstMoves;
+	static_vector<uint, MAX_CHAIN_POINTS> PossibleMoves;
+	static_vector<uint, MAX_CHAIN_POINTS> FirstMoves;
 	double BestEstimate = -1;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 		if (find(PossibleMoves.begin(), PossibleMoves.end(), *i) != PossibleMoves.end())
 			FirstMoves.push_back(*i);
 
@@ -237,7 +236,7 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, vector<uint> &Moves)
 #endif
 
 		Node **CurChild = &n.Child;
-		for (vector<uint>::const_iterator i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
+		for (auto i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
 			(*CurChild)->Move = *i;
@@ -274,17 +273,17 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, vector<uint> &Moves)
 	return BestEstimate;
 }
 
-double UCTEstimateWithTime(Field &MainField, ulong Time, vector<uint> &Moves)
+double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
-	vector<uint> PossibleMoves;
-	vector<uint> FirstMoves;
+	static_vector<uint, MAX_CHAIN_POINTS> PossibleMoves;
+	static_vector<uint, MAX_CHAIN_POINTS> FirstMoves;
 	double BestEstimate = -1;
 	Timer t;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 
-	for (vector<uint>::const_iterator i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = Moves.begin(); i < Moves.end(); i++)
 		if (find(PossibleMoves.begin(), PossibleMoves.end(), *i) != PossibleMoves.end())
 			FirstMoves.push_back(*i);
 
@@ -303,7 +302,7 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, vector<uint> &Moves)
 #endif
 
 		Node **CurChild = &n.Child;
-		for (vector<uint>::const_iterator i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
+		for (auto i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
 			(*CurChild)->Move = *i;

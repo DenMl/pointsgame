@@ -3,6 +3,6 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include "Field.h"
-#include <vector>
+#include "static_vector.h"
 
-void PositionEstimate(Field &MainField, vector<uint> &Moves);
+void PositionEstimate(Field &MainField, static_vector<uint, MAX_CHAIN_POINTS> &Moves);
