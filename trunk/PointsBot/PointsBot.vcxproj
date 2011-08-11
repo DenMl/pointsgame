@@ -170,6 +170,7 @@
     <ClInclude Include="BasicTypes.h" />
     <ClInclude Include="BotEngine.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="static_vector.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="MinMaxEstimate.h" />
     <ClInclude Include="Player.h" />
