@@ -78,19 +78,19 @@ public:
 	uint Count;
 
 private:
-	inline void AddNewTrajectory(Field &CurrentField, vector<uint>::iterator begin, vector<uint>::iterator end, short Player)
+	inline void AddNewTrajectory(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS>::iterator begin, static_vector<uint, MAX_CHAIN_POINTS>::iterator end, short Player)
 	{
 		ulong TempHash = 0;
 
 		// Ёвристические проверки.
 		//  ажда€ точка траектории должна окружать что-либо и иметь р€дом хот€ бы 2 группы точек.
 		// ≈сли нет - не добавл€ем эту траекторию.
-		for (vector<uint>::iterator i = begin; i < end; i++)
+		for (auto i = begin; i < end; i++)
 			if (!CurrentField.IsBaseBound(*i) || (CurrentField.NumberNearGroups(*i, Player) < 2))
 				return;
 
 		// ¬ысчитываем хеш траектории и сравниваем с уже существующими дл€ исключени€ повторов.
-		for (vector<uint>::iterator i = begin; i < end; i++)
+		for (auto i = begin; i < end; i++)
 			TempHash ^= GetZobristHash(*i);
 		for (uint i = 0; i < Count; i++)
 			if (TempHash == Trajectories[i].Hash)
@@ -101,7 +101,7 @@ private:
 		Trajectories[Count].Hash = TempHash;
 
 		Trajectories[Count].Clear();
-		for (vector<uint>::iterator i = begin; i < end; i++)
+		for (auto i = begin; i < end; i++)
 		{
 			// ƒобавл€ем точку в PointsSeq траектории.
 			Trajectories[Count].Push(*i);
@@ -237,7 +237,7 @@ public:
 		BuildCurrentTrajectoriesRecursive(CurField, Depth - 1, Player, Pos);
 	}
 
-	inline void GetPoints(vector<uint> &Points)
+	inline void GetPoints(static_vector<uint, MAX_CHAIN_POINTS> &Points)
 	{
 		for (uint i = 0; i < Count; i++)
 			if (!Trajectories[i].Excluded)

@@ -8,8 +8,6 @@
 #include <string>
 #include <map>
 
-using namespace std;
-
 Field *MainField;
 
 const uint min_MinMaxDepth = 0;

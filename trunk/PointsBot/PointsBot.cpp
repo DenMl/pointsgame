@@ -3,7 +3,6 @@
 #include "Field.h"
 #include "Config.h"
 #include "BotEngine.h"
-#include <omp.h>
 #include "Random.h"
 
 Field* InitField(ushort FieldWidth, ushort FieldHeight, SurroundCondition SurCond, BeginPattern Pattern)

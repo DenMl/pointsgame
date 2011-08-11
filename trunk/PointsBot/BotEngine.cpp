@@ -6,8 +6,9 @@
 #include "UCTEstimate.h"
 #include "PositionEstimate.h"
 #include "Random.h"
+#include "static_vector.h"
 
-void BuildAllMoves(Field &MainField, vector<uint> &Moves)
+void BuildAllMoves(Field &MainField, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	Moves.clear();
 	for (uint i = MainField.MinPos; i <= MainField.MaxPos; i++)
@@ -17,7 +18,7 @@ void BuildAllMoves(Field &MainField, vector<uint> &Moves)
 
 uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 {
-	vector<uint> Moves;
+	static_vector<uint, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.
@@ -55,7 +56,7 @@ uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 
 uint SearchBestMoveWithTime(Field &MainField, ulong Time)
 {
-	vector<uint> Moves;
+	static_vector<uint, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.

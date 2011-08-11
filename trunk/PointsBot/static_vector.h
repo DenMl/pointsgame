@@ -19,7 +19,7 @@ public:
 
 	static_vector_iterator(const value_type* other)
 	{
-		p = other;
+		p = (value_type*)other;
 	}
 
 	static_vector_iterator(const static_vector_iterator& other)
@@ -190,6 +190,10 @@ public:
 	inline bool empty() const
 	{
 		return _size == 0;
+	}
+	inline void fast_resize(size_type size)
+	{
+		_size = size;
 	}
 	inline void resize(size_type size, const value_type &val = value_type())
 	{

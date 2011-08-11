@@ -46,7 +46,7 @@ void Field::RemoveEmptyBase(const uint StartPos)
 			});
 }
 
-bool Field::BuildChain(const uint StartPos, short EnableCond, const uint DirectionPos, list<uint> &Chain)
+bool Field::BuildChain(const uint StartPos, short EnableCond, const uint DirectionPos, static_vector<uint, MAX_CHAIN_POINTS> &Chain)
 {
 	uint Pos;
 
@@ -79,23 +79,23 @@ bool Field::BuildChain(const uint StartPos, short EnableCond, const uint Directi
 	}
 	while (Pos != StartPos);
 
-	for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+	for (auto i = Chain.begin(); i < Chain.end(); i++)
 		ClearTag(*i);
 
 	return (TempSquare < 0 && Chain.size() > 2);
 }
 
-void Field::FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
+void Field::FindSurround(static_vector<uint, MAX_CHAIN_POINTS> &Chain, uint InsidePoint, short Player)
 {
 	// Количество захваченных точек.
 	int CurCaptureCount = 0;
 	// Количество захваченных пустых полей.
 	int CurFreedCount = 0;
 
-	list<uint> SurPoints;
+	static_vector<uint, MAX_CHAIN_POINTS> SurPoints;
 
 	// Помечаем точки цепочки.
-	for (list<uint>::iterator i = Chain.begin(); i != Chain.end(); i++)
+	for (auto i = Chain.begin(); i < Chain.end(); i++)
 		SetTag(*i);
 
 	Wave(	InsidePoint,
@@ -119,7 +119,7 @@ void Field::FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
 	if (CurCaptureCount != 0) // Если захватили точки.
 #endif
 	{
-		for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+		for (auto i = Chain.begin(); i < Chain.end(); i++)
 		{
 			ClearTag(*i);
 			// Добавляем в список изменений точки цепочки.
@@ -128,7 +128,7 @@ void Field::FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
 			SetBaseBound(*i);
 		}
 
-		for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
+		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
 		{
 			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
 
@@ -137,10 +137,10 @@ void Field::FindSurround(list<uint> &Chain, uint InsidePoint, short Player)
 	}
 	else // Если ничего не захватили.
 	{
-		for (list<uint>::const_iterator i = Chain.begin(); i != Chain.end(); i++)
+		for (auto i = Chain.begin(); i < Chain.end(); i++)
 			ClearTag(*i);
 
-		for (list<uint>::const_iterator i = SurPoints.begin(); i != SurPoints.end(); i++)
+		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
 		{
 			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
 
