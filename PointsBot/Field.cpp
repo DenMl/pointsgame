@@ -46,7 +46,7 @@ void Field::RemoveEmptyBase(const uint StartPos)
 			});
 }
 
-bool Field::BuildChain(const uint StartPos, short EnableCond, const uint DirectionPos, static_vector<uint, MAX_CHAIN_POINTS> &Chain)
+bool Field::BuildChain(const uint StartPos, const short EnableCond, const uint DirectionPos, static_vector<uint, MAX_CHAIN_POINTS> &Chain)
 {
 	uint Pos;
 
