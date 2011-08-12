@@ -1,6 +1,7 @@
 #include "Config.h"
 #include "BasicTypes.h"
 #include "UCTEstimate.h"
+#include "Player.h"
 #include "Field.h"
 #include "Random.h"
 #include "Time.h"
@@ -36,12 +37,12 @@ inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_P
 			Putted++;
 		}
 
-	if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
-		result = 0;
-	else if (CurrentField.CaptureCount[0] < CurrentField.CaptureCount[1])
-		result = 1;
+	if (CurrentField.GetScore(PlayerRed) > 0)
+		return PlayerRed;
+	else if (CurrentField.GetScore(PlayerBlack) > 0)
+		return PlayerBlack;
 	else
-		result = -1;
+		return -1;
 
 	for (uint i = 0; i < Putted; i++)
 		CurrentField.UndoStep();
@@ -71,7 +72,7 @@ inline Node* UCTSelect(Node &n)
 	{
 		if (next->Visits > 0)
 		{
-			winrate = (double)(next->Wins)/next->Visits;
+			winrate = ((double)next->Wins)/next->Visits;
 			uct = UCTK * sqrt(log((double)n.Visits) / (5 * next->Visits));
 			uctvalue = winrate + uct;
 		}
@@ -108,13 +109,13 @@ short PlaySimulation(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> 
 		if (next == NULL)
 		{
 			n.Visits = ULONG_MAX;
-			if (CurrentField.CaptureCount[NextPlayer(CurrentField.CurPlayer)] > CurrentField.CaptureCount[CurrentField.CurPlayer])
+			if (CurrentField.GetScore(NextPlayer(CurrentField.CurPlayer)) > 0)
 				n.Wins = ULONG_MAX;
 
-			if (CurrentField.CaptureCount[0] > CurrentField.CaptureCount[1])
-				return 0;
-			else if (CurrentField.CaptureCount[0] < CurrentField.CaptureCount[1])
-				return 1;
+			if (CurrentField.GetScore(PlayerRed) > 0)
+				return PlayerRed;
+			else if (CurrentField.GetScore(PlayerBlack) > 0)
+				return PlayerBlack;
 			else
 				return -1;
 		}
