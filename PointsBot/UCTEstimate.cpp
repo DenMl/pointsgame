@@ -27,7 +27,7 @@ inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_P
 	{
 		uint j = rand() % (i + 1);
 		Moves[i] = Moves[j];
-		Moves[j] = PossibleMoves[j];
+		Moves[j] = PossibleMoves[i];
 	}
 
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
@@ -38,11 +38,11 @@ inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_P
 		}
 
 	if (CurrentField.GetScore(PlayerRed) > 0)
-		return PlayerRed;
+		result = PlayerRed;
 	else if (CurrentField.GetScore(PlayerBlack) > 0)
-		return PlayerBlack;
+		result = PlayerBlack;
 	else
-		return -1;
+		result = -1;
 
 	for (uint i = 0; i < Putted; i++)
 		CurrentField.UndoStep();
@@ -224,8 +224,8 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<uint, M
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > Moves.size())
-		omp_set_num_threads(Moves.size());
+	if (omp_get_max_threads() > FirstMoves.size())
+		omp_set_num_threads(FirstMoves.size());
 	#pragma omp parallel
 	{
 		Node n;
