@@ -15,7 +15,7 @@ using std::tr1::function;
 class Field
 {
 #pragma region State bits and masks
-	private:
+private:
 
 	// Бит, указывающий номер игрока.
 	static const ushort PlayerBit = 0x1;
@@ -38,34 +38,34 @@ class Field
 #pragma endregion
 
 #pragma region Get and set state functions
-	public:
+public:
 	// Get state functions.
 	// Функции получения состояния.
 
 	// Получить по координате игрока, чья точка там поставлена.
-	inline const short GetPlayer(const uint Pos) { return Points[Pos] & PlayerBit; }
+	inline short GetPlayer(const uint Pos) const { return Points[Pos] & PlayerBit; }
 	// Проверить по координате, поставлена ли там точка.
-	inline const bool IsPutted(const uint Pos) { return (Points[Pos] & PutBit) != 0; }
+	inline bool IsPutted(const uint Pos) const { return (Points[Pos] & PutBit) != 0; }
 	// Прверить по координате, является ли точка окружающей базу.
-	inline const bool IsBaseBound(const uint Pos) { return (Points[Pos] & BoundBit) != 0; }
+	inline bool IsBaseBound(const uint Pos) const { return (Points[Pos] & BoundBit) != 0; }
 	// Проверить по координате, захвачено ли поле.
-	inline const bool IsCaptured(const uint Pos) { return (Points[Pos] & SurBit) != 0; }
+	inline bool IsCaptured(const uint Pos) const { return (Points[Pos] & SurBit) != 0; }
 	// Проверить по координате, лежит ли она в пустой базе.
-	inline const bool IsInEmptyBase(const uint Pos) { return (Points[Pos] & EmptyBaseBit) != 0; }
+	inline bool IsInEmptyBase(const uint Pos) const { return (Points[Pos] & EmptyBaseBit) != 0; }
 	// Проверить по координате, помечено ли поле.
-	inline const bool IsTagged(const uint Pos) { return (Points[Pos] & TagBit) != 0; }
+	inline bool IsTagged(const uint Pos) const { return (Points[Pos] & TagBit) != 0; }
 	// Получить условие по координате.
-	inline const ushort GetEnableCond(const uint Pos) { return Points[Pos] & EnableMask; }
+	inline ushort GetEnableCond(const uint Pos) const { return Points[Pos] & EnableMask; }
 	// Проверка незанятости поля по условию.
-	inline const bool IsEnable(const uint Pos, const ushort EnableCond) { return (Points[Pos] & EnableMask) == EnableCond; }
+	inline bool IsEnable(const uint Pos, const ushort EnableCond) const { return (Points[Pos] & EnableMask) == EnableCond; }
 	// Проверка занятости поля по условию.
-	inline const bool IsNotEnable(const uint Pos, const ushort EnableCond) { return (Points[Pos] & EnableMask) != EnableCond; }
+	inline bool IsNotEnable(const uint Pos, const ushort EnableCond) const { return (Points[Pos] & EnableMask) != EnableCond; }
 	// Проверка на то, захвачено ли поле.
-	inline const bool IsBound(const uint Pos, const ushort BoundCond) { return (Points[Pos] & BoundMask) == BoundCond; }
+	inline bool IsBound(const uint Pos, const ushort BoundCond) const { return (Points[Pos] & BoundMask) == BoundCond; }
 	// Проверка на то, не захвачено ли поле.
-	inline const bool IsNotBound(const uint Pos, const ushort BoundCond) { return (Points[Pos] & BoundMask) != BoundCond; }
+	inline bool IsNotBound(const uint Pos, const ushort BoundCond) const { return (Points[Pos] & BoundMask) != BoundCond; }
 	// Провека на то, возможно ли поставить точку в полке.
-	inline const bool PuttingAllow(const uint Pos) { return !(Points[Pos] & (PutBit | SurBit | BadValue)); }
+	inline bool PuttingAllow(const uint Pos) const { return !(Points[Pos] & (PutBit | SurBit | BadValue)); }
 
 	// Set state functions.
 	// Функции установки состояния.
@@ -96,7 +96,7 @@ class Field
 #pragma endregion
 
 #pragma region MainVariables
-	public:
+public:
 	static_vector<BoardChange, MAX_CHAIN_POINTS> Changes;
 
 	// Main points array (game board).
@@ -157,17 +157,17 @@ private:
 	//  o - center pos
 	//  x - pos
 	//  * - result
-	inline const void GetFirstNextPos(const uint CenterPos, uint &Pos);
+	inline void GetFirstNextPos(const uint CenterPos, uint &Pos) const;
 	//  . . .   * . .   x * .   . x *   . . x   . . .   . . .   . . .
 	//  * o .   x o .   . o .   . o .   . o *   . o x   . o .   . o .
 	//  x . .   . . .   . . .   . . .   . . .   . . *   . * x   * x .
 	//  o - center pos
 	//  x - pos
 	//  * - result
-	inline const void GetNextPos(const uint CenterPos, uint &Pos);
+	inline void GetNextPos(const uint CenterPos, uint &Pos) const;
 	// Возвращает количество групп точек рядом с CenterPos.
 	// InpChainPoints - возможные точки цикла, InpSurPoints - возможные окруженные точки.
-	inline const ushort GetInputPoints(const uint CenterPos, const ushort EnableCond, uint InpChainPoints[], uint InpSurPoints[]);
+	inline ushort GetInputPoints(const uint CenterPos, const ushort EnableCond, uint InpChainPoints[], uint InpSurPoints[]) const;
 	// Поставить начальные точки.
 	void PlaceBeginPattern();
 	// Изменение счета игроков.
@@ -179,10 +179,10 @@ private:
 	inline void Wave(uint StartPos, function<bool(int)> Condition, function<void(uint)> Action);
 	// Удаляет пометку пустой базы с поля точек, начиная с позиции StartPos.
 	void RemoveEmptyBase(const uint StartPos);
-	bool BuildChain(const uint StartPos, short EnableCond, const uint DirectionPos, static_vector<uint, MAX_CHAIN_POINTS> &Chain);
+	bool BuildChain(const uint StartPos, const short EnableCond, const uint DirectionPos, static_vector<uint, MAX_CHAIN_POINTS> &Chain);
 	void FindSurround(static_vector<uint, MAX_CHAIN_POINTS> &Chain, uint InsidePoint, short Player);
 	inline void UpdateHash(short Player, short Surrounded, uint Pos);
-	inline const IntersectionState GetIntersectionState(const uint Pos, const uint NextPos);
+	inline IntersectionState GetIntersectionState(const uint Pos, const uint NextPos) const;
 
 public:
 	// Конструктор.
@@ -190,39 +190,39 @@ public:
 	// Конструктор копирования.
 	Field(const Field &Orig);
 
-	inline const int GetScore(short Player)
+	inline int GetScore(short Player) const
 	{
 		return CaptureCount[Player] - CaptureCount[NextPlayer(Player)];
 	}
 
 	// Функции конвертации координат.
-	inline const uint ConvertToPos(const ushort X, const ushort Y)
+	inline uint ConvertToPos(const ushort X, const ushort Y) const
 	{
 		if ((X < 0) || (X >= FieldWidth) || (Y < 0) || (Y >= FieldHeight))
 			return 0;
 		else
 			return (Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth;
 	}
-	inline const uint ConvertToPos(const Point point)
+	inline uint ConvertToPos(const Point point) const
 	{
 		return ConvertToPos(point.X, point.Y);
 	}
 	// Небезопасные функции конвертации координат.
-	inline const uint UnsafeConvertToPos(const ushort X, const ushort Y)
+	inline uint UnsafeConvertToPos(const ushort X, const ushort Y) const
 	{
 		return (Y + ExpandHeight) * FieldWidth2 + X + ExpandWidth;
 	}
-	inline const uint UnsafeConvertToPos(const Point point)
+	inline uint UnsafeConvertToPos(const Point point) const
 	{
 		return UnsafeConvertToPos(point.X, point.Y);
 	}
 	// Конвертация из Pos в XY.
-	inline const void ConvertToXY(const uint Pos, ushort &X, ushort &Y)
+	inline void ConvertToXY(const uint Pos, ushort &X, ushort &Y) const
 	{
 		X = Pos % FieldWidth2 - ExpandWidth;
 		Y = Pos / FieldWidth2 - ExpandHeight;
 	}
-	inline const void ConvertToXY(const uint Pos, Point &P)
+	inline void ConvertToXY(const uint Pos, Point &P) const
 	{
 		P.X = Pos % FieldWidth2 - ExpandWidth;
 		P.Y = Pos / FieldWidth2 - ExpandHeight;
@@ -363,7 +363,7 @@ public:
 	}
 
 	// Проверяет, есть ли рядом с Pos точки цвета Player.
-	inline const bool IsNearPoints(const uint Pos, const short Player)
+	inline bool IsNearPoints(const uint Pos, const short Player) const
 	{
 		uint TempPos = Pos - FieldWidth2 - 1;
 		if (IsEnable(TempPos, PutBit | Player))
@@ -393,7 +393,7 @@ public:
 	}
 
 	// Возвращает количество точек рядом с Pos цвета Player.
-	inline const ushort NumberNearPoints(const uint Pos, const short Player)
+	inline ushort NumberNearPoints(const uint Pos, const short Player) const
 	{
 		ushort Result = 0;
 		uint TempPos = Pos - FieldWidth2 - 1;
@@ -424,7 +424,7 @@ public:
 	}
 
 	// Возвращает количество групп точек рядом с CenterPos.
-	inline const ushort NumberNearGroups(const uint CenterPos, const short Player)
+	inline ushort NumberNearGroups(const uint CenterPos, const short Player) const
 	{
 		ushort k = 0;
 
@@ -443,7 +443,7 @@ public:
 		return k;
 	}
 
-	const bool PointInsideRing(const uint TestedPos, const static_vector<uint, MAX_CHAIN_POINTS> &Ring)
+	bool PointInsideRing(const uint TestedPos, const static_vector<uint, MAX_CHAIN_POINTS> &Ring) const
 	{
 		uint Intersections = 0;
 
@@ -609,8 +609,7 @@ inline int Field::Square(const uint Pos1, const uint Pos2)
 {
 	return (Pos1 % FieldWidth2) * (Pos2 / FieldWidth2) - (Pos1 / FieldWidth2) * (Pos2 % FieldWidth2);
 }
-
-inline const void Field::GetFirstNextPos(const uint CenterPos, uint &Pos)
+inline void Field::GetFirstNextPos(const uint CenterPos, uint &Pos) const
 {
 	if (Pos < CenterPos)
 	{
@@ -627,8 +626,7 @@ inline const void Field::GetFirstNextPos(const uint CenterPos, uint &Pos)
 			Pos = CenterPos-FieldWidth2 - 1;
 	}
 }
-
-inline const void Field::GetNextPos(const uint CenterPos, uint &Pos)
+inline void Field::GetNextPos(const uint CenterPos, uint &Pos) const
 {
 	uint t;
 	if (Pos < CenterPos)
@@ -656,8 +654,7 @@ inline const void Field::GetNextPos(const uint CenterPos, uint &Pos)
 			Pos = CenterPos - 1;
 	}
 }
-
-inline const ushort Field::GetInputPoints(const uint CenterPos, const ushort EnableCond, uint InpChainPoints[], uint InpSurPoints[])
+inline ushort Field::GetInputPoints(const uint CenterPos, const ushort EnableCond, uint InpChainPoints[], uint InpSurPoints[]) const
 {
 	uint k = 0;
 
@@ -727,7 +724,6 @@ inline const ushort Field::GetInputPoints(const uint CenterPos, const ushort Ena
 
 	return k;
 }
-
 inline void Field::AddSubCapturedFreed(const short Player, const int Captured, const int Freed)
 {
 	if (Captured == -1)
@@ -740,7 +736,6 @@ inline void Field::AddSubCapturedFreed(const short Player, const int Captured, c
 		CaptureCount[NextPlayer(Player)] -= Freed;
 	}
 }
-
 inline void Field::CheckCapturedAndFreed(const uint Pos, const short Player, int &Captured, int &Freed)
 {
 	if (IsPutted(Pos))
@@ -751,7 +746,6 @@ inline void Field::CheckCapturedAndFreed(const uint Pos, const short Player, int
 			Freed++;
 	}
 }
-
 inline void Field::SetCaptureFreeState(const uint Pos, const short Player)
 {
 	if (IsPutted(Pos))
@@ -764,7 +758,6 @@ inline void Field::SetCaptureFreeState(const uint Pos, const short Player)
 	else
 		Capture(Pos);
 }
-
 inline void Field::Wave(uint StartPos, function<bool(int)> Condition, function<void(uint)> Action)
 {
 	// Очередь для волнового алгоритма (обхода в ширину).
@@ -803,13 +796,11 @@ inline void Field::Wave(uint StartPos, function<bool(int)> Condition, function<v
 	for (it = q.begin(); it != q.end(); it++)
 		ClearTag(*it);
 }
-
 inline void Field::UpdateHash(short Player, short Surrounded, uint Pos)
 {
 	Hash ^= GetZobristHash(Player, Surrounded, Pos);
 }
-
-inline const IntersectionState Field::GetIntersectionState(const uint Pos, const uint NextPos)
+inline IntersectionState Field::GetIntersectionState(const uint Pos, const uint NextPos) const
 {
 	Point a, b;
 	ConvertToXY(Pos, a);
