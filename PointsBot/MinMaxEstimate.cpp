@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <climits>
 
+using namespace std;
+
 inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	Trajectories1.ExcludeCompositeTrajectories();

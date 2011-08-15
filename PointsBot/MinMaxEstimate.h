@@ -5,4 +5,6 @@
 #include "Field.h"
 #include "static_vector.h"
 
+using namespace std;
+
 int MinMaxEstimate(Field &MainField, uint Depth, static_vector<uint, MAX_CHAIN_POINTS> &Moves);

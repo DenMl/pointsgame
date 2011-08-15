@@ -5,6 +5,8 @@
 #include "Field.h"
 #include "static_vector.h"
 
+using namespace std;
+
 const double UCTK = 1;
 // Радиус, внутри которого происходит анализ.
 const ushort UCTRadius = 2;

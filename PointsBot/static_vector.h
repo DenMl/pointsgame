@@ -9,134 +9,30 @@ class static_vector_iterator : public iterator<random_access_iterator_tag, value
 private:
 	value_type *p;
 public:
-
 	typedef size_t size_type;
-
-	static_vector_iterator()
-	{
-		p = 0;
-	}
-
-	static_vector_iterator(const value_type* other)
-	{
-		p = const_cast<value_type*>(other);
-	}
-
-	static_vector_iterator(const static_vector_iterator& other)
-	{
-		p = other.p;
-	}
-
-	~static_vector_iterator()
-	{
-	}
-
-	static_vector_iterator& operator =(const static_vector_iterator& other)
-	{
-		p = other.p;
-		return *this;
-	}
-
-	pointer operator ->() const
-	{
-		return &**p;
-	}
-
-	reference operator *() const
-	{
-		return *p;
-	}
-
-	static_vector_iterator& operator ++()
-	{
-		++p;
-		return *this;
-	}
-
-	static_vector_iterator operator ++(int)
-	{
-		static_vector_iterator tmp(*this);
-		p++;
-		return tmp;
-	}
-
-	static_vector_iterator& operator --()
-	{
-		--p;
-		return *this;
-	}
-
-	static_vector_iterator operator --(int)
-	{
-		static_vector_iterator tmp(*this);
-		p--;
-		return tmp;
-	}
-
-	static_vector_iterator& operator +=(const difference_type& idx)
-	{
-		p += idx;
-		return *this;
-	}
-
-	static_vector_iterator& operator -=(const difference_type& idx)
-	{
-		p -= idx;
-		return *this;
-	}
-
-	static_vector_iterator operator +(const size_type& idx) const
-	{
-		static_vector_iterator tmp(*this);
-		return tmp += idx;
-	}
-
-	static_vector_iterator operator -(const size_type& idx) const
-	{
-		static_vector_iterator tmp(*this);
-		return tmp -= idx;
-	}
-
-	reference operator [](const size_type& idx) const
-	{
-		return *(p + idx);
-	}
-
-	bool operator <(const static_vector_iterator& other) const
-	{
-		return p < other.p;
-	}
-
-	bool operator >(const static_vector_iterator& other) const
-	{
-		return p > other.p;
-	}
-
-	bool operator ==(const static_vector_iterator& other) const
-	{
-		return p == other.p;
-	}
-
-	bool operator !=(const static_vector_iterator& other) const
-	{
-		return p != other.p;
-	}
-
-	bool operator <=(const static_vector_iterator& other) const
-	{
-		return p <= other.p;
-	}
-
-	bool operator >=(const static_vector_iterator& other) const
-	{
-		return p >= other.p;
-	}
-
-	difference_type operator -(const static_vector_iterator& other) const
-	{
-		return p - other.p;
-	}
-
+	static_vector_iterator() { p = 0; }
+	static_vector_iterator(const value_type* other) { p = const_cast<value_type*>(other); }
+	static_vector_iterator(const static_vector_iterator& other) { p = other.p; }
+	~static_vector_iterator() { }
+	static_vector_iterator& operator =(const static_vector_iterator& other) { p = other.p; return *this; }
+	pointer operator ->() const { return &**p; }
+	reference operator *() const { return *p; }
+	static_vector_iterator& operator ++() { ++p; return *this; }
+	static_vector_iterator operator ++(int) { static_vector_iterator tmp(*this); p++; return tmp; }
+	static_vector_iterator& operator --() { --p; return *this; }
+	static_vector_iterator operator --(int) { static_vector_iterator tmp(*this); p--; return tmp; }
+	static_vector_iterator& operator +=(const difference_type& idx) { p += idx; return *this; }
+	static_vector_iterator& operator -=(const difference_type& idx) { p -= idx; return *this; }
+	static_vector_iterator operator +(const size_type& idx) const { static_vector_iterator tmp(*this); return tmp += idx; }
+	static_vector_iterator operator -(const size_type& idx) const { static_vector_iterator tmp(*this); return tmp -= idx; }
+	reference operator [](const size_type& idx) const { return *(p + idx); }
+	bool operator <(const static_vector_iterator& other) const { return p < other.p; }
+	bool operator >(const static_vector_iterator& other) const { return p > other.p; }
+	bool operator ==(const static_vector_iterator& other) cons { return p == other.p; }
+	bool operator !=(const static_vector_iterator& other) const { return p != other.p; }
+	bool operator <=(const static_vector_iterator& other) const { return p <= other.p; }
+	bool operator >=(const static_vector_iterator& other) const { return p >= other.p; }
+	difference_type operator -(const static_vector_iterator& other) const { return p - other.p; }
 };
 
 template<class _Tp, size_t _S> class static_vector
@@ -181,8 +77,7 @@ public:
 		assign(first, last);
 	}
 	~static_vector()
-	{
-	}
+	{ }
 	inline size_type size() const
 	{
 		return _size;

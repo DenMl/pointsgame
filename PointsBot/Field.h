@@ -10,6 +10,7 @@
 #include <stack>
 #include <functional>
 
+using namespace std;
 using std::tr1::function;
 
 class Field

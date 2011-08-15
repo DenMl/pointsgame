@@ -4,6 +4,8 @@
 #include "BasicTypes.h"
 #include "BasicConstants.h"
 
+using namespace std;
+
 extern ulong Zobrist[2][2][PointsLength22];
 
 void ZobristInit();

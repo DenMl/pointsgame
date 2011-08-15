@@ -8,6 +8,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
+
 const uint MAX_TRAJECTORY_LENGTH = 8;
 const uint MAX_TRAJECTORIES_COUNT = 256;
 

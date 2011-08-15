@@ -15,6 +15,8 @@
 #include <assert.h>
 #endif
 
+using namespace std;
+
 inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	static_vector<uint, MAX_CHAIN_POINTS> Moves;
