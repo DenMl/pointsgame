@@ -515,13 +515,14 @@ public:
 				InpPointsCount = GetInputPoints(StartPos, Player | PutBit, InpChainPoints, InpSurPoints);
 				if (InpPointsCount > 1)
 				{
+					ushort ChainsCount = 0;
 					for (ushort i = 0; i < InpPointsCount; i++)
 						if (BuildChain(StartPos, GetPlayer(StartPos) | PutBit, InpChainPoints[i], Chain))
 						{
 							FindSurround(Chain, InpSurPoints[i], Player);
-							// ≈сли поставлена точка в пустую базу, и есть окружение - то это возможно только когда р€дом 2 группы точек (2 точки цепочки). » только через одну из них идет окружение.
-							// ≈сли через первую - вторую провер€ть нет смысла. ѕоэтому можно смело останавливатьс€.
-							break;
+							ChainsCount++;
+							if (ChainsCount == InpPointsCount - 1)
+								break;
 						}
 					if (IsBaseBound(StartPos))
 					{
