@@ -19,7 +19,7 @@ public:
 
 	static_vector_iterator(const value_type* other)
 	{
-		p = (value_type*)other;
+		p = const_cast<value_type*>(other);
 	}
 
 	static_vector_iterator(const static_vector_iterator& other)
