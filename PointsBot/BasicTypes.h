@@ -3,6 +3,8 @@
 #include "Config.h"
 #include <stack>
 
+using namespace std;
+
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
