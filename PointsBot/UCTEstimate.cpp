@@ -290,9 +290,9 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<uint, MAX
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > Moves.size())
-		omp_set_num_threads(Moves.size());
-#pragma omp parallel
+	if (omp_get_max_threads() > FirstMoves.size())
+		omp_set_num_threads(FirstMoves.size());
+	#pragma omp parallel
 	{
 		Node n;
 
