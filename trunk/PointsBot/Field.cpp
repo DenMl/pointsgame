@@ -1,6 +1,8 @@
 #include "Config.h"
 #include "Field.h"
 
+using namespace std;
+
 void Field::PlaceBeginPattern()
 {
 	Point point;

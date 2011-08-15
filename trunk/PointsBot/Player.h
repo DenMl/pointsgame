@@ -2,6 +2,8 @@
 
 #include "Config.h"
 
+using namespace std;
+
 // Значение бита первого игрока.
 static const short PlayerRed = 0x0;
 // Значение бита второго игрока.

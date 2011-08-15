@@ -8,6 +8,8 @@
 #include "Random.h"
 #include "static_vector.h"
 
+using namespace std;
+
 void BuildAllMoves(Field &MainField, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
 {
 	Moves.clear();

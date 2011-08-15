@@ -9,6 +9,8 @@
 #include <time.h>
 #endif
 
+using namespace std;
+
 inline unsigned long GetTime()
 {
 #if WINDOWS

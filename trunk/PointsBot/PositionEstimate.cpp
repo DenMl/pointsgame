@@ -7,6 +7,8 @@
 #include <list>
 #include <climits>
 
+using namespace std;
+
 // Учет позиционных эвристик.
 short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 {
