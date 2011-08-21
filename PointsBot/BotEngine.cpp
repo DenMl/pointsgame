@@ -10,17 +10,17 @@
 
 using namespace std;
 
-void BuildAllMoves(Field &MainField, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
+void BuildAllMoves(Field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	Moves.clear();
-	for (uint i = MainField.MinPos; i <= MainField.MaxPos; i++)
+	for (pos i = MainField.MinPos; i <= MainField.MaxPos; i++)
 		if (MainField.PuttingAllow(i))
 			Moves.push_back(i);
 }
 
-uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
+pos SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 {
-	static_vector<uint, MAX_CHAIN_POINTS> Moves;
+	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.
@@ -56,9 +56,9 @@ uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 		return Moves[rand() % Moves.size()];
 }
 
-uint SearchBestMoveWithTime(Field &MainField, ulong Time)
+pos SearchBestMoveWithTime(Field &MainField, ulong Time)
 {
-	static_vector<uint, MAX_CHAIN_POINTS> Moves;
+	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// Если на доске не стоит ни одной точки - возвращаем случайный ход.

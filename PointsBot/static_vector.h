@@ -28,7 +28,7 @@ public:
 	reference operator [](const size_type& idx) const { return *(p + idx); }
 	bool operator <(const static_vector_iterator& other) const { return p < other.p; }
 	bool operator >(const static_vector_iterator& other) const { return p > other.p; }
-	bool operator ==(const static_vector_iterator& other) cons { return p == other.p; }
+	bool operator ==(const static_vector_iterator& other) const { return p == other.p; }
 	bool operator !=(const static_vector_iterator& other) const { return p != other.p; }
 	bool operator <=(const static_vector_iterator& other) const { return p <= other.p; }
 	bool operator >=(const static_vector_iterator& other) const { return p >= other.p; }

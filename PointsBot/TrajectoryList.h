@@ -5,70 +5,13 @@
 #include "Zobrist.h"
 #include "Field.h"
 #include "Config.h"
+#include "Trajectory.h"
 #include <vector>
 #include <algorithm>
 
 using namespace std;
 
-const uint MAX_TRAJECTORY_LENGTH = 8;
 const uint MAX_TRAJECTORIES_COUNT = 256;
-
-struct Trajectory
-{
-	uint Points[MAX_TRAJECTORY_LENGTH];
-	uint Count;
-
-	ulong Hash;
-
-	bool Excluded;
-
-	inline void Clear()
-	{
-		Count = 0;
-		Hash = 0;
-		Excluded = false;
-	}
-
-	// Добавляет точку в траекторию.
-	inline void Push(uint Pos)
-	{
-		Points[Count] = Pos;
-		Count++;
-		Hash ^= GetZobristHash(Pos);
-	}
-	// Добавляет точку в траекторию, не обновляя хеш.
-	inline void FastPush(uint Pos)
-	{
-		Points[Count] = Pos;
-		Count++;
-	}
-
-	inline void Copy(const Trajectory &Orig)
-	{
-		for (uint i = 0; i < Orig.Count; i++)
-			Points[i] = Orig.Points[i];
-		Count = Orig.Count;
-		Hash = Orig.Hash;
-		Excluded = Orig.Excluded;
-	}
-	inline void Copy(const Trajectory &Orig, const uint Pos)
-	{
-		Count = 0;
-		for (uint i = 0; i < Orig.Count; i++)
-			if (Orig.Points[i] != Pos)
-				FastPush(Orig.Points[i]);
-		Hash = Orig.Hash ^ GetZobristHash(Pos);
-		Excluded = Orig.Excluded;
-	}
-
-	inline const uint Find(const uint Pos)
-	{
-		for (uint i = 0; i < Count; i++)
-			if (Points[i] == Pos)
-				return i;
-		return -1;
-	}
-};
 
 class TrajectoryList
 {
@@ -80,7 +23,7 @@ public:
 	uint Count;
 
 private:
-	inline void AddNewTrajectory(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS>::iterator begin, static_vector<uint, MAX_CHAIN_POINTS>::iterator end, short Player)
+	inline void AddNewTrajectory(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS>::iterator begin, static_vector<pos, MAX_CHAIN_POINTS>::iterator end, player Player)
 	{
 		ulong TempHash = 0;
 
@@ -95,18 +38,16 @@ private:
 		for (auto i = begin; i < end; i++)
 			TempHash ^= GetZobristHash(*i);
 		for (uint i = 0; i < Count; i++)
-			if (TempHash == Trajectories[i].Hash)
+			if (TempHash == Trajectories[i].get_hash())
 				return; // В теории возможны коллизии. Неплохо было бы сделать точную проверку.
 
 		Trajectories[Count].Excluded = false;
-		// Запоминаем хеш новой траектории.
-		Trajectories[Count].Hash = TempHash;
 
-		Trajectories[Count].Clear();
+		Trajectories[Count].clear();
 		for (auto i = begin; i < end; i++)
 		{
 			// Добавляем точку в PointsSeq траектории.
-			Trajectories[Count].Push(*i);
+			Trajectories[Count].push_back(*i);
 		}
 		// Увеличиваем на 1 количество траекторий.
 		Count++;
@@ -118,9 +59,9 @@ private:
 	}
 	// Добавляет траекторию, полученную из CurTrajectory исключением из нее точки Pos.
 	// Также контролирует недобавление нулевых траекторий.
-	inline void AddNewTrajectory(const Trajectory &CurTrajectory, const uint Pos)
+	inline void AddNewTrajectory(const Trajectory &CurTrajectory, const pos Pos)
 	{
-		if (CurTrajectory.Count == 1)
+		if (CurTrajectory.size() == 1)
 			return;
 
 		Trajectories[Count].Copy(CurTrajectory, Pos);
@@ -128,25 +69,25 @@ private:
 	}
 
 	// Проверяет, во все ли точки траектории можно сделать ход, кроме, возможно, точки Pos.
-	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory, uint Pos)
+	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory, pos Pos)
 	{
-		for (uint i = 0; i < CurTrajectory.Count; i++)
-			if (CurTrajectory.Points[i] != Pos && !CurField.PuttingAllow(CurTrajectory.Points[i]))
+		for (auto i = CurTrajectory.begin(); i < CurTrajectory.end(); i++)
+			if (*i != Pos && !CurField.PuttingAllow(*i))
 				return false;
 		return true;
 	}
 	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory)
 	{
-		for (uint i = 0; i < CurTrajectory.Count; i++)
-			if (!CurField.PuttingAllow(CurTrajectory.Points[i]))
+		for (auto i = CurTrajectory.begin(); i < CurTrajectory.end(); i++)
+			if (!CurField.PuttingAllow(*i))
 				return false;
 		return true;
 	}
 
 	// Рекурсивная функция построения траекторий.
-	void BuildTrajectoriesRecursive(Field &CurField, uint Depth, short Player)
+	void BuildTrajectoriesRecursive(Field &CurField, uint Depth, player Player)
 	{
-		for (uint Pos = CurField.MinPos; Pos <= CurField.MaxPos; Pos++)
+		for (pos Pos = CurField.MinPos; Pos <= CurField.MaxPos; Pos++)
 		{
 			if (CurField.PuttingAllow(Pos) && CurField.IsNearPoints(Pos, Player))
 			{
@@ -179,9 +120,9 @@ private:
 			}
 		}
 	}
-	void BuildCurrentTrajectoriesRecursive(Field &CurField, uint Depth, short Player, uint CheckedPos)
+	void BuildCurrentTrajectoriesRecursive(Field &CurField, uint Depth, player Player, pos CheckedPos)
 	{
-		for (uint Pos = CurField.MinPos; Pos <= CurField.MaxPos; Pos++)
+		for (pos Pos = CurField.MinPos; Pos <= CurField.MaxPos; Pos++)
 		{
 			if (CurField.PuttingAllow(Pos) && CurField.IsNearPoints(Pos, Player))
 			{
@@ -225,7 +166,10 @@ public:
 	inline void BuildEnemyTrajectories(Field &CurField, TrajectoryList &LastTrajectories, uint Pos, uint Depth)
 	{
 		for (uint i = 0; i < LastTrajectories.Count; i++)
-			if ((LastTrajectories.Trajectories[i].Count <= Depth || (LastTrajectories.Trajectories[i].Count == Depth + 1 && LastTrajectories.Trajectories[i].Find(Pos) != -1)) && IsTrajectoryValid(CurField, LastTrajectories.Trajectories[i], Pos))
+			if (	(LastTrajectories.Trajectories[i].size() <= Depth ||
+					(LastTrajectories.Trajectories[i].size() == Depth + 1 &&
+						find(LastTrajectories.Trajectories[i].begin(), LastTrajectories.Trajectories[i].end(), Pos) != LastTrajectories.Trajectories[i].end())) &&
+						IsTrajectoryValid(CurField, LastTrajectories.Trajectories[i], Pos))
 				AddNewTrajectory(LastTrajectories.Trajectories[i], Pos);
 	}
 
@@ -239,13 +183,13 @@ public:
 		BuildCurrentTrajectoriesRecursive(CurField, Depth - 1, Player, Pos);
 	}
 
-	inline void GetPoints(static_vector<uint, MAX_CHAIN_POINTS> &Points)
+	inline void GetPoints(static_vector<pos, MAX_CHAIN_POINTS> &Points)
 	{
 		for (uint i = 0; i < Count; i++)
 			if (!Trajectories[i].Excluded)
-				for (uint j = 0; j < Trajectories[i].Count; j++)
-					if (find(Points.begin(), Points.end(), Trajectories[i].Points[j]) == Points.end())
-						Points.push_back(Trajectories[i].Points[j]);
+				for (auto j = Trajectories[i].begin(); j < Trajectories[i].end(); j++)
+					if (find(Points.begin(), Points.end(), *j) == Points.end())
+						Points.push_back(*j);
 	}
 
 	// Проецирует траектории на доску TrajectoriesBoard (для каждой точки Pos очередной траектории инкрементирует TrajectoriesBoard[Pos]).
@@ -254,16 +198,16 @@ public:
 	{
 		for (uint i = 0; i < Count; i++)
 			if (!Trajectories[i].Excluded)
-				for (uint j = 0; j < Trajectories[i].Count; j++)
-					TrajectoriesBoard[Trajectories[i].Points[j]]++;
+				for (auto j = Trajectories[i].begin(); j < Trajectories[i].end(); j++)
+					TrajectoriesBoard[*j]++;
 	}
 	// Удаляет проекцию траекторий с доски TrajectoriesBoard.
 	inline void UnProject(uint TrajectoriesBoard[])
 	{
 		for (uint i = 0; i < Count; i++)
 			if (!Trajectories[i].Excluded)
-				for (uint j = 0; j < Trajectories[i].Count; j++)
-					TrajectoriesBoard[Trajectories[i].Points[j]]--;
+				for (auto j = Trajectories[i].begin(); j < Trajectories[i].end(); j++)
+					TrajectoriesBoard[*j]--;
 	}
 
 	bool ExcludeUnnecessaryTrajectories(uint TrajectoriesBoard[])
@@ -277,16 +221,16 @@ public:
 				continue;
 			// Считаем в c количество точек, входящих только в эту траекторию.
 			c = 0;
-			for (uint j = 0; j < Trajectories[i].Count; j++)
-				if (TrajectoriesBoard[Trajectories[i].Points[j]] == 1)
+			for (auto j = Trajectories[i].begin(); j < Trajectories[i].end(); j++)
+				if (TrajectoriesBoard[*j] == 1)
 					c++;
 			// Если точек, входящих только в эту траекторию, > 1, то исключаем эту траекторию.
 			if (c > 1)
 			{
 				NeedExclude = true;
 				Trajectories[i].Excluded = true;
-				for (uint j = 0; j < Trajectories[i].Count; j++)
-					TrajectoriesBoard[Trajectories[i].Points[j]]--;
+				for (auto j = Trajectories[i].begin(); j < Trajectories[i].end(); j++)
+					TrajectoriesBoard[*j]--;
 			}
 		}
 
@@ -301,10 +245,10 @@ public:
 	// Возвращает хеш Зобриста пересечения двух траекторий.
 	inline static ulong GetIntersectHash(Trajectory &T1, Trajectory &T2)
 	{
-		ulong TempHash = T1.Hash;
-		for (uint i = 0; i < T2.Count; i++)
-			if (T1.Find(T2.Points[i]) == -1)
-				TempHash ^= GetZobristHash(T2.Points[i]);
+		ulong TempHash = T1.get_hash();
+		for (auto i = T2.begin(); i < T2.end(); i++)
+			if (find(T1.begin(), T1.end(), *i) == T1.end())
+				TempHash ^= GetZobristHash(*i);
 		return TempHash;
 	}
 
@@ -313,9 +257,9 @@ public:
 	{
 		for (uint k = 0; k < Count; k++)
 			for (uint i = 0; i < Count - 1; i++)
-				if (Trajectories[k].Count > Trajectories[i].Count)
+				if (Trajectories[k].size() > Trajectories[i].size())
 					for (uint j = i + 1; j < Count; j++)
-						if (Trajectories[k].Count > Trajectories[j].Count && Trajectories[k].Hash == GetIntersectHash(Trajectories[i], Trajectories[j]))
+						if (Trajectories[k].size() > Trajectories[j].size() && Trajectories[k].get_hash() == GetIntersectHash(Trajectories[i], Trajectories[j]))
 							Trajectories[k].Excluded = true;
 	}
 };
