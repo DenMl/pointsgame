@@ -5,57 +5,57 @@ using namespace std;
 
 void Field::PlaceBeginPattern()
 {
-	Point point;
+	ushort X, Y;
 	switch (Pattern)
 	{
 	case (CrosswisePattern):
-		point.X = FieldWidth / 2 - 1;
-		point.Y = FieldHeight / 2 - 1;
-		DoStep(ConvertToPos(point));
-		point.X++;
-		DoStep(ConvertToPos(point));
-		point.Y++;
-		DoStep(ConvertToPos(point));
-		point.X--;
-		DoStep(ConvertToPos(point));
+		X = Width / 2 - 1;
+		Y = Height / 2 - 1;
+		DoStep(ConvertToPos(X, Y));
+		X++;
+		DoStep(ConvertToPos(X, Y));
+		Y++;
+		DoStep(ConvertToPos(X, Y));
+		X--;
+		DoStep(ConvertToPos(X, Y));
 		break;
 	case (SquarePattern):
-		point.X = FieldWidth / 2 - 1;
-		point.Y = FieldHeight / 2 - 1;
-		DoStep(ConvertToPos(point));
-		point.X++;
-		DoStep(ConvertToPos(point));
-		point.X--;
-		point.Y++;
-		DoStep(ConvertToPos(point));
-		point.X++;
-		DoStep(ConvertToPos(point));
+		X = Width / 2 - 1;
+		Y = Height / 2 - 1;
+		DoStep(ConvertToPos(X, Y));
+		X++;
+		DoStep(ConvertToPos(X, Y));
+		X--;
+		Y++;
+		DoStep(ConvertToPos(X, Y));
+		X++;
+		DoStep(ConvertToPos(X, Y));
 		break;
 	}
 }
 
-void Field::RemoveEmptyBase(const uint StartPos)
+void Field::RemoveEmptyBase(const pos StartPos)
 {
 	Wave(	StartPos,
-			[&](uint Pos)
+			[&](pos Pos)
 			{
 				return IsInEmptyBase(Pos);
 			},
-			[&](uint Pos)
+			[&](pos Pos)
 			{
-				Changes.back().Changes.push(Pair<uint, ushort>(Pos, Points[Pos] & !TagBit));
+				Changes.back().Changes.push(Pair<pos, value>(Pos, Points[Pos] & !TagBit));
 				ClearEmptyBase(Pos);
 			});
 }
 
-bool Field::BuildChain(const uint StartPos, const short EnableCond, const uint DirectionPos, static_vector<uint, MAX_CHAIN_POINTS> &Chain)
+bool Field::BuildChain(const pos StartPos, const value EnableCond, const pos DirectionPos, static_vector<pos, MAX_CHAIN_POINTS> &Chain)
 {
-	uint Pos;
+	pos Pos;
 
 	Chain.clear();
 	Chain.push_back(StartPos);
 	Pos = DirectionPos;
-	uint CenterPos = StartPos;
+	pos CenterPos = StartPos;
 	// Площадь базы.
 	int TempSquare = Square(CenterPos, Pos);
 	do
@@ -87,25 +87,25 @@ bool Field::BuildChain(const uint StartPos, const short EnableCond, const uint D
 	return (TempSquare < 0 && Chain.size() > 2);
 }
 
-void Field::FindSurround(static_vector<uint, MAX_CHAIN_POINTS> &Chain, uint InsidePoint, short Player)
+void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos InsidePoint, player Player)
 {
 	// Количество захваченных точек.
 	int CurCaptureCount = 0;
 	// Количество захваченных пустых полей.
 	int CurFreedCount = 0;
 
-	static_vector<uint, MAX_CHAIN_POINTS> SurPoints;
+	static_vector<pos, MAX_CHAIN_POINTS> SurPoints;
 
 	// Помечаем точки цепочки.
 	for (auto i = Chain.begin(); i < Chain.end(); i++)
 		SetTag(*i);
 
 	Wave(	InsidePoint,
-		[&, Player](uint Pos)
+		[&, Player](pos Pos)
 	{
 		return IsNotBound(Pos, Player | PutBit | BoundBit);
 	},
-		[&, Player](uint Pos)
+		[&, Player](pos Pos)
 	{
 		CheckCapturedAndFreed(Pos, Player, CurCaptureCount, CurFreedCount);
 		SurPoints.push_back(Pos);
@@ -125,14 +125,14 @@ void Field::FindSurround(static_vector<uint, MAX_CHAIN_POINTS> &Chain, uint Insi
 		{
 			ClearTag(*i);
 			// Добавляем в список изменений точки цепочки.
-			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
+			Changes.back().Changes.push(Pair<pos, value>(*i, Points[*i]));
 			// Помечаем точки цепочки.
 			SetBaseBound(*i);
 		}
 
 		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
 		{
-			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
+			Changes.back().Changes.push(Pair<pos, value>(*i, Points[*i]));
 
 			SetCaptureFreeState(*i, Player);
 		}
@@ -144,7 +144,7 @@ void Field::FindSurround(static_vector<uint, MAX_CHAIN_POINTS> &Chain, uint Insi
 
 		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
 		{
-			Changes.back().Changes.push(Pair<uint, ushort>(*i, Points[*i]));
+			Changes.back().Changes.push(Pair<pos, value>(*i, Points[*i]));
 
 			if (!IsPutted(*i))
 				SetEmptyBase(*i);
@@ -152,7 +152,7 @@ void Field::FindSurround(static_vector<uint, MAX_CHAIN_POINTS> &Chain, uint Insi
 	}
 }
 
-Field::Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)
+Field::Field(const coord FieldWidth, const coord FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)
 {
 	ExpandWidth = (FieldWidth2 - FieldWidth) / 2;
 	ParityWidth = (FieldWidth2 - FieldWidth) % 2;
@@ -160,25 +160,25 @@ Field::Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCo
 	ParityHeight = (FieldHeight2 - FieldHeight) % 2;
 
 	// Верхнюю часть доски помечаем флагом BadValue.
-	for (uint i = 0; i < ExpandHeight * FieldWidth2; i++)
-		Points[i] = BadValue;
+	for (pos i = 0; i < ExpandHeight * FieldWidth2; i++)
+		Points[i] = BadBit;
 
-	uint Pos = (ExpandHeight - 1) * FieldWidth2 + ExpandWidth + FieldWidth;
-	for (ushort i = 0; i < FieldHeight; i++)
+	pos Pos = (ExpandHeight - 1) * FieldWidth2 + ExpandWidth + FieldWidth;
+	for (coord i = 0; i < FieldHeight; i++)
 	{
 		// Боковые части доски помечаем флагом BadValue.
-		for (ushort j = 0; j < ExpandWidth * 2 + ParityWidth; j++)
-			Points[Pos++] = BadValue;
+		for (coord j = 0; j < ExpandWidth * 2 + ParityWidth; j++)
+			Points[Pos++] = BadBit;
 		// Очищаем центральную часть доски.
-		for (ushort j = 0; j < FieldWidth; j++)
+		for (coord j = 0; j < FieldWidth; j++)
 			Points[Pos++] = 0;
 	}
 	// Нижнюю часть доски (и нижнюю правую боковую часть) помечаем флагом BadValue.
 	for (Pos; Pos < PointsLength22; Pos++)
-		Points[Pos] = BadValue;
+		Points[Pos] = BadBit;
 
-	this->FieldWidth = FieldWidth;
-	this->FieldHeight = FieldHeight;
+	this->Width = FieldWidth;
+	this->Height = FieldHeight;
 #if SURROUND_CONDITIONS
 	this->SurCond = SurCond;
 #endif
@@ -189,8 +189,8 @@ Field::Field(const ushort FieldWidth, const ushort FieldHeight, const SurroundCo
 
 	Hash = 0;
 
-	MinPos = UnsafeConvertToPos(0, 0);
-	MaxPos = UnsafeConvertToPos(FieldWidth - 1, FieldHeight - 1);
+	MinPos = ConvertToPos(0, 0);
+	MaxPos = ConvertToPos(FieldWidth - 1, FieldHeight - 1);
 
 	PlaceBeginPattern();
 }
@@ -207,8 +207,8 @@ Field::Field(const Field &Orig)
 	for (uint i = 0; i < PointsLength22; i++)
 		Points[i] = Orig.Points[i];
 
-	FieldWidth = Orig.FieldWidth;
-	FieldHeight = Orig.FieldHeight;
+	Width = Orig.Width;
+	Height = Orig.Height;
 	PointsSeq.assign(Orig.PointsSeq.begin(), Orig.PointsSeq.end());
 #if SURROUND_CONDITIONS
 	SurCond = Orig.SurCond;

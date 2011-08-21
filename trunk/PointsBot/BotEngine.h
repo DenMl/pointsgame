@@ -8,5 +8,5 @@ using namespace std;
 
 // Возвращает лучший найденный ход.
 // Если не найдено - 0.
-uint SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations);
-uint SearchBestMoveWithTime(Field &MainField, ulong Time);
+pos SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations);
+pos SearchBestMoveWithTime(Field &MainField, ulong Time);

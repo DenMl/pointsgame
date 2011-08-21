@@ -9,7 +9,7 @@
 
 using namespace std;
 
-inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], static_vector<uint, MAX_CHAIN_POINTS> &Moves)
+inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	Trajectories1.ExcludeCompositeTrajectories();
 	Trajectories2.ExcludeCompositeTrajectories();
@@ -26,7 +26,6 @@ inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectorie
 
 #if ALPHABETA_SORT
 	// Сортируем точки по убыванию количества траекторий, в которые они входят.
-	//ShellSort(Moves.Stack, TrajectoriesBoard, Moves.Count);
 	sort(Moves.begin(), Moves.end(), [&](uint x, uint y){ return TrajectoriesBoard[x] < TrajectoriesBoard[y]; });
 #endif
 
@@ -71,7 +70,7 @@ int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 	Trajectories[CurField.CurPlayer].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.CurPlayer);
 	//Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	
-	static_vector<uint, MAX_CHAIN_POINTS> Moves;
+	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, Moves);
 
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
@@ -97,7 +96,7 @@ int Negamax(Field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, uint TrajectoriesBoard[], uint Depth)
 {
 	TrajectoryList TempTrajectories;
-	static_vector<uint, MAX_CHAIN_POINTS> Moves;
+	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	int Result = INT_MIN + 1;
 
 	TempTrajectories.BuildEnemyTrajectories(CurField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
@@ -115,7 +114,7 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
-		for (int i = 0; i < Moves.size(); i++)
+		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(Moves.size()); i++)
 		{
 			CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth, Moves[i], EnemyTrajectories, CurrentTrajectories, INT_MIN + 1, -alpha);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
@@ -140,7 +139,7 @@ int GetEnemyEstimate(Field &CurField, TrajectoryList &CurrentTrajectories, Traje
 // CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
 // Moves - на входе возможные ходы, на выходе лучшие из них.
-int MinMaxEstimate(Field &CurField, uint Depth, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
+int MinMaxEstimate(Field &CurField, uint Depth, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	// Минимально и максимально возможная оценка.
 	int BestEstimate = INT_MIN + 1;
@@ -148,7 +147,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, static_vector<uint, MAX_CHAIN_PO
 	TrajectoryList Trajectories[2];
 	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
 	uint TrajectoriesBoard[PointsLength22] = {0};
-	static_vector<uint, MAX_CHAIN_POINTS> BestMoves, PossibleMoves, FirstMoves;
+	static_vector<pos, MAX_CHAIN_POINTS> BestMoves, PossibleMoves, FirstMoves;
 	// Доска с оценками ходов.
 	int ScoreBoard[PointsLength22];
 
@@ -180,7 +179,7 @@ int MinMaxEstimate(Field &CurField, uint Depth, static_vector<uint, MAX_CHAIN_PO
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
-		for (int i = 0; i < FirstMoves.size(); i++)
+		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(FirstMoves.size()); i++)
 		{
 			int CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth - 1, FirstMoves[i], Trajectories[LocalField.CurPlayer], Trajectories[NextPlayer(LocalField.CurPlayer)], INT_MIN + 1, -alpha + 1);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.

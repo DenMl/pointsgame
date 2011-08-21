@@ -543,16 +543,7 @@ namespace PointsShell
 
             Pos BotMovie;
             Thinking = true;
-            try
-            {
-                BotMovie = Bot.GetBotMovie(Preferences.MinMaxDepth, Preferences.UCTIterations);
-            }
-            catch
-            {
-                SaveXT("bug.sav");
-                MessageBox.Show("Error in PointsBot.dll");
-                return;
-            }
+            BotMovie = Bot.GetBotMovie(Preferences.MinMaxDepth, Preferences.UCTIterations);
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() => PutPoint(BotMovie)));
             Thinking = false;
         }

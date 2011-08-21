@@ -9,10 +9,11 @@
 
 using namespace std;
 
+const short cgSumma[] = {-5, -1, 0, 0, 1, 2, 5, 20, 30};
+
 // Учет позиционных эвристик.
 short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 {
-	const short cgSumma[] = {-5, -1, 0, 0, 1, 2, 5, 20, 30};
 	short g1, g2;
 	short c1, c2;
 	short Result;
@@ -28,10 +29,10 @@ short PositionEstimate(Field &MainField, uint TestedPoint, short Player)
 	return Result;
 }
 
-void PositionEstimate(Field &MainField, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
+void PositionEstimate(Field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	short BestScore = SHRT_MIN;
-	static_vector<uint, MAX_CHAIN_POINTS> BestMoves;
+	static_vector<pos, MAX_CHAIN_POINTS> BestMoves;
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
 	{
 		short TempScore = PositionEstimate(MainField, *i, MainField.CurPlayer);

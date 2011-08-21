@@ -17,7 +17,7 @@
 
 using namespace std;
 
-inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves)
+inline short PlayRandomGame(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	static_vector<uint, MAX_CHAIN_POINTS> Moves;
 	uint Putted = 0;
@@ -52,7 +52,7 @@ inline short PlayRandomGame(Field &CurrentField, static_vector<uint, MAX_CHAIN_P
 	return result;
 }
 
-inline void CreateChildren(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+inline void CreateChildren(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	Node **CurrentChild = &n.Child;
 
@@ -93,7 +93,7 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-short PlaySimulation(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+short PlaySimulation(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	short randomresult;
 
@@ -136,67 +136,6 @@ short PlaySimulation(Field &CurrentField, static_vector<uint, MAX_CHAIN_POINTS> 
 	return randomresult;
 }
 
-inline void GeneratePossibleMoves(Field &CurField, static_vector<uint, MAX_CHAIN_POINTS> &PossibleMoves)
-{
-	ushort TempField[PointsLength22] = {0};
-	std::queue<uint> q;
-
-	PossibleMoves.clear();
-	for (uint i = CurField.MinPos; i <= CurField.MaxPos; i++)
-		if (CurField.IsPutted(i)) //TODO: Класть соседей, а не сами точки.
-			q.push(i);
-
-	while (!q.empty())
-	{
-		if (CurField.PuttingAllow(q.front())) //TODO: Убрать условие.
-			PossibleMoves.push_back(q.front());
-		if (TempField[q.front()] < UCTRadius)
-		{
-			if (CurField.PuttingAllow(q.front() - FieldWidth2 - 1) && TempField[q.front() - FieldWidth2 - 1] == 0)
-			{
-				TempField[q.front() - FieldWidth2 - 1] = TempField[q.front()] + 1;
-				q.push(q.front() - FieldWidth2 - 1);
-			}
-			if (CurField.PuttingAllow(q.front() - FieldWidth2) && TempField[q.front() - FieldWidth2] == 0)
-			{
-				TempField[q.front() - FieldWidth2] = TempField[q.front()] + 1;
-				q.push(q.front() - FieldWidth2);
-			}
-			if (CurField.PuttingAllow(q.front() - FieldWidth2 + 1) && TempField[q.front() - FieldWidth2 + 1] == 0)
-			{
-				TempField[q.front() - FieldWidth2 + 1] = TempField[q.front()] + 1;
-				q.push(q.front() - FieldWidth2 + 1);
-			}
-			if (CurField.PuttingAllow(q.front() - 1) && TempField[q.front() - 1] == 0)
-			{
-				TempField[q.front() - 1] = TempField[q.front()] + 1;
-				q.push(q.front() - 1);
-			}
-			if (CurField.PuttingAllow(q.front() + 1) && TempField[q.front() + 1] == 0)
-			{
-				TempField[q.front() + 1] = TempField[q.front()] + 1;
-				q.push(q.front() + 1);
-			}
-			if (CurField.PuttingAllow(q.front() + FieldWidth2 - 1) && TempField[q.front() + FieldWidth2 - 1] == 0)
-			{
-				TempField[q.front() + FieldWidth2 - 1] = TempField[q.front()] + 1;
-				q.push(q.front() + FieldWidth2 - 1);
-			}
-			if (CurField.PuttingAllow(q.front() + FieldWidth2) && TempField[q.front() + FieldWidth2] == 0)
-			{
-				TempField[q.front() + FieldWidth2] = TempField[q.front()] + 1;
-				q.push(q.front() + FieldWidth2);
-			}
-			if (CurField.PuttingAllow(q.front() + FieldWidth2 + 1) && TempField[q.front() + FieldWidth2 + 1] == 0)
-			{
-				TempField[q.front() + FieldWidth2 + 1] = TempField[q.front()] + 1;
-				q.push(q.front() + FieldWidth2 + 1);
-			}
-		}
-		q.pop();
-	}
-}
-
 void RecursiveFinalUCT(Node *n)
 {
 	if (n->Child != NULL)
@@ -212,22 +151,14 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
-	// Список всех возможных ходов для UCT.
-	static_vector<uint, MAX_CHAIN_POINTS> PossibleMoves;
-	static_vector<uint, MAX_CHAIN_POINTS> FirstMoves;
 	double BestEstimate = -1;
-
-	GeneratePossibleMoves(MainField, PossibleMoves);
-	for (auto i = Moves.begin(); i < Moves.end(); i++)
-		if (find(PossibleMoves.begin(), PossibleMoves.end(), *i) != PossibleMoves.end())
-			FirstMoves.push_back(*i);
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > FirstMoves.size())
-		omp_set_num_threads(FirstMoves.size());
+	if (omp_get_max_threads() > static_cast<int>(Moves.size()))
+		omp_set_num_threads(static_cast<int>(Moves.size()));
 	#pragma omp parallel
 	{
 		Node n;
@@ -239,7 +170,7 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<uint, M
 #endif
 
 		Node **CurChild = &n.Child;
-		for (auto i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
+		for (auto i = Moves.begin() + omp_get_thread_num(); i < Moves.end(); i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
 			(*CurChild)->Move = *i;
@@ -247,7 +178,7 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<uint, M
 		}
 
 		for (ulong i = 0; i < MaxSimulations; i++)
-			PlaySimulation(*LocalField, PossibleMoves, n);
+			PlaySimulation(*LocalField, Moves, n);
 
 		omp_set_lock(&lock);
 		Node *next = n.Child; 
@@ -276,24 +207,15 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<uint, M
 	return BestEstimate;
 }
 
-double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<uint, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
-	// Список всех возможных ходов для UCT.
-	static_vector<uint, MAX_CHAIN_POINTS> PossibleMoves;
-	static_vector<uint, MAX_CHAIN_POINTS> FirstMoves;
 	double BestEstimate = -1;
 	Timer t;
 
-	GeneratePossibleMoves(MainField, PossibleMoves);
-
-	for (auto i = Moves.begin(); i < Moves.end(); i++)
-		if (find(PossibleMoves.begin(), PossibleMoves.end(), *i) != PossibleMoves.end())
-			FirstMoves.push_back(*i);
-
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > FirstMoves.size())
-		omp_set_num_threads(FirstMoves.size());
+	if (omp_get_max_threads() > static_cast<int>(Moves.size()))
+		omp_set_num_threads(static_cast<int>(Moves.size()));
 	#pragma omp parallel
 	{
 		Node n;
@@ -305,7 +227,7 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<uint, MAX
 #endif
 
 		Node **CurChild = &n.Child;
-		for (auto i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
+		for (auto i = Moves.begin() + omp_get_thread_num(); i < Moves.end(); i += omp_get_num_threads())
 		{
 			*CurChild = new Node();
 			(*CurChild)->Move = *i;
@@ -314,7 +236,7 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<uint, MAX
 
 		while (t.Get() < Time)
 			for (uint i = 0; i < IterationsBeforeCheckTime; i++)
-				PlaySimulation(*LocalField, PossibleMoves, n);
+				PlaySimulation(*LocalField, Moves, n);
 
 		omp_set_lock(&lock);
 		Node *next = n.Child; 

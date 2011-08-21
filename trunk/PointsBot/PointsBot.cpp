@@ -33,7 +33,7 @@ void RemoveLastPoint(Field *MainField)
 
 void SetCurrentPlayer(Field *MainField, size_t Player)
 {
-	MainField->SetCurrentPlayer((short)Player);
+	MainField->SetPlayer((short)Player);
 }
 
 size_t GetCurrentPlayer(Field *MainField)
@@ -46,7 +46,7 @@ void SetNextPlayer(Field *MainField)
 	MainField->SetNextPlayer();
 }
 
-void GetBotMove(Field *MainField, size_t MinMaxDepth, size_t UCTIterations, ushort &X, ushort &Y)
+void GetBotMove(Field *MainField, size_t MinMaxDepth, size_t UCTIterations, coord &X, coord &Y)
 {
 	Randomize();
 	MainField->ConvertToXY(SearchBestMove(*MainField, (uint)MinMaxDepth, (ulong)UCTIterations), X, Y);

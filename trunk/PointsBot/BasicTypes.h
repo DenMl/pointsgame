@@ -9,10 +9,16 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 
+typedef int pos;
+typedef short value;
+typedef short player;
+typedef int score;
+typedef short coord;
+
 // Структура координат точки.
 struct Point
 {
-	ushort X, Y;
+	coord X, Y;
 };
 
 enum SurroundCondition
@@ -52,7 +58,7 @@ template<typename T1, typename T2> struct Pair
 struct BoardChange
 {
 	uint CaptureCount[2];
-	short Player;
+	player Player;
 	ulong Hash;
-	stack<Pair<uint, ushort>> Changes;
+	stack<Pair<pos, value>> Changes;
 };

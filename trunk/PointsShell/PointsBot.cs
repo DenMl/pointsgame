@@ -29,7 +29,7 @@ namespace PointsShell
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void RemoveLastPoint(size_t Field);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void GetBotMove(size_t Field, size_t MinMaxDepth, size_t UCTIterations, ref ushort X, ref ushort Y);
+        private static extern void GetBotMove(size_t Field, size_t MinMaxDepth, size_t UCTIterations, ref short X, ref short Y);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         private static extern void SetCurrentPlayer(size_t Field, size_t Player);
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -64,7 +64,7 @@ namespace PointsShell
 
         public Pos GetBotMovie(int MinMaxDepth, int UCTIterations)
         {
-            ushort X = 0, Y = 0;
+            short X = 0, Y = 0;
             GetBotMove(Handle, (size_t)MinMaxDepth, (size_t)UCTIterations, ref X, ref Y);
             X++;
             Y++;

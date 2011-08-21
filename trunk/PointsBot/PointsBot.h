@@ -16,7 +16,7 @@ DLLEXPORT void PutPlayersPoint(Field *MainField, size_t X, size_t Y, size_t Play
 // Экспортируемая функция отката хода.
 DLLEXPORT void RemoveLastPoint(Field *MainField);
 // Экспортируемая функция получения наилучшего хода по мнению ИИ.
-DLLEXPORT void GetBotMove(Field *MainField, size_t MinMaxDepth, size_t UCTIterations, ushort &X, ushort &Y);
+DLLEXPORT void GetBotMove(Field *MainField, size_t MinMaxDepth, size_t UCTIterations, short &X, short &Y);
 DLLEXPORT void SetCurrentPlayer(Field *MainField, size_t Player);
 DLLEXPORT size_t GetCurrentPlayer(Field *MainField);
 DLLEXPORT void SetNextPlayer(Field *MainField);

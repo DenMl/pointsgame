@@ -7,4 +7,4 @@
 
 using namespace std;
 
-int MinMaxEstimate(Field &MainField, uint Depth, static_vector<uint, MAX_CHAIN_POINTS> &Moves);
+int MinMaxEstimate(Field &MainField, uint Depth, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
