@@ -9,14 +9,13 @@ class Trajectory : private static_vector<pos, MAX_TRAJECTORY_LENGTH>
 {
 private:
 	size_t _hash;
+	bool _excluded;
 
 public:
-	bool Excluded;
-
 	inline Trajectory() : static_vector()
 	{
 		_hash = 0;
-		Excluded = false;
+		_excluded = false;
 	}
 	using static_vector<pos, MAX_TRAJECTORY_LENGTH>::size;
 	using static_vector<pos, MAX_TRAJECTORY_LENGTH>::begin;
@@ -25,7 +24,7 @@ public:
 	{
 		static_vector::clear();
 		_hash = 0;
-		Excluded = false;
+		_excluded = false;
 	}
 	inline void push_back(pos Pos)
 	{
@@ -37,7 +36,7 @@ public:
 	{
 		assign(Orig.begin(), Orig.end());
 		_hash = Orig._hash;
-		Excluded = Orig.Excluded;
+		_excluded = Orig.excluded();
 	}
 	inline void Copy(const Trajectory &Orig, const pos Pos)
 	{
@@ -45,11 +44,23 @@ public:
 		for (auto i = Orig.begin(); i < Orig.end(); i++)
 			if (*i != Pos)
 				push_back(*i);
-		_hash = Orig._hash ^ GetZobristHash(Pos);
-		Excluded = Orig.Excluded;
+		_hash = Orig.hash() ^ GetZobristHash(Pos);
+		_excluded = Orig.excluded();
 	}
-	inline size_t get_hash()
+	inline size_t hash() const
 	{
 		return _hash;
+	}
+	inline void exclude()
+	{
+		_excluded = true;
+	}
+	inline void include()
+	{
+		_excluded = false;
+	}
+	inline bool excluded() const
+	{
+		return _excluded;
 	}
 };
