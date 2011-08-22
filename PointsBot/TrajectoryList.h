@@ -134,7 +134,7 @@ public:
 	// Конструктор.
 	inline TrajectoryList()
 	{
-		Clear();
+		Trajectories.reserve(MAX_TRAJECTORIES_COUNT);
 	}
 	// Конструктор копирования.
 // 	inline TrajectoryList(const TrajectoryList &Orig)
