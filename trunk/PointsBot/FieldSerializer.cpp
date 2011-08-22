@@ -13,7 +13,7 @@ bool FieldSerializer::ToXT(Field &CurField, string FileName)
 	if (CurField.Width != 39 || CurField.Height != 32 || CurField.SurCond != Standart || CurField.PointsSeq.size() == 0)
 		return false;
 
-	ofstream Stream(FileName, ios_base::binary | ios_base::out | ios_base::trunc);
+	ofstream Stream(FileName, ios::binary | ios::out | ios::trunc);
 
 	if (!Stream)
 		return false;
@@ -21,16 +21,20 @@ bool FieldSerializer::ToXT(Field &CurField, string FileName)
 	// ѕервый байт - верси€ клиента.
 	Stream << static_cast<char>(121);
 	// —ледующие 2 байта - количество поставленных точек - 1.
-	Stream << static_cast<ushort>(CurField.PointsSeq.size() - 1);
+	Stream << static_cast<char>((CurField.PointsSeq.size() - 1) & 0xFF); Stream << static_cast<char>(((CurField.PointsSeq.size() - 1) >> 8) & 0xFF);
 	// ƒалее 2 байта, указывающие на цвет последнего игрока, сделавшего ход.
 	if (CurField.GetPlayer(CurField.PointsSeq.back()) == PlayerRed)
-		Stream << static_cast<ushort>(0xFFFF);
+	{
+		Stream << static_cast<char>(0xFF); Stream << static_cast<char>(0xFF);
+	}
 	else
-		Stream << static_cast<ushort>(0xFFFF);
+	{
+		Stream << static_cast<char>(0xFF);
+	}
 	// ???
-	Stream << static_cast<ushort>(0x0000);
-	Stream << static_cast<ushort>(0x0000);
-	Stream << static_cast<ushort>(0x0000);
+	Stream << static_cast<char>(0x00); Stream << static_cast<char>(0x00);
+	Stream << static_cast<char>(0x00); Stream << static_cast<char>(0x00);
+	Stream << static_cast<char>(0x00); Stream << static_cast<char>(0x00);
 	// ƒалее идут имена двух игроков по 9 байт.
 	Stream << "                  ";
 	// ¬идимо, здесь в первых четырех байтах идет врем€ сохранени€ партии или ее продолжительность, дальше нули.
@@ -47,9 +51,13 @@ bool FieldSerializer::ToXT(Field &CurField, string FileName)
 		Stream << static_cast<char>(1);
 		// «атем цвет игрока, поставившего точку.
 		if (CurField.GetPlayer(*i) == PlayerRed)
-			Stream << static_cast<ushort>(0xFFFF);
+		{
+			Stream << static_cast<char>(0xFF); Stream << static_cast<char>(0xFF);
+		}
 		else
-			Stream << static_cast<ushort>(0x0000);
+		{
+			Stream << static_cast<char>(0x00); Stream << static_cast<char>(0x00);
+		}
 		// ???
 		for (short j = 0; j < 8; j++)
 			Stream << static_cast<char>(0x00);
