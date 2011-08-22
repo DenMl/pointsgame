@@ -785,7 +785,7 @@ inline IntersectionState Field::GetIntersectionState(const pos Pos, const pos Ne
 {
 	Point a, b;
 	ConvertToXY(Pos, a.X, a.Y);
-	ConvertToXY(NextPos, b.X, a.Y);
+	ConvertToXY(NextPos, b.X, b.Y);
 
 	if (b.X <= a.X)
 		switch (b.Y - a.Y)
