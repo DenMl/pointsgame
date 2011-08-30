@@ -21,7 +21,7 @@ public:
 
 private:
 	template<typename _InIt>
-	inline void AddNewTrajectory(Field &CurrentField, _InIt begin, _InIt end, player Player)
+	inline void AddNewTrajectory(field &CurrentField, _InIt begin, _InIt end, player Player)
 	{
 		size_t TempHash = 0;
 
@@ -29,7 +29,7 @@ private:
 		//  ажда€ точка траектории должна окружать что-либо и иметь р€дом хот€ бы 2 группы точек.
 		// ≈сли нет - не добавл€ем эту траекторию.
 		for (auto i = begin; i < end; i++)
-			if (!CurrentField.IsBaseBound(*i) || (CurrentField.NumberNearGroups(*i, Player) < 2))
+			if (!CurrentField.is_base_bound(*i) || (CurrentField.number_near_groups(*i, Player) < 2))
 				return;
 
 		// ¬ысчитываем хеш траектории и сравниваем с уже существующими дл€ исключени€ повторов.
@@ -64,69 +64,69 @@ private:
 	}
 
 	// ѕровер€ет, во все ли точки траектории можно сделать ход, кроме, возможно, точки Pos.
-	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory, pos Pos)
+	inline static bool IsTrajectoryValid(field &CurField, const Trajectory &CurTrajectory, pos Pos)
 	{
 		for (auto i = CurTrajectory.begin(); i < CurTrajectory.end(); i++)
-			if (*i != Pos && !CurField.PuttingAllow(*i))
+			if (*i != Pos && !CurField.putting_allow(*i))
 				return false;
 		return true;
 	}
-	inline static bool IsTrajectoryValid(Field &CurField, const Trajectory &CurTrajectory)
+	inline static bool IsTrajectoryValid(field &CurField, const Trajectory &CurTrajectory)
 	{
 		for (auto i = CurTrajectory.begin(); i < CurTrajectory.end(); i++)
-			if (!CurField.PuttingAllow(*i))
+			if (!CurField.putting_allow(*i))
 				return false;
 		return true;
 	}
 
 	// –екурсивна€ функци€ построени€ траекторий.
-	void BuildTrajectoriesRecursive(Field &CurField, uint Depth, player Player)
+	void BuildTrajectoriesRecursive(field &CurField, uint Depth, player Player)
 	{
-		for (pos Pos = CurField.MinPos; Pos <= CurField.MaxPos; Pos++)
+		for (pos Pos = CurField.min_pos(); Pos <= CurField.max_pos(); Pos++)
 		{
-			if (CurField.PuttingAllow(Pos) && CurField.IsNearPoints(Pos, Player))
+			if (CurField.putting_allow(Pos) && CurField.is_near_points(Pos, Player))
 			{
-				if (CurField.IsInEmptyBase(Pos)) // ≈сли поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
+				if (CurField.is_in_empty_base(Pos)) // ≈сли поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
 				{
-					CurField.DoUnsafeStep(Pos, Player);
-					if (CurField.DCaptureCount > 0)
-						AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
-					CurField.UndoStep();
+					CurField.do_unsafe_step(Pos, Player);
+					if (CurField.get_d_score() > 0)
+						AddNewTrajectory(CurField, CurField.points_seq.end() - (CurrentDepth - Depth), CurField.points_seq.end(), Player);
+					CurField.undo_step();
 				}
 				else
 				{
-					CurField.DoUnsafeStep(Pos, Player);
+					CurField.do_unsafe_step(Pos, Player);
 
 #if SURROUND_CONDITIONS
-					if (CurField.IsBaseBound(Pos) && CurField.DCaptureCount == 0)
+					if (CurField.is_base_bound(Pos) && CurField.get_d_score() == 0)
 					{
-						CurField.UndoStep();
+						CurField.undo_step();
 						continue;
 					}
 #endif
 
-					if (CurField.DCaptureCount > 0)
-						AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
+					if (CurField.get_d_score() > 0)
+						AddNewTrajectory(CurField, CurField.points_seq.end() - (CurrentDepth - Depth), CurField.points_seq.end(), Player);
 					else if (Depth > 0)
 						BuildTrajectoriesRecursive(CurField, Depth - 1, Player);
 
-					CurField.UndoStep();
+					CurField.undo_step();
 				}
 			}
 		}
 	}
-	void BuildCurrentTrajectoriesRecursive(Field &CurField, uint Depth, player Player, pos CheckedPos)
+	void BuildCurrentTrajectoriesRecursive(field &CurField, uint Depth, player Player, pos CheckedPos)
 	{
-		for (pos Pos = CurField.MinPos; Pos <= CurField.MaxPos; Pos++)
+		for (pos Pos = CurField.min_pos(); Pos <= CurField.max_pos(); Pos++)
 		{
-			if (CurField.PuttingAllow(Pos) && CurField.IsNearPoints(Pos, Player))
+			if (CurField.putting_allow(Pos) && CurField.is_near_points(Pos, Player))
 			{
-				if (CurField.DoUnsafeStepAndCheckPoint(Pos, Player, CheckedPos))
-					AddNewTrajectory(CurField, CurField.PointsSeq.end() - (CurrentDepth - Depth), CurField.PointsSeq.end(), Player);
-				else if (!CurField.IsInEmptyBase(Pos) && Depth > 0)
+				if (CurField.do_unsafe_step_and_check_point(Pos, Player, CheckedPos))
+					AddNewTrajectory(CurField, CurField.points_seq.end() - (CurrentDepth - Depth), CurField.points_seq.end(), Player);
+				else if (!CurField.is_in_empty_base(Pos) && Depth > 0)
 					BuildCurrentTrajectoriesRecursive(CurField, Depth - 1, Player, CheckedPos);
 
-				CurField.UndoStep();
+				CurField.undo_step();
 			}
 		}
 	}
@@ -152,20 +152,20 @@ public:
 	}
 
 	// ѕостроить траектории на поле CurrentField длиной Depth за игрока Player.
-	inline void BuildTrajectories(Field &CurField, uint Depth, short Player)
+	inline void BuildTrajectories(field &CurField, uint Depth, short Player)
 	{
 		CurrentDepth = Depth;
 		BuildTrajectoriesRecursive(CurField, Depth - 1, Player);
 	}
 	// ѕостроить траектории на поле CurrentField на основе уже существующих траекторий LastTrajectories.
-	inline void BuildEnemyTrajectories(Field &CurField, TrajectoryList &LastTrajectories, uint Pos, uint Depth)
+	inline void BuildEnemyTrajectories(field &CurField, TrajectoryList &LastTrajectories, uint Pos, uint Depth)
 	{
 		for (auto i = LastTrajectories.Trajectories.begin(); i < LastTrajectories.Trajectories.end(); i++)
 			if ((i->size() <= Depth || (i->size() == Depth + 1 && find(i->begin(), i->end(), Pos) != i->end())) && IsTrajectoryValid(CurField, *i, Pos))
 				AddNewTrajectory(*i, Pos);
 	}
 
-	inline void BuildCurrentTrajectories(Field &CurField, TrajectoryList &LastTrajectories, uint Pos, uint Depth, short Player)
+	inline void BuildCurrentTrajectories(field &CurField, TrajectoryList &LastTrajectories, uint Pos, uint Depth, short Player)
 	{
 		for (auto i = LastTrajectories.Trajectories.begin(); i < LastTrajectories.Trajectories.end(); i++)
 			if (IsTrajectoryValid(CurField, *i))

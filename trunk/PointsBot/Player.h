@@ -5,12 +5,12 @@
 using namespace std;
 
 // Значение бита первого игрока.
-static const short PlayerRed = 0x0;
+const short player_red = 0x0;
 // Значение бита второго игрока.
-static const short PlayerBlack = 0x1;
+const short player_black = 0x1;
 
 // Получить по игроку следующего игрока.
-inline short NextPlayer(const short Player)
+inline short next_player(const short cur_player)
 {
-	return Player ^ 1;
+	return cur_player ^ 1;
 }

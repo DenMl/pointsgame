@@ -17,7 +17,7 @@
 
 using namespace std;
 
-inline short PlayRandomGame(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves)
+inline short PlayRandomGame(field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	uint Putted = 0;
@@ -33,31 +33,31 @@ inline short PlayRandomGame(Field &CurrentField, static_vector<pos, MAX_CHAIN_PO
 	}
 
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
-		if (CurrentField.PuttingAllow(*i))
+		if (CurrentField.putting_allow(*i))
 		{
-			CurrentField.DoUnsafeStep(*i);
+			CurrentField.do_unsafe_step(*i);
 			Putted++;
 		}
 
-		if (CurrentField.GetScore(PlayerRed) > 0)
-			result = PlayerRed;
-		else if (CurrentField.GetScore(PlayerBlack) > 0)
-			result = PlayerBlack;
+		if (CurrentField.get_score(player_red) > 0)
+			result = player_red;
+		else if (CurrentField.get_score(player_black) > 0)
+			result = player_black;
 		else
 			result = -1;
 
 		for (uint i = 0; i < Putted; i++)
-			CurrentField.UndoStep();
+			CurrentField.undo_step();
 
 		return result;
 }
 
-inline void CreateChildren(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+inline void CreateChildren(field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	Node **CurrentChild = &n.Child;
 
 	for (auto i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
-		if (CurrentField.PuttingAllow(*i))
+		if (CurrentField.putting_allow(*i))
 		{
 			*CurrentChild = new Node();
 			(*CurrentChild)->Move = *i;
@@ -93,7 +93,7 @@ inline Node* UCTSelect(Node &n)
 	return result;
 }
 
-short PlaySimulation(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
+short PlaySimulation(field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves, Node &n)
 {
 	short randomresult;
 
@@ -111,83 +111,83 @@ short PlaySimulation(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS> &
 		if (next == NULL)
 		{
 			n.Visits = ULONG_MAX;
-			if (CurrentField.GetScore(NextPlayer(CurrentField.CurPlayer)) > 0)
+			if (CurrentField.get_score(next_player(CurrentField.get_player())) > 0)
 				n.Wins = ULONG_MAX;
 
-			if (CurrentField.GetScore(PlayerRed) > 0)
-				return PlayerRed;
-			else if (CurrentField.GetScore(PlayerBlack) > 0)
-				return PlayerBlack;
+			if (CurrentField.get_score(player_red) > 0)
+				return player_red;
+			else if (CurrentField.get_score(player_black) > 0)
+				return player_black;
 			else
 				return -1;
 		}
 
-		CurrentField.DoUnsafeStep(next->Move);
+		CurrentField.do_unsafe_step(next->Move);
 
 		randomresult = PlaySimulation(CurrentField, PossibleMoves, *next);
 
-		CurrentField.UndoStep();
+		CurrentField.undo_step();
 	}
 
 	n.Visits++;
-	if (randomresult == NextPlayer(CurrentField.CurPlayer))
+	if (randomresult == next_player(CurrentField.get_player()))
 		n.Wins++;
 
 	return randomresult;
 }
 
-inline void GeneratePossibleMoves(Field &CurField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves)
+inline void GeneratePossibleMoves(field &CurField, static_vector<pos, MAX_CHAIN_POINTS> &PossibleMoves)
 {
 	ushort TempField[PointsLength22] = {0};
 	std::queue<pos> q;
 
 	PossibleMoves.clear();
-	for (pos i = CurField.MinPos; i <= CurField.MaxPos; i++)
-		if (CurField.IsPutted(i)) //TODO: Класть соседей, а не сами точки.
+	for (pos i = CurField.min_pos(); i <= CurField.max_pos(); i++)
+		if (CurField.is_putted(i)) //TODO: Класть соседей, а не сами точки.
 			q.push(i);
 
 	while (!q.empty())
 	{
-		if (CurField.PuttingAllow(q.front())) //TODO: Убрать условие.
+		if (CurField.putting_allow(q.front())) //TODO: Убрать условие.
 			PossibleMoves.push_back(q.front());
 		if (TempField[q.front()] < UCTRadius)
 		{
-			if (CurField.PuttingAllow(q.front() - FieldWidth2 - 1) && TempField[q.front() - FieldWidth2 - 1] == 0)
+			if (CurField.putting_allow(q.front() - FieldWidth2 - 1) && TempField[q.front() - FieldWidth2 - 1] == 0)
 			{
 				TempField[q.front() - FieldWidth2 - 1] = TempField[q.front()] + 1;
 				q.push(q.front() - FieldWidth2 - 1);
 			}
-			if (CurField.PuttingAllow(q.front() - FieldWidth2) && TempField[q.front() - FieldWidth2] == 0)
+			if (CurField.putting_allow(q.front() - FieldWidth2) && TempField[q.front() - FieldWidth2] == 0)
 			{
 				TempField[q.front() - FieldWidth2] = TempField[q.front()] + 1;
 				q.push(q.front() - FieldWidth2);
 			}
-			if (CurField.PuttingAllow(q.front() - FieldWidth2 + 1) && TempField[q.front() - FieldWidth2 + 1] == 0)
+			if (CurField.putting_allow(q.front() - FieldWidth2 + 1) && TempField[q.front() - FieldWidth2 + 1] == 0)
 			{
 				TempField[q.front() - FieldWidth2 + 1] = TempField[q.front()] + 1;
 				q.push(q.front() - FieldWidth2 + 1);
 			}
-			if (CurField.PuttingAllow(q.front() - 1) && TempField[q.front() - 1] == 0)
+			if (CurField.putting_allow(q.front() - 1) && TempField[q.front() - 1] == 0)
 			{
 				TempField[q.front() - 1] = TempField[q.front()] + 1;
 				q.push(q.front() - 1);
 			}
-			if (CurField.PuttingAllow(q.front() + 1) && TempField[q.front() + 1] == 0)
+			if (CurField.putting_allow(q.front() + 1) && TempField[q.front() + 1] == 0)
 			{
 				TempField[q.front() + 1] = TempField[q.front()] + 1;
 				q.push(q.front() + 1);
 			}
-			if (CurField.PuttingAllow(q.front() + FieldWidth2 - 1) && TempField[q.front() + FieldWidth2 - 1] == 0)
+			if (CurField.putting_allow(q.front() + FieldWidth2 - 1) && TempField[q.front() + FieldWidth2 - 1] == 0)
 			{
 				TempField[q.front() + FieldWidth2 - 1] = TempField[q.front()] + 1;
 				q.push(q.front() + FieldWidth2 - 1);
 			}
-			if (CurField.PuttingAllow(q.front() + FieldWidth2) && TempField[q.front() + FieldWidth2] == 0)
+			if (CurField.putting_allow(q.front() + FieldWidth2) && TempField[q.front() + FieldWidth2] == 0)
 			{
 				TempField[q.front() + FieldWidth2] = TempField[q.front()] + 1;
 				q.push(q.front() + FieldWidth2);
 			}
-			if (CurField.PuttingAllow(q.front() + FieldWidth2 + 1) && TempField[q.front() + FieldWidth2 + 1] == 0)
+			if (CurField.putting_allow(q.front() + FieldWidth2 + 1) && TempField[q.front() + FieldWidth2 + 1] == 0)
 			{
 				TempField[q.front() + FieldWidth2 + 1] = TempField[q.front()] + 1;
 				q.push(q.front() + FieldWidth2 + 1);
@@ -212,7 +212,7 @@ inline void FinalUCT(Node *n)
 		RecursiveFinalUCT(n->Child);
 }
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimate(field &MainField, ulong MaxSimulations, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
 	static_vector<pos, MAX_CHAIN_POINTS> PossibleMoves;
@@ -232,11 +232,7 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<pos, MA
 	{
 		Node n;
 
-		Field *LocalField = new Field(MainField);
-#if !ABSOLUTE_UCT
-		LocalField->CaptureCount[0] = 0;
-		LocalField->CaptureCount[1] = 0;
-#endif
+		field *LocalField = new field(MainField);
 
 		Node **CurChild = &n.Child;
 		for (auto i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())
@@ -276,7 +272,7 @@ double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<pos, MA
 	return BestEstimate;
 }
 
-double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
+double UCTEstimateWithTime(field &MainField, ulong Time, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	// Список всех возможных ходов для UCT.
 	static_vector<pos, MAX_CHAIN_POINTS> PossibleMoves;
@@ -298,11 +294,7 @@ double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<pos, MAX_
 	{
 		Node n;
 
-		Field *LocalField = new Field(MainField);
-#if !ABSOLUTE_UCT
-		LocalField->CaptureCount[0] = 0;
-		LocalField->CaptureCount[1] = 0;
-#endif
+		field *LocalField = new field(MainField);
 
 		Node **CurChild = &n.Child;
 		for (auto i = FirstMoves.begin() + omp_get_thread_num(); i < FirstMoves.end(); i += omp_get_num_threads())

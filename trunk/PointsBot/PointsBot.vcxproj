@@ -165,14 +165,13 @@
     <None Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AuxFunc.h" />
     <ClInclude Include="BasicConstants.h" />
     <ClInclude Include="BasicTypes.h" />
     <ClInclude Include="BotEngine.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="FieldSerializer.h" />
     <ClInclude Include="static_vector.h" />
-    <ClInclude Include="Field.h" />
+    <ClInclude Include="field.h" />
     <ClInclude Include="MinMaxEstimate.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointsBot.h" />
@@ -201,7 +200,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Field.cpp" />
+    <ClCompile Include="field.cpp" />
     <ClCompile Include="FieldSerializer.cpp" />
     <ClCompile Include="MinMaxEstimate.cpp" />
     <ClCompile Include="PointsBot.cpp" />

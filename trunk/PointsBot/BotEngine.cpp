@@ -10,21 +10,21 @@
 
 using namespace std;
 
-void BuildAllMoves(Field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
+void BuildAllMoves(field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
 {
 	Moves.clear();
-	for (pos i = MainField.MinPos; i <= MainField.MaxPos; i++)
-		if (MainField.PuttingAllow(i))
+	for (pos i = MainField.min_pos(); i <= MainField.max_pos(); i++)
+		if (MainField.putting_allow(i))
 			Moves.push_back(i);
 }
 
-pos SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
+pos SearchBestMove(field &MainField, uint Depth, ulong UCTIterations)
 {
 	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// ≈сли на доске не стоит ни одной точки - возвращаем случайный ход.
-	if (MainField.PointsSeq.size() == 0)
+	if (MainField.points_seq.size() == 0)
 		return Moves[rand() % Moves.size()];
 
 	if (Moves.size() == 1) // ≈сли возможный ход один - возвращаем его.
@@ -56,13 +56,13 @@ pos SearchBestMove(Field &MainField, uint Depth, ulong UCTIterations)
 		return Moves[rand() % Moves.size()];
 }
 
-pos SearchBestMoveWithTime(Field &MainField, ulong Time)
+pos SearchBestMoveWithTime(field &MainField, ulong Time)
 {
 	static_vector<pos, MAX_CHAIN_POINTS> Moves;
 	BuildAllMoves(MainField, Moves);
 
 	// ≈сли на доске не стоит ни одной точки - возвращаем случайный ход.
-	if (MainField.PointsSeq.size() == 0)
+	if (MainField.points_seq.size() == 0)
 		return Moves[rand() % Moves.size()];
 
 	if (Moves.size() == 1) // ≈сли возможный ход один - возвращаем его.

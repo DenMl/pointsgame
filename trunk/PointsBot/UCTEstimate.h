@@ -30,5 +30,5 @@ struct Node
 	}
 };
 
-double UCTEstimate(Field &MainField, ulong MaxSimulations, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
-double UCTEstimateWithTime(Field &MainField, ulong Time, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimate(field &MainField, ulong MaxSimulations, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
+double UCTEstimateWithTime(field &MainField, ulong Time, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
