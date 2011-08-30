@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config.h"
+#include <utility>
 #include <stack>
 
 using namespace std;
@@ -16,49 +17,37 @@ typedef int score;
 typedef short coord;
 
 // Структура координат точки.
-struct Point
+struct point
 {
-	coord X, Y;
+	coord x, y;
 };
 
-enum SurroundCondition
+enum sur_cond
 {
-	Standart,
-	Always,
-	AlwaysEnemy
+	SC_STANDART,
+	SC_ALWAYS,
+	SC_ALWAYS_ENEMY
 };
 
-enum BeginPattern
+enum begin_pattern
 {
-	CleanPattern,
-	CrosswisePattern,
-	SquarePattern
+	BP_CLEAN,
+	BP_CROSSWIRE,
+	BP_SQUARE
 };
 
-enum IntersectionState
+enum intersection_state
 {
-	ISNone,
-	ISUp,
-	ISDown,
-	ISTarget
+	IS_NONE,
+	IS_UP,
+	IS_DOWN,
+	IS_TARGET
 };
 
-template<typename T1, typename T2> struct Pair
+struct board_change
 {
-	T1 first;
-	T2 second;
-
-	inline Pair(T1 a, T2 b)
-	{
-		first = a;
-		second = b;
-	}
-};
-
-struct BoardChange
-{
-	uint CaptureCount[2];
-	player Player;
-	ulong Hash;
-	stack<Pair<pos, value>> Changes;
+	uint capture_count[2];
+	player player;
+	ulong hash;
+	stack<pair<pos, value>> changes;
 };

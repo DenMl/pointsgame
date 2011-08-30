@@ -98,7 +98,7 @@ public:
 
 #pragma region MainVariables
 public:
-	static_vector<BoardChange, MAX_CHAIN_POINTS> Changes;
+	static_vector<board_change, MAX_CHAIN_POINTS> Changes;
 
 	// Main points array (game board).
 	// Основной массив точек (игровая доска).
@@ -119,13 +119,13 @@ public:
 	// SurStandart = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.
 	// SurAlways = 1 - обводить базу, даже если нет вражеских точек внутри.
 	// SurAlwaysEnemy = 2 - обводит всегда PlayerBlack, если PlayerRed поставил точку в пустую базу.
-	SurroundCondition SurCond;
+	sur_cond SurCond;
 
 	// Используемый шаблон в начале игры.
 	// Crosswise = 0 - Crosswise.
 	// Clean = 1 - Clean.
 	// Square = 2 - Square.
-	BeginPattern Pattern;
+	begin_pattern Pattern;
 
 	// Размеры границ поля.
 	coord ExpandWidth, ExpandHeight;
@@ -183,11 +183,11 @@ private:
 	bool BuildChain(const pos StartPos, const value EnableCond, const pos DirectionPos, static_vector<pos, MAX_CHAIN_POINTS> &Chain);
 	void FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos InsidePoint, player Player);
 	inline void UpdateHash(player Player, short Surrounded, pos Pos);
-	inline IntersectionState GetIntersectionState(const pos Pos, const pos NextPos) const;
+	inline intersection_state GetIntersectionState(const pos Pos, const pos NextPos) const;
 
 public:
 	// Конструктор.
-	Field(const coord FieldWidth, const coord FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern);
+	Field(const coord FieldWidth, const coord FieldHeight, const sur_cond SurCond, const begin_pattern BeginPattern);
 	// Конструктор копирования.
 	Field(const Field &Orig);
 
@@ -232,12 +232,12 @@ public:
 	inline void DoUnsafeStep(const pos Pos)
 	{
 		Changes.resize(Changes.size() + 1);
-		Changes.back().CaptureCount[0] = CaptureCount[0];
-		Changes.back().CaptureCount[1] = CaptureCount[1];
-		Changes.back().Player = CurPlayer;
+		Changes.back().capture_count[0] = CaptureCount[0];
+		Changes.back().capture_count[1] = CaptureCount[1];
+		Changes.back().player = CurPlayer;
 
 		// Добавляем в изменения поставленную точку.
-		Changes.back().Changes.push(Pair<pos, value>(Pos, Points[Pos]));
+		Changes.back().changes.push(pair<pos, value>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, CurPlayer);
 		SetPutted(Pos);
@@ -252,12 +252,12 @@ public:
 	inline void DoUnsafeStep(const pos Pos, const player Player)
 	{
 		Changes.resize(Changes.size() + 1);
-		Changes.back().CaptureCount[0] = CaptureCount[0];
-		Changes.back().CaptureCount[1] = CaptureCount[1];
-		Changes.back().Player = CurPlayer;
+		Changes.back().capture_count[0] = CaptureCount[0];
+		Changes.back().capture_count[1] = CaptureCount[1];
+		Changes.back().player = CurPlayer;
 
 		// Добавляем в изменения поставленную точку.
-		Changes.back().Changes.push(Pair<pos, value>(Pos, Points[Pos]));
+		Changes.back().changes.push(pair<pos, value>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
@@ -271,12 +271,12 @@ public:
 	inline bool DoUnsafeStepAndCheckPoint(const pos Pos, const player Player, const pos CheckedPos)
 	{
 		Changes.resize(Changes.size() + 1);
-		Changes.back().CaptureCount[0] = CaptureCount[0];
-		Changes.back().CaptureCount[1] = CaptureCount[1];
-		Changes.back().Player = CurPlayer;
+		Changes.back().capture_count[0] = CaptureCount[0];
+		Changes.back().capture_count[1] = CaptureCount[1];
+		Changes.back().player = CurPlayer;
 
 		// Добавляем в изменения поставленную точку.
-		Changes.back().Changes.push(Pair<pos, value>(Pos, Points[Pos]));
+		Changes.back().changes.push(pair<pos, value>(Pos, Points[Pos]));
 
 		SetPlayer(Pos, Player);
 		SetPutted(Pos);
@@ -290,14 +290,14 @@ public:
 	inline void UndoStep()
 	{
 		PointsSeq.pop_back();
-		while (!Changes.back().Changes.empty())
+		while (!Changes.back().changes.empty())
 		{
-			Points[Changes.back().Changes.top().first] = Changes.back().Changes.top().second;
-			Changes.back().Changes.pop();
+			Points[Changes.back().changes.top().first] = Changes.back().changes.top().second;
+			Changes.back().changes.pop();
 		}
-		CurPlayer = Changes.back().Player;
-		CaptureCount[0] = Changes.back().CaptureCount[0];
-		CaptureCount[1] = Changes.back().CaptureCount[1];
+		CurPlayer = Changes.back().player;
+		CaptureCount[0] = Changes.back().capture_count[0];
+		CaptureCount[1] = Changes.back().capture_count[1];
 		Changes.pop_back();
 	}
 
@@ -427,37 +427,37 @@ public:
 	{
 		uint Intersections = 0;
 
-		IntersectionState State = ISNone;
+		intersection_state State = IS_NONE;
 
 		for (auto i = Ring.begin(); i < Ring.end(); i++)
 		{
 			switch (GetIntersectionState(TestedPos, *i))
 			{
-			case (ISNone):
-				State = ISNone;
+			case (IS_NONE):
+				State = IS_NONE;
 				break;
-			case (ISUp):
-				if (State == ISDown)
+			case (IS_UP):
+				if (State == IS_DOWN)
 					Intersections++;
-				State = ISUp;
+				State = IS_UP;
 				break;
-			case (ISDown):
-				if (State == ISUp)
+			case (IS_DOWN):
+				if (State == IS_UP)
 					Intersections++;
-				State = ISDown;
+				State = IS_DOWN;
 				break;
 			}
 		}
-		if (State == ISUp || State == ISDown)
+		if (State == IS_UP || State == IS_DOWN)
 		{
 			auto i = Ring.begin();
-			IntersectionState TempState = GetIntersectionState(TestedPos, *i);
-			while (TempState == State || TempState == ISTarget)
+			intersection_state TempState = GetIntersectionState(TestedPos, *i);
+			while (TempState == State || TempState == IS_TARGET)
 			{
 				i++;
 				TempState = GetIntersectionState(TestedPos, *i);
 			}
-			if (TempState != ISNone)
+			if (TempState != IS_NONE)
 				Intersections++;
 		}
 
@@ -489,7 +489,7 @@ public:
 			}
 
 #if SURROUND_CONDITIONS
-			if (SurCond != AlwaysEnemy) // Если приоритет не всегда у врага.
+			if (SurCond != SC_ALWAYS_ENEMY) // Если приоритет не всегда у врага.
 #endif
 			{
 				InpPointsCount = GetInputPoints(StartPos, Player | PutBit, InpChainPoints, InpSurPoints);
@@ -568,7 +568,7 @@ public:
 						for (auto j = Chain.begin(); j < Chain.end(); j++)
 						{
 							// Добавляем в список изменений точки цепочки.
-							Changes.back().Changes.push(Pair<pos, value>(*j, Points[*j]));
+							Changes.back().changes.push(pair<pos, value>(*j, Points[*j]));
 							// Помечаем точки цепочки.
 							SetBaseBound(*j);
 						}
@@ -781,24 +781,24 @@ inline void Field::UpdateHash(player Player, short Surrounded, pos Pos)
 {
 	Hash ^= GetZobristHash(Player, Surrounded, Pos);
 }
-inline IntersectionState Field::GetIntersectionState(const pos Pos, const pos NextPos) const
+inline intersection_state Field::GetIntersectionState(const pos Pos, const pos NextPos) const
 {
-	Point a, b;
-	ConvertToXY(Pos, a.X, a.Y);
-	ConvertToXY(NextPos, b.X, b.Y);
+	point a, b;
+	ConvertToXY(Pos, a.x, a.y);
+	ConvertToXY(NextPos, b.x, b.y);
 
-	if (b.X <= a.X)
-		switch (b.Y - a.Y)
+	if (b.x <= a.x)
+		switch (b.y - a.y)
 	{
 		case (1):
-			return ISUp;
+			return IS_UP;
 		case (0):
-			return ISTarget;
+			return IS_TARGET;
 		case (-1):
-			return ISDown;
+			return IS_DOWN;
 		default:
-			return ISNone;
+			return IS_NONE;
 	}
 	else
-		return ISNone;
+		return IS_NONE;
 }
