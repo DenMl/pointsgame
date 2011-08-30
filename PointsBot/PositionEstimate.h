@@ -7,4 +7,4 @@
 
 using namespace std;
 
-void PositionEstimate(Field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
+void PositionEstimate(field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves);

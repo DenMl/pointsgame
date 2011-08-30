@@ -9,5 +9,5 @@ using namespace std;
 class FieldSerializer
 {
 public:
-	static bool ToXT(Field &CurField, string FileName);
+	static bool ToXT(field &CurField, string FileName);
 };

@@ -22,6 +22,10 @@ struct point
 	coord x, y;
 };
 
+// Правила обработки пустых баз.
+// SurStandart = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.
+// SurAlways = 1 - обводить базу, даже если нет вражеских точек внутри.
+// SurAlwaysEnemy = 2 - обводит всегда PlayerBlack, если PlayerRed поставил точку в пустую базу.
 enum sur_cond
 {
 	SC_STANDART,

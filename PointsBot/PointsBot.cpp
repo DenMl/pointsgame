@@ -5,49 +5,49 @@
 #include "BotEngine.h"
 #include "Random.h"
 
-Field* InitField(size_t FieldWidth, size_t FieldHeight, size_t SurCond, size_t Pattern)
+field* InitField(size_t FieldWidth, size_t FieldHeight, size_t SurCond, size_t Pattern)
 {
-	return new Field((ushort)FieldWidth, (ushort)FieldHeight, (sur_cond)SurCond, (begin_pattern)Pattern);
+	return new field((ushort)FieldWidth, (ushort)FieldHeight, (sur_cond)SurCond, (begin_pattern)Pattern);
 }
 
-void FinalField(Field *MainField)
+void FinalField(field *MainField)
 {
 	if (MainField != NULL)
 		delete MainField;
 }
 
-void PutPoint(Field *MainField, size_t X, size_t Y)
+void PutPoint(field *MainField, size_t X, size_t Y)
 {
-	MainField->DoStep(MainField->ConvertToPos((ushort)X, (ushort)Y));
+	MainField->do_step(MainField->to_pos((ushort)X, (ushort)Y));
 }
 
-void PutPlayersPoint(Field *MainField, size_t X, size_t Y, size_t Player)
+void PutPlayersPoint(field *MainField, size_t X, size_t Y, size_t Player)
 {
-	MainField->DoStep(MainField->ConvertToPos((ushort)X, (ushort)Y), (short)Player);
+	MainField->do_step(MainField->to_pos((ushort)X, (ushort)Y), (short)Player);
 }
 
-void RemoveLastPoint(Field *MainField)
+void RemoveLastPoint(field *MainField)
 {
-	MainField->UndoStep();
+	MainField->undo_step();
 }
 
-void SetCurrentPlayer(Field *MainField, size_t Player)
+void SetCurrentPlayer(field *MainField, size_t Player)
 {
-	MainField->SetPlayer((short)Player);
+	MainField->set_player((short)Player);
 }
 
-size_t GetCurrentPlayer(Field *MainField)
+size_t GetCurrentPlayer(field *MainField)
 {
-	return MainField->CurPlayer;
+	return MainField->get_player();
 }
 
-void SetNextPlayer(Field *MainField)
+void SetNextPlayer(field *MainField)
 {
-	MainField->SetNextPlayer();
+	MainField->set_next_player();
 }
 
-void GetBotMove(Field *MainField, size_t MinMaxDepth, size_t UCTIterations, coord &X, coord &Y)
+void GetBotMove(field *MainField, size_t MinMaxDepth, size_t UCTIterations, coord &X, coord &Y)
 {
 	Randomize();
-	MainField->ConvertToXY(SearchBestMove(*MainField, (uint)MinMaxDepth, (ulong)UCTIterations), X, Y);
+	MainField->to_xy(SearchBestMove(*MainField, (uint)MinMaxDepth, (ulong)UCTIterations), X, Y);
 }
