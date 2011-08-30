@@ -48,7 +48,7 @@ void Field::RemoveEmptyBase(const pos StartPos)
 			});
 }
 
-bool Field::BuildChain(const pos StartPos, const value EnableCond, const pos DirectionPos, static_vector<pos, MAX_CHAIN_POINTS> &Chain)
+bool Field::BuildChain(const pos StartPos, const value EnableCond, const pos DirectionPos, list<pos> &Chain)
 {
 	pos Pos;
 
@@ -81,23 +81,23 @@ bool Field::BuildChain(const pos StartPos, const value EnableCond, const pos Dir
 	}
 	while (Pos != StartPos);
 
-	for (auto i = Chain.begin(); i < Chain.end(); i++)
+	for (auto i = Chain.begin(); i != Chain.end(); i++)
 		ClearTag(*i);
 
 	return (TempSquare < 0 && Chain.size() > 2);
 }
 
-void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos InsidePoint, player Player)
+void Field::FindSurround(list<pos> &Chain, pos InsidePoint, player Player)
 {
 	// Количество захваченных точек.
 	int CurCaptureCount = 0;
 	// Количество захваченных пустых полей.
 	int CurFreedCount = 0;
 
-	static_vector<pos, MAX_CHAIN_POINTS> SurPoints;
+	list<pos> SurPoints;
 
 	// Помечаем точки цепочки.
-	for (auto i = Chain.begin(); i < Chain.end(); i++)
+	for (auto i = Chain.begin(); i != Chain.end(); i++)
 		SetTag(*i);
 
 	Wave(	InsidePoint,
@@ -121,7 +121,7 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 	if (CurCaptureCount != 0) // Если захватили точки.
 #endif
 	{
-		for (auto i = Chain.begin(); i < Chain.end(); i++)
+		for (auto i = Chain.begin(); i != Chain.end(); i++)
 		{
 			ClearTag(*i);
 			// Добавляем в список изменений точки цепочки.
@@ -130,7 +130,7 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 			SetBaseBound(*i);
 		}
 
-		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
+		for (auto i = SurPoints.begin(); i != SurPoints.end(); i++)
 		{
 			Changes.back().changes.push(pair<pos, value>(*i, Points[*i]));
 
@@ -139,10 +139,10 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 	}
 	else // Если ничего не захватили.
 	{
-		for (auto i = Chain.begin(); i < Chain.end(); i++)
+		for (auto i = Chain.begin(); i != Chain.end(); i++)
 			ClearTag(*i);
 
-		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
+		for (auto i = SurPoints.begin(); i != SurPoints.end(); i++)
 		{
 			Changes.back().changes.push(pair<pos, value>(*i, Points[*i]));
 

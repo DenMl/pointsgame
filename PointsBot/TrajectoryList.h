@@ -20,7 +20,8 @@ public:
 	vector<Trajectory> Trajectories;
 
 private:
-	inline void AddNewTrajectory(Field &CurrentField, static_vector<pos, MAX_CHAIN_POINTS>::iterator begin, static_vector<pos, MAX_CHAIN_POINTS>::iterator end, player Player)
+	template<typename _InIt>
+	inline void AddNewTrajectory(Field &CurrentField, _InIt begin, _InIt end, player Player)
 	{
 		size_t TempHash = 0;
 

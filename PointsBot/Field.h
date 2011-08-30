@@ -6,8 +6,9 @@
 #include "Zobrist.h"
 #include "AuxFunc.h"
 #include "Player.h"
-#include "static_vector.h"
 #include <stack>
+#include <list>
+#include <vector>
 #include <functional>
 
 using namespace std;
@@ -98,7 +99,7 @@ public:
 
 #pragma region MainVariables
 public:
-	static_vector<board_change, MAX_CHAIN_POINTS> Changes;
+	vector<board_change> Changes;
 
 	// Main points array (game board).
 	// Основной массив точек (игровая доска).
@@ -113,7 +114,7 @@ public:
 
 	// History points sequance.
 	// Последовательность поставленных точек.
-	static_vector<pos, MAX_CHAIN_POINTS> PointsSeq;
+	vector<pos> PointsSeq;
 
 	// Правила обработки пустых баз.
 	// SurStandart = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.
@@ -174,8 +175,8 @@ private:
 	inline void Wave(pos StartPos, function<bool(pos)> Condition, function<void(pos)> Action);
 	// Удаляет пометку пустой базы с поля точек, начиная с позиции StartPos.
 	void RemoveEmptyBase(const pos StartPos);
-	bool BuildChain(const pos StartPos, const value EnableCond, const pos DirectionPos, static_vector<pos, MAX_CHAIN_POINTS> &Chain);
-	void FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos InsidePoint, player Player);
+	bool BuildChain(const pos StartPos, const value EnableCond, const pos DirectionPos, list<pos> &Chain);
+	void FindSurround(list<pos> &Chain, pos InsidePoint, player Player);
 	inline void UpdateHash(player Player, short Surrounded, pos Pos);
 	inline intersection_state GetIntersectionState(const pos Pos, const pos NextPos) const;
 
@@ -417,13 +418,13 @@ public:
 		return k;
 	}
 
-	bool PointInsideRing(const pos TestedPos, const static_vector<pos, MAX_CHAIN_POINTS> &Ring) const
+	bool PointInsideRing(const pos TestedPos, const list<pos> &Ring) const
 	{
 		uint Intersections = 0;
 
 		intersection_state State = IS_NONE;
 
-		for (auto i = Ring.begin(); i < Ring.end(); i++)
+		for (auto i = Ring.begin(); i != Ring.end(); i++)
 		{
 			switch (GetIntersectionState(TestedPos, *i))
 			{
@@ -464,7 +465,7 @@ public:
 		short InpPointsCount;
 		pos InpChainPoints[4], InpSurPoints[4];
 
-		static_vector<pos, MAX_CHAIN_POINTS> Chain;
+		list<pos> Chain;
 
 		DCaptureCount = 0;
 		DFreedCount = 0;
@@ -547,7 +548,7 @@ public:
 	{
 		pos InpChainPoints[4], InpSurPoints[4];
 
-		static_vector<pos, MAX_CHAIN_POINTS> Chain;
+		list<pos> Chain;
 
 		// Цвет игрока, точка которого проверяется.
 		short Player = GetPlayer(StartPos);
@@ -559,7 +560,7 @@ public:
 				if (BuildChain(StartPos, GetPlayer(StartPos) | PutBit, InpChainPoints[i], Chain))
 					if (PointInsideRing(CheckedPos, Chain))
 					{
-						for (auto j = Chain.begin(); j < Chain.end(); j++)
+						for (auto j = Chain.begin(); j != Chain.end(); j++)
 						{
 							// Добавляем в список изменений точки цепочки.
 							Changes.back().changes.push(pair<pos, value>(*j, Points[*j]));
@@ -736,7 +737,7 @@ inline void Field::SetCaptureFreeState(const pos Pos, const player Player)
 inline void Field::Wave(pos StartPos, function<bool(pos)> Condition, function<void(pos)> Action)
 {
 	// Очередь для волнового алгоритма (обхода в ширину).
-	static_vector<pos, MAX_CHAIN_POINTS> q;
+	list<pos> q;
 
 	q.push_back(StartPos);
 	SetTag(StartPos);
