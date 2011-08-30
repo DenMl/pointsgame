@@ -121,12 +121,6 @@ public:
 	// SurAlwaysEnemy = 2 - обводит всегда PlayerBlack, если PlayerRed поставил точку в пустую базу.
 	sur_cond SurCond;
 
-	// »спользуемый шаблон в начале игры.
-	// Crosswise = 0 - Crosswise.
-	// Clean = 1 - Clean.
-	// Square = 2 - Square.
-	begin_pattern Pattern;
-
 	// –азмеры границ пол€.
 	coord ExpandWidth, ExpandHeight;
 	// „етность размеров пол€ (четные => 0; нечетные => 1).
@@ -170,7 +164,7 @@ private:
 	// InpChainPoints - возможные точки цикла, InpSurPoints - возможные окруженные точки.
 	inline short GetInputPoints(const pos CenterPos, const value EnableCond, pos InpChainPoints[], pos InpSurPoints[]) const;
 	// ѕоставить начальные точки.
-	void PlaceBeginPattern();
+	void PlaceBeginPattern(begin_pattern cur_pattern);
 	// »зменение счета игроков.
 	inline void AddSubCapturedFreed(const player Player, const score Captured, const score Freed);
 	// »змен€ет Captured/Free в зависимости от того, захвачена или окружена точка.

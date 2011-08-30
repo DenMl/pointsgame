@@ -3,10 +3,10 @@
 
 using namespace std;
 
-void Field::PlaceBeginPattern()
+void Field::PlaceBeginPattern(begin_pattern cur_pattern)
 {
 	ushort X, Y;
-	switch (Pattern)
+	switch (cur_pattern)
 	{
 	case (BP_CROSSWIRE):
 		X = Width / 2 - 1;
@@ -182,7 +182,6 @@ Field::Field(const coord FieldWidth, const coord FieldHeight, const sur_cond Sur
 #if SURROUND_CONDITIONS
 	this->SurCond = SurCond;
 #endif
-	this->Pattern = BeginPattern;
 	CurPlayer = PlayerRed;
 	CaptureCount[0] = 0;
 	CaptureCount[1] = 0;
@@ -192,7 +191,7 @@ Field::Field(const coord FieldWidth, const coord FieldHeight, const sur_cond Sur
 	MinPos = ConvertToPos(0, 0);
 	MaxPos = ConvertToPos(FieldWidth - 1, FieldHeight - 1);
 
-	PlaceBeginPattern();
+	PlaceBeginPattern(BeginPattern);
 }
 
 Field::Field(const Field &Orig)
@@ -213,7 +212,6 @@ Field::Field(const Field &Orig)
 #if SURROUND_CONDITIONS
 	SurCond = Orig.SurCond;
 #endif
-	Pattern = Orig.Pattern;
 	CurPlayer = Orig.CurPlayer;
 	CaptureCount[0] = Orig.CaptureCount[0];
 	CaptureCount[1] = Orig.CaptureCount[1];
