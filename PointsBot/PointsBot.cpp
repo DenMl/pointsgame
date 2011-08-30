@@ -7,7 +7,7 @@
 
 Field* InitField(size_t FieldWidth, size_t FieldHeight, size_t SurCond, size_t Pattern)
 {
-	return new Field((ushort)FieldWidth, (ushort)FieldHeight, (SurroundCondition)SurCond, (BeginPattern)Pattern);
+	return new Field((ushort)FieldWidth, (ushort)FieldHeight, (sur_cond)SurCond, (begin_pattern)Pattern);
 }
 
 void FinalField(Field *MainField)

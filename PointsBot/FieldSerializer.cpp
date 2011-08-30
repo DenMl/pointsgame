@@ -10,7 +10,7 @@ using namespace std;
 
 bool FieldSerializer::ToXT(Field &CurField, string FileName)
 {
-	if (CurField.Width != 39 || CurField.Height != 32 || CurField.SurCond != Standart || CurField.PointsSeq.size() == 0)
+	if (CurField.Width != 39 || CurField.Height != 32 || CurField.SurCond != SC_STANDART || CurField.PointsSeq.size() == 0)
 		return false;
 
 	ofstream Stream(FileName, ios::binary | ios::out | ios::trunc);

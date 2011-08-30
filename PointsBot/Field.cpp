@@ -8,7 +8,7 @@ void Field::PlaceBeginPattern()
 	ushort X, Y;
 	switch (Pattern)
 	{
-	case (CrosswisePattern):
+	case (BP_CROSSWIRE):
 		X = Width / 2 - 1;
 		Y = Height / 2 - 1;
 		DoStep(ConvertToPos(X, Y));
@@ -19,7 +19,7 @@ void Field::PlaceBeginPattern()
 		X--;
 		DoStep(ConvertToPos(X, Y));
 		break;
-	case (SquarePattern):
+	case (BP_SQUARE):
 		X = Width / 2 - 1;
 		Y = Height / 2 - 1;
 		DoStep(ConvertToPos(X, Y));
@@ -43,7 +43,7 @@ void Field::RemoveEmptyBase(const pos StartPos)
 			},
 			[&](pos Pos)
 			{
-				Changes.back().Changes.push(Pair<pos, value>(Pos, Points[Pos] & !TagBit));
+				Changes.back().changes.push(pair<pos, value>(Pos, Points[Pos] & !TagBit));
 				ClearEmptyBase(Pos);
 			});
 }
@@ -116,7 +116,7 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 	DFreedCount += CurFreedCount;
 
 #if SURROUND_CONDITIONS
-	if ((CurCaptureCount != 0) || (SurCond == Always)) // Если захватили точки, или стоит опция захватывать всегда.
+	if ((CurCaptureCount != 0) || (SurCond == SC_ALWAYS)) // Если захватили точки, или стоит опция захватывать всегда.
 #else
 	if (CurCaptureCount != 0) // Если захватили точки.
 #endif
@@ -125,14 +125,14 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 		{
 			ClearTag(*i);
 			// Добавляем в список изменений точки цепочки.
-			Changes.back().Changes.push(Pair<pos, value>(*i, Points[*i]));
+			Changes.back().changes.push(pair<pos, value>(*i, Points[*i]));
 			// Помечаем точки цепочки.
 			SetBaseBound(*i);
 		}
 
 		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
 		{
-			Changes.back().Changes.push(Pair<pos, value>(*i, Points[*i]));
+			Changes.back().changes.push(pair<pos, value>(*i, Points[*i]));
 
 			SetCaptureFreeState(*i, Player);
 		}
@@ -144,7 +144,7 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 
 		for (auto i = SurPoints.begin(); i < SurPoints.end(); i++)
 		{
-			Changes.back().Changes.push(Pair<pos, value>(*i, Points[*i]));
+			Changes.back().changes.push(pair<pos, value>(*i, Points[*i]));
 
 			if (!IsPutted(*i))
 				SetEmptyBase(*i);
@@ -152,7 +152,7 @@ void Field::FindSurround(static_vector<pos, MAX_CHAIN_POINTS> &Chain, pos Inside
 	}
 }
 
-Field::Field(const coord FieldWidth, const coord FieldHeight, const SurroundCondition SurCond, const BeginPattern BeginPattern)
+Field::Field(const coord FieldWidth, const coord FieldHeight, const sur_cond SurCond, const begin_pattern BeginPattern)
 {
 	ExpandWidth = (FieldWidth2 - FieldWidth) / 2;
 	ParityWidth = (FieldWidth2 - FieldWidth) % 2;
