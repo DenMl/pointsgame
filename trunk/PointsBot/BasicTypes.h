@@ -29,6 +29,7 @@ enum sur_cond
 	SC_ALWAYS_ENEMY
 };
 
+// Используемый шаблон в начале игры.
 enum begin_pattern
 {
 	BP_CLEAN,
