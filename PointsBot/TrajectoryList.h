@@ -17,7 +17,7 @@ private:
 	uint CurrentDepth;
 
 public:
-	vector<Trajectory> Trajectories;
+	vector<trajectory> Trajectories;
 
 private:
 	template<typename _InIt>
@@ -47,14 +47,14 @@ private:
 			Trajectories.back().push_back(*i);
 		}
 	}
-	inline void AddNewTrajectory(const Trajectory &CurTrajectory)
+	inline void AddNewTrajectory(const trajectory &CurTrajectory)
 	{
 		Trajectories.resize(Trajectories.size() + 1);
 		Trajectories.back().Copy(CurTrajectory);
 	}
 	// Добавляет траекторию, полученную из CurTrajectory исключением из нее точки Pos.
 	// Также контролирует недобавление нулевых траекторий.
-	inline void AddNewTrajectory(const Trajectory &CurTrajectory, const pos Pos)
+	inline void AddNewTrajectory(const trajectory &CurTrajectory, const pos Pos)
 	{
 		if (CurTrajectory.size() == 1)
 			return;
@@ -64,16 +64,16 @@ private:
 	}
 
 	// Проверяет, во все ли точки траектории можно сделать ход, кроме, возможно, точки Pos.
-	inline static bool IsTrajectoryValid(field &CurField, const Trajectory &CurTrajectory, pos Pos)
+	inline static bool IsTrajectoryValid(field &CurField, const trajectory &CurTrajectory, pos Pos)
 	{
-		for (auto i = CurTrajectory.begin(); i < CurTrajectory.end(); i++)
+		for (auto i = CurTrajectory.begin(); i != CurTrajectory.end(); i++)
 			if (*i != Pos && !CurField.putting_allow(*i))
 				return false;
 		return true;
 	}
-	inline static bool IsTrajectoryValid(field &CurField, const Trajectory &CurTrajectory)
+	inline static bool IsTrajectoryValid(field &CurField, const trajectory &CurTrajectory)
 	{
-		for (auto i = CurTrajectory.begin(); i < CurTrajectory.end(); i++)
+		for (auto i = CurTrajectory.begin(); i != CurTrajectory.end(); i++)
 			if (!CurField.putting_allow(*i))
 				return false;
 		return true;
@@ -179,7 +179,7 @@ public:
 	{
 		for (auto i = Trajectories.begin(); i < Trajectories.end(); i++)
 			if (!i->excluded())
-				for (auto j = i->begin(); j < i->end(); j++)
+				for (auto j = i->begin(); j != i->end(); j++)
 					if (find(Points.begin(), Points.end(), *j) == Points.end())
 						Points.push_back(*j);
 	}
@@ -190,7 +190,7 @@ public:
 	{
 		for (auto i = Trajectories.begin(); i < Trajectories.end(); i++)
 			if (!i->excluded())
-				for (auto j = i->begin(); j < i->end(); j++)
+				for (auto j = i->begin(); j != i->end(); j++)
 					TrajectoriesBoard[*j]++;
 	}
 	// Удаляет проекцию траекторий с доски TrajectoriesBoard.
@@ -198,7 +198,7 @@ public:
 	{
 		for (auto i = Trajectories.begin(); i < Trajectories.end(); i++)
 			if (!i->excluded())
-				for (auto j = i->begin(); j < i->end(); j++)
+				for (auto j = i->begin(); j != i->end(); j++)
 					TrajectoriesBoard[*j]--;
 	}
 
@@ -213,7 +213,7 @@ public:
 				continue;
 			// Считаем в c количество точек, входящих только в эту траекторию.
 			c = 0;
-			for (auto j = i->begin(); j < i->end(); j++)
+			for (auto j = i->begin(); j != i->end(); j++)
 				if (TrajectoriesBoard[*j] == 1)
 					c++;
 			// Если точек, входящих только в эту траекторию, > 1, то исключаем эту траекторию.
@@ -221,7 +221,7 @@ public:
 			{
 				NeedExclude = true;
 				i->exclude();
-				for (auto j = i->begin(); j < i->end(); j++)
+				for (auto j = i->begin(); j != i->end(); j++)
 					TrajectoriesBoard[*j]--;
 			}
 		}
@@ -235,10 +235,10 @@ public:
 	}
 
 	// Возвращает хеш Зобриста пересечения двух траекторий.
-	inline static ulong GetIntersectHash(Trajectory &T1, Trajectory &T2)
+	inline static ulong GetIntersectHash(trajectory &T1, trajectory &T2)
 	{
 		ulong TempHash = T1.hash();
-		for (auto i = T2.begin(); i < T2.end(); i++)
+		for (auto i = T2.begin(); i != T2.end(); i++)
 			if (find(T1.begin(), T1.end(), *i) == T1.end())
 				TempHash ^= GetZobristHash(*i);
 		return TempHash;

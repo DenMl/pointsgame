@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config.h"
+#include "BasicTypes.h"
 #include <climits>
 
 #if WINDOWS
@@ -11,7 +12,7 @@
 
 using namespace std;
 
-inline unsigned long GetTime()
+inline ulong get_time()
 {
 #if WINDOWS
 	return GetTickCount();
@@ -24,28 +25,20 @@ inline unsigned long GetTime()
 #endif
 }
 
-class Timer
+class timer
 {
 private:
-	ulong LastTime;
+	ulong _last_time;
 
 public:
-	inline Timer()
+	inline timer() { set(); }
+	inline void set() { _last_time = get_time(); }
+	inline ulong get()
 	{
-		Set();
-	}
-
-	inline void Set()
-	{
-		LastTime = GetTime();
-	}
-
-	inline ulong Get()
-	{
-		ulong CurTime = GetTime();
-		if (CurTime > LastTime)
-			return CurTime - LastTime;
+		ulong cur_time = get_time();
+		if (cur_time > _last_time)
+			return cur_time - _last_time;
 		else
-			return ULONG_MAX - LastTime + CurTime + 1;
+			return ULONG_MAX - _last_time + cur_time + 1;
 	}
 };
