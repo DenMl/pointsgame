@@ -432,7 +432,7 @@ void field::check_closure(const pos start_pos, player cur_player)
 	}
 }
 
-inline bool field::check_closure(const pos start_pos, const pos checked_pos, player cur_player)
+bool field::check_closure(const pos start_pos, const pos checked_pos, player cur_player)
 {
 	pos InpChainPoints[4], InpSurPoints[4];
 

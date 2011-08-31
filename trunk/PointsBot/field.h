@@ -459,5 +459,5 @@ public:
 	// ѕровер€ет поставленную точку на наличие созданных ею окружений, и окружает, если они есть.
 	void check_closure(const pos start_pos, player cur_player);
 	// ѕровер€ет поставленную точку, не окружает ли она позицию checked_pos.
-	inline bool check_closure(const pos start_pos, const pos checked_pos, player cur_player);
+	bool check_closure(const pos start_pos, const pos checked_pos, player cur_player);
 };
