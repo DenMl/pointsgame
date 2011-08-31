@@ -152,45 +152,25 @@ inline void GeneratePossibleMoves(field &CurField, static_vector<pos, MAX_CHAIN_
 			PossibleMoves.push_back(q.front());
 		if (TempField[q.front()] < UCTRadius)
 		{
-			if (CurField.putting_allow(q.front() - FieldWidth2 - 1) && TempField[q.front() - FieldWidth2 - 1] == 0)
+			if (CurField.putting_allow(CurField.n(q.front())) && TempField[CurField.n(q.front())] == 0)
 			{
-				TempField[q.front() - FieldWidth2 - 1] = TempField[q.front()] + 1;
-				q.push(q.front() - FieldWidth2 - 1);
+				TempField[CurField.n(q.front())] = TempField[q.front()] + 1;
+				q.push(CurField.n(q.front()));
 			}
-			if (CurField.putting_allow(q.front() - FieldWidth2) && TempField[q.front() - FieldWidth2] == 0)
+			if (CurField.putting_allow(CurField.s(q.front())) && TempField[CurField.s(q.front())] == 0)
 			{
-				TempField[q.front() - FieldWidth2] = TempField[q.front()] + 1;
-				q.push(q.front() - FieldWidth2);
+				TempField[CurField.s(q.front())] = TempField[q.front()] + 1;
+				q.push(CurField.s(q.front()));
 			}
-			if (CurField.putting_allow(q.front() - FieldWidth2 + 1) && TempField[q.front() - FieldWidth2 + 1] == 0)
+			if (CurField.putting_allow(CurField.w(q.front())) && TempField[CurField.w(q.front())] == 0)
 			{
-				TempField[q.front() - FieldWidth2 + 1] = TempField[q.front()] + 1;
-				q.push(q.front() - FieldWidth2 + 1);
+				TempField[CurField.w(q.front())] = TempField[q.front()] + 1;
+				q.push(CurField.w(q.front()));
 			}
-			if (CurField.putting_allow(q.front() - 1) && TempField[q.front() - 1] == 0)
+			if (CurField.putting_allow(CurField.e(q.front())) && TempField[CurField.e(q.front())] == 0)
 			{
-				TempField[q.front() - 1] = TempField[q.front()] + 1;
-				q.push(q.front() - 1);
-			}
-			if (CurField.putting_allow(q.front() + 1) && TempField[q.front() + 1] == 0)
-			{
-				TempField[q.front() + 1] = TempField[q.front()] + 1;
-				q.push(q.front() + 1);
-			}
-			if (CurField.putting_allow(q.front() + FieldWidth2 - 1) && TempField[q.front() + FieldWidth2 - 1] == 0)
-			{
-				TempField[q.front() + FieldWidth2 - 1] = TempField[q.front()] + 1;
-				q.push(q.front() + FieldWidth2 - 1);
-			}
-			if (CurField.putting_allow(q.front() + FieldWidth2) && TempField[q.front() + FieldWidth2] == 0)
-			{
-				TempField[q.front() + FieldWidth2] = TempField[q.front()] + 1;
-				q.push(q.front() + FieldWidth2);
-			}
-			if (CurField.putting_allow(q.front() + FieldWidth2 + 1) && TempField[q.front() + FieldWidth2 + 1] == 0)
-			{
-				TempField[q.front() + FieldWidth2 + 1] = TempField[q.front()] + 1;
-				q.push(q.front() + FieldWidth2 + 1);
+				TempField[CurField.e(q.front())] = TempField[q.front()] + 1;
+				q.push(CurField.e(q.front()));
 			}
 		}
 		q.pop();
