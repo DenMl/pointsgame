@@ -169,7 +169,7 @@
     <ClInclude Include="BasicTypes.h" />
     <ClInclude Include="BotEngine.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="FieldSerializer.h" />
+    <ClInclude Include="field_serializer.h" />
     <ClInclude Include="static_vector.h" />
     <ClInclude Include="field.h" />
     <ClInclude Include="MinMaxEstimate.h" />
@@ -201,7 +201,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="field.cpp" />
-    <ClCompile Include="FieldSerializer.cpp" />
+    <ClCompile Include="field_serializer.cpp" />
     <ClCompile Include="MinMaxEstimate.cpp" />
     <ClCompile Include="PointsBot.cpp" />
     <ClCompile Include="PositionEstimate.cpp" />
