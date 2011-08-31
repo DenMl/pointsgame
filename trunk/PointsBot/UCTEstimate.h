@@ -7,26 +7,26 @@
 
 using namespace std;
 
-const double UCTK = 1;
-// Радиус, внутри которого происходит анализ.
-const ushort UCTRadius = 2;
-const uint IterationsBeforeCheckTime = 100;
+#define UCTK 1
+// Радиус, внутри которого происходит анализ UCT.
+#define UCT_RADIUS 2
+#define UCT_ITERATIONS_BEFORE_CHECK_TIME 100
 
-struct Node
+struct uct_node
 {
-	ulong Wins;
-	ulong Visits;
-	uint Move;
-	Node *Child;
-	Node *Sibling;
+	ulong wins;
+	ulong visits;
+	uint move;
+	uct_node* child;
+	uct_node* sibling;
 
-	Node()
+	uct_node()
 	{
-		Wins = 0;
-		Visits = 0;
-		Move = 0;
-		Child = NULL;
-		Sibling = NULL;
+		wins = 0;
+		visits = 0;
+		move = 0;
+		child = NULL;
+		sibling = NULL;
 	}
 };
 
