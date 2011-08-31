@@ -258,7 +258,7 @@ double UCTEstimateWithTime(field &MainField, ulong Time, static_vector<pos, MAX_
 	static_vector<pos, MAX_CHAIN_POINTS> PossibleMoves;
 	static_vector<pos, MAX_CHAIN_POINTS> FirstMoves;
 	double BestEstimate = -1;
-	Timer t;
+	timer t;
 
 	GeneratePossibleMoves(MainField, PossibleMoves);
 
@@ -284,7 +284,7 @@ double UCTEstimateWithTime(field &MainField, ulong Time, static_vector<pos, MAX_
 			CurChild = &(*CurChild)->Sibling;
 		}
 
-		while (t.Get() < Time)
+		while (t.get() < Time)
 			for (uint i = 0; i < IterationsBeforeCheckTime; i++)
 				PlaySimulation(*LocalField, PossibleMoves, n);
 

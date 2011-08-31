@@ -58,9 +58,6 @@
     <ClInclude Include="Player.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="static_vector.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -71,6 +68,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="field.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

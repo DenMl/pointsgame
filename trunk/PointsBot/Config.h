@@ -4,13 +4,13 @@
 #define SURROUND_CONDITIONS 1
 
 // —ледует включать, когда производитс€ отладка.
-#define DEBUG 1
+//#define DEBUG 1
 
 // ¬ключает сортировку по веро€тност€м дл€ улучшени€ альфабета-отсечени€.
 #define ALPHABETA_SORT 1
 
 // ќпредел€ет условие победы дл€ UCT - абсолютна€ или относительна€ (счита€ от текущей позиции) победа.
-#define ABSOLUTE_UCT 0
+//#define ABSOLUTE_UCT 0
 
 // 1, если компил€ци€ происходит дл€ Windows.
 #define WINDOWS 1
