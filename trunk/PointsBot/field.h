@@ -4,13 +4,13 @@
 #include "BasicTypes.h"
 #include "BasicConstants.h"
 #include "Zobrist.h"
-#include "AuxFunc.h"
 #include "Player.h"
 #include <stack>
 #include <list>
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <utility>
 
 using namespace std;
 using std::tr1::function;
