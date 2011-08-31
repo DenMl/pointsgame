@@ -120,6 +120,7 @@ public:
 		_size = other._size;
 		for (size_type i = 0; i < _size; i++)
 			_array[i] = other._array[i];
+		return *this;
 	}
 	inline void swap(static_vector &other)
 	{

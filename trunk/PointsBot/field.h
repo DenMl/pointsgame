@@ -293,9 +293,9 @@ public:
 	inline pos ne(pos cur_pos) const { return cur_pos - (_width + 2) + 1; }
 	inline pos sw(pos cur_pos) const { return cur_pos + (_width + 2) - 1; }
 	inline pos se(pos cur_pos) const { return cur_pos + (_width + 2) + 1; }
-	inline pos to_pos(const coord x, const coord y) const { return (y + 1) * _width + x + 1; }
-	inline coord to_x(const pos cur_pos) const { return static_cast<coord>(cur_pos % _width - 1); }
-	inline coord to_y(const pos cur_pos) const { return static_cast<coord>(cur_pos / _width - 1); }
+	inline pos to_pos(const coord x, const coord y) const { return (y + 1) * (_width + 2) + x + 1; }
+	inline coord to_x(const pos cur_pos) const { return static_cast<coord>(cur_pos % (_width + 2) - 1); }
+	inline coord to_y(const pos cur_pos) const { return static_cast<coord>(cur_pos / (_width + 2) - 1); }
 	// Конвертация из Pos в XY.
 	inline void to_xy(const pos cur_pos, coord &x, coord &y) const { x = to_x(cur_pos); y = to_y(cur_pos); }
 	inline void set_player(const player cur_player) { _player = cur_player; }
