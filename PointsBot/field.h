@@ -237,7 +237,6 @@ private:
 		else
 			capture(cur_pos);
 	}
-	void wave(pos start_pos, function<bool(pos)> cond);
 	// ”дал€ет пометку пустой базы с пол€ точек, начина€ с позиции StartPos.
 	void remove_empty_base(const pos StartPos);
 	bool build_chain(const pos start_pos, const value enable_cond, const pos direction_pos, list<pos> &chain);
@@ -455,6 +454,7 @@ public:
 			result++;
 		return result;
 	}
+	void wave(pos start_pos, function<bool(pos)> cond);
 	bool is_point_inside_ring(const pos cur_pos, const list<pos> &ring) const;
 	// ѕровер€ет поставленную точку на наличие созданных ею окружений, и окружает, если они есть.
 	void check_closure(const pos start_pos, player cur_player);

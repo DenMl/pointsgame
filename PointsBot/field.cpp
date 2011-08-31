@@ -93,43 +93,6 @@ void field::place_begin_pattern(begin_pattern cur_pattern)
 	}
 }
 
-void field::wave(pos start_pos, function<bool(pos)> cond)
-{
-	// Очередь для волнового алгоритма (обхода в ширину).
-	list<pos> q;
-
-	q.push_back(start_pos);
-	set_tag(start_pos);
-	auto it = q.begin();
-	while (it != q.end())
-	{
-		if (!is_tagged(w(*it)) && cond(w(*it)))
-		{
-			q.push_back(w(*it));
-			set_tag(w(*it));
-		}
-		if (!is_tagged(n(*it)) && cond(n(*it)))
-		{
-			q.push_back(n(*it));
-			set_tag(n(*it));
-		}
-		if (!is_tagged(e(*it)) && cond(e(*it)))
-		{
-			q.push_back(e(*it));
-			set_tag(e(*it));
-		}
-		if (!is_tagged(s(*it)) && cond(s(*it)))
-		{
-			q.push_back(s(*it));
-			set_tag(s(*it));
-		}
-		it++;
-	}
-
-	for (it = q.begin(); it != q.end(); it++)
-		clear_tag(*it);
-}
-
 void field::remove_empty_base(const pos start_pos)
 {
 	wave(	start_pos,
@@ -311,6 +274,46 @@ field::field(const field &orig)
 field::~field()
 {
 	delete _points;
+}
+
+void field::wave(pos start_pos, function<bool(pos)> cond)
+{
+	// Очередь для волнового алгоритма (обхода в ширину).
+	list<pos> q;
+
+	if (!cond(start_pos))
+		return;
+
+	q.push_back(start_pos);
+	set_tag(start_pos);
+	auto it = q.begin();
+	while (it != q.end())
+	{
+		if (!is_tagged(w(*it)) && cond(w(*it)))
+		{
+			q.push_back(w(*it));
+			set_tag(w(*it));
+		}
+		if (!is_tagged(n(*it)) && cond(n(*it)))
+		{
+			q.push_back(n(*it));
+			set_tag(n(*it));
+		}
+		if (!is_tagged(e(*it)) && cond(e(*it)))
+		{
+			q.push_back(e(*it));
+			set_tag(e(*it));
+		}
+		if (!is_tagged(s(*it)) && cond(s(*it)))
+		{
+			q.push_back(s(*it));
+			set_tag(s(*it));
+		}
+		it++;
+	}
+
+	for (it = q.begin(); it != q.end(); it++)
+		clear_tag(*it);
 }
 
 bool field::is_point_inside_ring(const pos cur_pos, const list<pos> &ring) const
