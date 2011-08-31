@@ -3,70 +3,70 @@
 
 using namespace std;
 
-short field::get_input_points(const pos CenterPos, const value EnableCond, pos InpChainPoints[], pos InpSurPoints[]) const
+short field::get_input_points(const pos center_pos, const value enable_cond, pos inp_chain_points[], pos inp_sur_points[]) const
 {
 	short result = 0;
 
-	if (is_not_enable(w(CenterPos), EnableCond))
+	if (is_not_enable(w(center_pos), enable_cond))
 	{
-		if (is_enable(nw(CenterPos), EnableCond))
+		if (is_enable(nw(center_pos), enable_cond))
 		{
-			InpChainPoints[0] = nw(CenterPos);
-			InpSurPoints[0] = w(CenterPos);
+			inp_chain_points[0] = nw(center_pos);
+			inp_sur_points[0] = w(center_pos);
 			result++;
 		}
-		else if (is_enable(n(CenterPos), EnableCond))
+		else if (is_enable(n(center_pos), enable_cond))
 		{
-			InpChainPoints[0] = n(CenterPos);
-			InpSurPoints[0] = w(CenterPos);
+			inp_chain_points[0] = n(center_pos);
+			inp_sur_points[0] = w(center_pos);
 			result++;
 		}
 	}
 
-	if (is_not_enable(s(CenterPos), EnableCond))
+	if (is_not_enable(s(center_pos), enable_cond))
 	{
-		if (is_enable(sw(CenterPos), EnableCond))
+		if (is_enable(sw(center_pos), enable_cond))
 		{
-			InpChainPoints[result] = sw(CenterPos);
-			InpSurPoints[result] = s(CenterPos);
+			inp_chain_points[result] = sw(center_pos);
+			inp_sur_points[result] = s(center_pos);
 			result++;
 		}
-		else if (is_enable(w(CenterPos), EnableCond))
+		else if (is_enable(w(center_pos), enable_cond))
 		{
-			InpChainPoints[result] = w(CenterPos);
-			InpSurPoints[result] = s(CenterPos);
+			inp_chain_points[result] = w(center_pos);
+			inp_sur_points[result] = s(center_pos);
 			result++;
 		}
 	}
 
-	if (is_not_enable(e(CenterPos), EnableCond))
+	if (is_not_enable(e(center_pos), enable_cond))
 	{
-		if (is_enable(se(CenterPos), EnableCond))
+		if (is_enable(se(center_pos), enable_cond))
 		{
-			InpChainPoints[result] = se(CenterPos);
-			InpSurPoints[result] = e(CenterPos);
+			inp_chain_points[result] = se(center_pos);
+			inp_sur_points[result] = e(center_pos);
 			result++;
 		}
-		else if (is_enable(s(CenterPos), EnableCond)) 
+		else if (is_enable(s(center_pos), enable_cond)) 
 		{
-			InpChainPoints[result] = s(CenterPos);
-			InpSurPoints[result] = e(CenterPos);
+			inp_chain_points[result] = s(center_pos);
+			inp_sur_points[result] = e(center_pos);
 			result++;
 		}
 	}
 
-	if (is_not_enable(n(CenterPos), EnableCond))
+	if (is_not_enable(n(center_pos), enable_cond))
 	{
-		if (is_enable(ne(CenterPos), EnableCond))
+		if (is_enable(ne(center_pos), enable_cond))
 		{
-			InpChainPoints[result] = ne(CenterPos);
-			InpSurPoints[result] = n(CenterPos);
+			inp_chain_points[result] = ne(center_pos);
+			inp_sur_points[result] = n(center_pos);
 			result++;
 		}
-		else if (is_enable(e(CenterPos), EnableCond))
+		else if (is_enable(e(center_pos), enable_cond))
 		{
-			InpChainPoints[result] = e(CenterPos);
-			InpSurPoints[result] = n(CenterPos);
+			inp_chain_points[result] = e(center_pos);
+			inp_sur_points[result] = n(center_pos);
 			result++;
 		}
 	}
