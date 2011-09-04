@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BasicTypes.h"
+#include "basic_types.h"
 #include "BasicConstants.h"
 #include "Zobrist.h"
 #include "Field.h"
@@ -49,8 +49,7 @@ private:
 	}
 	inline void AddNewTrajectory(const trajectory &CurTrajectory)
 	{
-		Trajectories.resize(Trajectories.size() + 1);
-		Trajectories.back().Copy(CurTrajectory);
+		Trajectories.push_back(CurTrajectory);
 	}
 	// Добавляет траекторию, полученную из CurTrajectory исключением из нее точки Pos.
 	// Также контролирует недобавление нулевых траекторий.

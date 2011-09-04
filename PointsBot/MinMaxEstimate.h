@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Config.h"
-#include "BasicTypes.h"
+#include "basic_types.h"
 #include "Field.h"
 #include "static_vector.h"
 
 using namespace std;
 
-int MinMaxEstimate(field &MainField, uint Depth, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
+pos minmax(field &cur_field, size_t depth, list<pos> &moves);

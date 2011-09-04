@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Config.h"
-#include "BasicTypes.h"
+#include "basic_types.h"
 #include "Field.h"
 #include "static_vector.h"
 
 using namespace std;
 
-void PositionEstimate(field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
+pos position_estimate(field &cur_field, list<pos> &moves);

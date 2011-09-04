@@ -25,13 +25,7 @@
     <ClInclude Include="BasicConstants.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="BasicTypes.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="BotEngine.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Config.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="MinMaxEstimate.h">
@@ -40,28 +34,16 @@
     <ClInclude Include="Zobrist.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="UCTEstimate.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="TrajectoryList.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="PointsBot.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="PositionEstimate.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="static_vector.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Trajectory.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="field.h">
@@ -71,6 +53,27 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="field_serializer.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="basic_types.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Trajectory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="uct.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="position_estimate.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="trajectories.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -87,19 +90,19 @@
     <ClCompile Include="Zobrist.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="UCTEstimate.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="PointsBot.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="PositionEstimate.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="field.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="field_serializer.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="uct.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="position_estimate.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

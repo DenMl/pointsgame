@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Config.h"
-#include "BasicTypes.h"
-#include "BasicConstants.h"
+#include "config.h"
+#include "basic_types.h"
 #include "Zobrist.h"
-#include "Player.h"
+#include "player.h"
 #include <stack>
 #include <list>
 #include <vector>

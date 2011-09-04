@@ -1,88 +1,40 @@
-#include "Config.h"
-#include "BasicTypes.h"
+#include "config.h"
+#include "basic_types.h"
 #include "BotEngine.h"
 #include "Field.h"
 #include "MinMaxEstimate.h"
-#include "UCTEstimate.h"
-#include "PositionEstimate.h"
+#include "uct.h"
+#include "position_estimate.h"
 #include "Random.h"
-#include "static_vector.h"
+#include <list>
 
 using namespace std;
 
-void BuildAllMoves(field &MainField, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
+void build_all_moves(field &cur_field, list<pos> &moves)
 {
-	Moves.clear();
-	for (pos i = MainField.min_pos(); i <= MainField.max_pos(); i++)
-		if (MainField.putting_allow(i))
-			Moves.push_back(i);
+	moves.clear();
+	for (pos i = cur_field.min_pos(); i <= cur_field.max_pos(); i++)
+		if (cur_field.putting_allow(i))
+			moves.push_back(i);
 }
 
-pos SearchBestMove(field &MainField, uint Depth, ulong UCTIterations)
+pos position_estimate_best_move(field &cur_field)
 {
-	static_vector<pos, MAX_CHAIN_POINTS> Moves;
-	BuildAllMoves(MainField, Moves);
-
-	// Если на доске не стоит ни одной точки - возвращаем случайный ход.
-	if (MainField.points_seq.size() == 0)
-		return Moves[rand() % Moves.size()];
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-
-	MinMaxEstimate(MainField, Depth, Moves);
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-
-	UCTEstimate(MainField, UCTIterations, Moves);
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-
-	PositionEstimate(MainField, Moves);
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-	else // Если в конце несколько возможных лучших ходов - возвращаем случайный.
-		return Moves[rand() % Moves.size()];
+	list<pos> moves;
+	build_all_moves(cur_field, moves);
+	return position_estimate(cur_field, moves);
 }
 
-pos SearchBestMoveWithTime(field &MainField, ulong Time)
+pos uct_best_move(field &cur_field, size_t max_simulations)
 {
-	static_vector<pos, MAX_CHAIN_POINTS> Moves;
-	BuildAllMoves(MainField, Moves);
+	list<pos> moves;
+	build_all_moves(cur_field, moves);
+	return uct(cur_field, max_simulations, moves);
+}
 
-	// Если на доске не стоит ни одной точки - возвращаем случайный ход.
-	if (MainField.points_seq.size() == 0)
-		return Moves[rand() % Moves.size()];
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-
-	UCTEstimateWithTime(MainField, Time, Moves);
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-
-	PositionEstimate(MainField, Moves);
-
-	if (Moves.size() == 1) // Если возможный ход один - возвращаем его.
-		return Moves[0];
-	else if (Moves.size() == 0) // Если нет возможных ходов - возвращаем ошибку -1.
-		return -1;
-	else // Если в конце несколько возможных лучших ходов - возвращаем случайный.
-		return Moves[rand() % Moves.size()];
+pos uct_with_time_best_move(field &cur_field, size_t time)
+{
+	list<pos> moves;
+	build_all_moves(cur_field, moves);
+	return uct_with_time(cur_field, time, moves);
 }

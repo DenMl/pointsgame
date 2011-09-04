@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Config.h"
-#include "BasicTypes.h"
+#include "config.h"
+#include "basic_types.h"
 
 // Minimum supported board width.
 // Минимальная поддерживаемая ширина доски.

@@ -9,32 +9,32 @@
 
 using namespace std;
 
-inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectories2, uint TrajectoriesBoard[], static_vector<pos, MAX_CHAIN_POINTS> &Moves)
+inline void get_points(TrajectoryList &trajectories1, TrajectoryList &trajectories2, uint trajectories_board[], static_vector<pos, MAX_CHAIN_POINTS> &moves)
 {
-	Trajectories1.ExcludeCompositeTrajectories();
-	Trajectories2.ExcludeCompositeTrajectories();
+	trajectories1.ExcludeCompositeTrajectories();
+	trajectories2.ExcludeCompositeTrajectories();
 
 	// Проецируем неисключенные траектории на доску.
-	Trajectories1.Project(TrajectoriesBoard);
-	Trajectories2.Project(TrajectoriesBoard);
+	trajectories1.Project(trajectories_board);
+	trajectories2.Project(trajectories_board);
 	// Исключаем те траектории, у которых имеется более одной точки, принадлежащей только ей.
-	while (Trajectories1.ExcludeUnnecessaryTrajectories(TrajectoriesBoard) || Trajectories2.ExcludeUnnecessaryTrajectories(TrajectoriesBoard));
+	while (trajectories1.ExcludeUnnecessaryTrajectories(trajectories_board) || trajectories2.ExcludeUnnecessaryTrajectories(trajectories_board));
 	// Получаем список точек, входящих в оставшиеся неисключенные траектории.
-	Moves.clear();
-	Trajectories1.GetPoints(Moves);
-	Trajectories2.GetPoints(Moves);
+	moves.clear();
+	trajectories1.GetPoints(moves);
+	trajectories2.GetPoints(moves);
 
 #if ALPHABETA_SORT
 	// Сортируем точки по убыванию количества траекторий, в которые они входят.
-	sort(Moves.begin(), Moves.end(), [&](uint x, uint y){ return TrajectoriesBoard[x] < TrajectoriesBoard[y]; });
+	sort(moves.begin(), moves.end(), [&](uint x, uint y){ return trajectories_board[x] < trajectories_board[y]; });
 #endif
 
 	// Очищаем доску от проекций.
-	Trajectories1.UnProject(TrajectoriesBoard);
-	Trajectories2.UnProject(TrajectoriesBoard);
+	trajectories1.UnProject(trajectories_board);
+	trajectories2.UnProject(trajectories_board);
 	// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).
-	Trajectories1.IncludeAllTrajectories();
-	Trajectories2.IncludeAllTrajectories();
+	trajectories1.IncludeAllTrajectories();
+	trajectories2.IncludeAllTrajectories();
 }
 
 // Рекурсивная функция минимакса.
@@ -44,38 +44,38 @@ inline void GetPoints(TrajectoryList &Trajectories1, TrajectoryList &Trajectorie
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-int Negamax(field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, int alpha, int beta)
+int negamax(field &cur_field, uint TrajectoriesBoard[], uint Depth, uint Pos, TrajectoryList &LastEnemyTrajectories, TrajectoryList &LastCurrentTrajectories, int alpha, int beta)
 {
 	int BestEstimate = INT_MIN + 1;
 	TrajectoryList Trajectories[2];
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
-	CurField.do_unsafe_step(Pos);
+	cur_field.do_unsafe_step(Pos);
 
 	if (Depth == 0)
 	{
-		BestEstimate = CurField.get_score(CurField.get_player());
-		CurField.undo_step();
+		BestEstimate = cur_field.get_score(cur_field.get_player());
+		cur_field.undo_step();
 		return -BestEstimate;
 	}
 
-	if (CurField.get_d_score() < 0) // Если точка поставлена в окружение.
+	if (cur_field.get_d_score() < 0) // Если точка поставлена в окружение.
 	{
-		CurField.undo_step();
+		cur_field.undo_step();
 		return INT_MIN + 1; // Для CurPlayer это хорошо, то есть оценка Infinity.
 	}
 
 	if (Depth > 1)
-		Trajectories[next_player(CurField.get_player())].BuildEnemyTrajectories(CurField, LastEnemyTrajectories, Pos, Depth / 2);
-	Trajectories[CurField.get_player()].BuildCurrentTrajectories(CurField, LastCurrentTrajectories, Pos, (Depth + 1) / 2, CurField.get_player());
+		Trajectories[next_player(cur_field.get_player())].BuildEnemyTrajectories(cur_field, LastEnemyTrajectories, Pos, Depth / 2);
+	Trajectories[cur_field.get_player()].BuildCurrentTrajectories(cur_field, LastCurrentTrajectories, Pos, (Depth + 1) / 2, cur_field.get_player());
 	//Trajectories[CurField.CurPlayer].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.CurPlayer);
 	
 	static_vector<pos, MAX_CHAIN_POINTS> Moves;
-	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, Moves);
+	get_points(Trajectories[0], Trajectories[1], TrajectoriesBoard, Moves);
 
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
 	{
-		int CurEstimate = Negamax(CurField, TrajectoriesBoard, Depth - 1, *i, Trajectories[CurField.get_player()], Trajectories[next_player(CurField.get_player())], -beta, -alpha);
+		int CurEstimate = negamax(cur_field, TrajectoriesBoard, Depth - 1, *i, Trajectories[cur_field.get_player()], Trajectories[next_player(cur_field.get_player())], -beta, -alpha);
 		if (CurEstimate > BestEstimate)
 		{
 			BestEstimate = CurEstimate;
@@ -86,119 +86,106 @@ int Negamax(field &CurField, uint TrajectoriesBoard[], uint Depth, uint Pos, Tra
 		}
 	}
 	if (BestEstimate == INT_MIN + 1)
-		BestEstimate = CurField.get_score(CurField.get_player());
+		BestEstimate = cur_field.get_score(cur_field.get_player());
 
-	CurField.undo_step();
+	cur_field.undo_step();
 
 	return -BestEstimate;
 }
 
-int GetEnemyEstimate(field &CurField, TrajectoryList &CurrentTrajectories, TrajectoryList &EnemyTrajectories, uint TrajectoriesBoard[], uint Depth)
+int get_enemy_estimate(field &cur_field, TrajectoryList &cur_trajectories, TrajectoryList &enemy_trajectories, size_t depth)
 {
 	TrajectoryList TempTrajectories;
 	static_vector<pos, MAX_CHAIN_POINTS> Moves;
-	int Result = INT_MIN + 1;
 
-	TempTrajectories.BuildEnemyTrajectories(CurField, CurrentTrajectories, 0, (Depth + 1) / 2 - 1);
-	GetPoints(EnemyTrajectories, TempTrajectories, TrajectoriesBoard, Moves);
+	uint* TrajectoriesBoard = new uint[cur_field.length()];
+	fill_n(TrajectoriesBoard, cur_field.length(), 0);
+
+	TempTrajectories.BuildEnemyTrajectories(cur_field, cur_trajectories, 0, (depth + 1) / 2 - 1);
+	get_points(enemy_trajectories, TempTrajectories, TrajectoriesBoard, Moves);
 
 	int alpha = INT_MIN + 1;
-	CurField.set_next_player();
-	Depth -= 2;
+	cur_field.set_next_player();
+	depth -= 2;
 	omp_lock_t lock;
 	omp_init_lock(&lock);
 	#pragma omp parallel
 	{
-		int MaxEstimate = INT_MIN + 1, CurEstimate;
-		field LocalField(CurField);
+		field LocalField(cur_field);
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(Moves.size()); i++)
 		{
-			CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth, Moves[i], EnemyTrajectories, CurrentTrajectories, INT_MIN + 1, -alpha);
+			int CurEstimate = negamax(LocalField, TrajectoriesBoard, depth, Moves[i], enemy_trajectories, cur_trajectories, INT_MIN + 1, -alpha);
+			omp_set_lock(&lock);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
-			if (CurEstimate > MaxEstimate)
-				MaxEstimate = CurEstimate;
+			omp_unset_lock(&lock);
 		}
-
-		omp_set_lock(&lock);
-		if (MaxEstimate > Result)
-			Result = MaxEstimate;
-		omp_unset_lock(&lock);
 	}
 	omp_destroy_lock(&lock);
-	CurField.set_next_player();
+	cur_field.set_next_player();
 
-	EnemyTrajectories.IncludeAllTrajectories();
+	enemy_trajectories.IncludeAllTrajectories();
 
-	return -Result;
+	delete TrajectoriesBoard;
+
+	return -alpha;
 }
 
 // CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
 // Moves - на входе возможные ходы, на выходе лучшие из них.
-int MinMaxEstimate(field &CurField, uint Depth, static_vector<pos, MAX_CHAIN_POINTS> &Moves)
+pos minmax(field &cur_field, size_t depth, list<pos> &moves)
 {
-	// Минимально и максимально возможная оценка.
-	int BestEstimate = INT_MIN + 1;
 	// Главные траектории - свои и вражеские.
 	TrajectoryList Trajectories[2];
 	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
 	uint TrajectoriesBoard[PointsLength22] = {0};
 	static_vector<pos, MAX_CHAIN_POINTS> BestMoves, PossibleMoves, FirstMoves;
-	// Доска с оценками ходов.
-	int ScoreBoard[PointsLength22];
+	pos result;
 
 	// Делаем что-то только когда глубина просчета положительная и колическтво возможных ходов на входе не равно 0.
-	if (Depth <= 0 || Moves.size() == 0)
-		return 0;
+	if (depth <= 0 || moves.size() == 0)
+		return -1;
 	// Строим свои траектоии.
-	Trajectories[CurField.get_player()].BuildTrajectories(CurField, (Depth + 1) / 2, CurField.get_player());
+	Trajectories[cur_field.get_player()].BuildTrajectories(cur_field, (depth + 1) / 2, cur_field.get_player());
 	// Строим траектории противника.
-	if (Depth > 1)
-		Trajectories[next_player(CurField.get_player())].BuildTrajectories(CurField, Depth / 2, next_player(CurField.get_player()));
+	if (depth > 1)
+		Trajectories[next_player(cur_field.get_player())].BuildTrajectories(cur_field, depth / 2, next_player(cur_field.get_player()));
 	// Получаем ходы из траекторий (которые имеет смысл рассматривать), и находим пересечение со входными возможными точками.
-	GetPoints(Trajectories[0], Trajectories[1], TrajectoriesBoard, PossibleMoves);
+	get_points(Trajectories[0], Trajectories[1], TrajectoriesBoard, PossibleMoves);
 	for (auto i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
-		if (find(Moves.begin(), Moves.end(), *i) != Moves.end())
+		if (find(moves.begin(), moves.end(), *i) != moves.end())
 			FirstMoves.push_back(*i);
 	// Если нет возможных ходов, входящих в траектории - выходим.
 	if (FirstMoves.size() == 0)
 		return 0;
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
-	int EnemyEstimate = GetEnemyEstimate(CurField, Trajectories[CurField.get_player()], Trajectories[next_player(CurField.get_player())], TrajectoriesBoard, Depth);
-	for (auto i = Moves.begin(); i < Moves.end(); i++)
-		ScoreBoard[*i] = EnemyEstimate;
+	int enemy_estimate = get_enemy_estimate(cur_field, Trajectories[cur_field.get_player()], Trajectories[next_player(cur_field.get_player())], depth);
 
-	int alpha = INT_MIN + 2;
+	omp_lock_t lock;
+	omp_init_lock(&lock);
+	int alpha = INT_MIN + 1;
 	#pragma omp parallel
 	{
-		field LocalField(CurField);
+		field local_field(cur_field);
 		uint TrajectoriesBoard[PointsLength22] = {0};
 
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(FirstMoves.size()); i++)
 		{
-			int CurEstimate = Negamax(LocalField, TrajectoriesBoard, Depth - 1, FirstMoves[i], Trajectories[LocalField.get_player()], Trajectories[next_player(LocalField.get_player())], INT_MIN + 1, -alpha + 1);
-			if (CurEstimate > alpha) // Обновляем нижнюю границу.
-				alpha = CurEstimate;
-			ScoreBoard[FirstMoves[i]] = CurEstimate;
+			int cur_estimate = negamax(local_field, TrajectoriesBoard, depth - 1, FirstMoves[i], Trajectories[local_field.get_player()], Trajectories[next_player(local_field.get_player())], INT_MIN + 1, -alpha);
+			omp_set_lock(&lock);
+			if (cur_estimate > alpha) // Обновляем нижнюю границу.
+			{
+				alpha = cur_estimate;
+				result = FirstMoves[i];
+			}
+			omp_unset_lock(&lock);
 		}
 	}
-
-	for (auto i = Moves.begin(); i < Moves.end(); i++)
-		if (ScoreBoard[*i] > BestEstimate)
-		{
-			BestEstimate = ScoreBoard[*i];
-			BestMoves.clear();
-			BestMoves.push_back(*i);
-		}
-		else if (ScoreBoard[*i] == BestEstimate)
-		{
-			BestMoves.push_back(*i);
-		}
-	Moves.assign(BestMoves.begin(), BestMoves.end());
-	return BestEstimate;
+	omp_destroy_lock(&lock);
+	return result;
 }

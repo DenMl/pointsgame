@@ -1,5 +1,5 @@
-#include "Random.h"
-#include "BasicTypes.h"
+#include "random.h"
+#include "basic_types.h"
 #include "BasicConstants.h"
 
 using namespace std;
