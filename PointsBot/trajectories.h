@@ -9,7 +9,7 @@
 class trajectories
 {
 private:
-	size_t _length;
+	size_t _depth;
 	field* _field;
 	list<trajectory> _trajectories[2];
 	int* _trajectories_board;
@@ -42,6 +42,20 @@ private:
 			_trajectories[cur_player].back().push_back(*i);
 		}
 	}
+	inline void add_trajectory(trajectory &cur_trajectory, player cur_player)
+	{
+		_trajectories[cur_player].push_back(cur_trajectory);
+	}
+	inline void add_trajectory(trajectory &cur_trajectory, pos cur_pos, player cur_player)
+	{
+		if (cur_trajectory.size() == 1)
+			return;
+
+		_trajectories[cur_player].push_back(trajectory());
+		for (auto i = cur_trajectory.begin(); i != cur_trajectory.end(); i++)
+			if (*i != cur_pos)
+				_trajectories[cur_player].back().push_back(*i);
+	}
 
 	void build_trajectories_recursive(size_t depth, player cur_player)
 	{
@@ -53,7 +67,7 @@ private:
 				{
 					_field->do_unsafe_step(Pos, cur_player);
 					if (_field->get_d_score() > 0)
-						add_trajectory(_field->points_seq.end() - (_length - depth), _field->points_seq.end(), cur_player);
+						add_trajectory(_field->points_seq.end() - (_depth - depth), _field->points_seq.end(), cur_player);
 					_field->undo_step();
 				}
 				else
@@ -69,7 +83,7 @@ private:
 #endif
 
 					if (_field->get_d_score() > 0)
-						add_trajectory(_field->points_seq.end() - (_length - depth), _field->points_seq.end(), cur_player);
+						add_trajectory(_field->points_seq.end() - (_depth - depth), _field->points_seq.end(), cur_player);
 					else if (depth > 0)
 						build_trajectories_recursive(depth - 1, cur_player);
 
@@ -78,7 +92,7 @@ private:
 			}
 		}
 	}
-	inline void project(trajectory cur_trajectory)
+	inline void project(trajectory &cur_trajectory)
 	{
 		for (auto j = cur_trajectory.begin(); j != cur_trajectory.end(); j++)
 			_trajectories_board[*j]++;
@@ -96,7 +110,7 @@ private:
 		project(player_red);
 		project(player_black);
 	}
-	inline void unproject(trajectory cur_trajectory)
+	inline void unproject(trajectory &cur_trajectory)
 	{
 		for (auto j = cur_trajectory.begin(); j != cur_trajectory.end(); j++)
 			_trajectories_board[*j]--;
@@ -191,20 +205,20 @@ public:
 	trajectories()
 	{
 		_field = NULL;
-		_length = 0;
+		_depth = 0;
 		_trajectories_board = NULL;
 	}
 	trajectories(field &cur_field, size_t length)
 	{
 		_field = &cur_field;
-		_length = length;
+		_depth = length;
 		_trajectories_board = new int[cur_field.length()];
 		fill_n(_trajectories_board, _field->length(), 0);
 	}
 	trajectories(const trajectories &other)
 	{
 		_field = other._field;
-		_length = other._length;
+		_depth = other._depth;
 		_trajectories_board = new int[_field->length()];
 		fill_n(_trajectories_board, _field->length(), 0);
 	}
@@ -219,14 +233,22 @@ public:
 	}
 	void build_trajectories()
 	{
-		if (_length > 0)
-			build_trajectories_recursive((_length + 1) / 2 - 1, _field->get_player());
-		if (_length > 1)
-			build_trajectories_recursive(_length / 2 - 1, next_player(_field->get_player()));
+		if (_depth > 0)
+			build_trajectories_recursive((_depth + 1) / 2 - 1, _field->get_player());
+		if (_depth > 1)
+			build_trajectories_recursive(_depth / 2 - 1, next_player(_field->get_player()));
 	}
-	void build_trajectories(trajectories &last)
+	void build_trajectories(trajectories &last, pos cur_pos)
 	{
+		_field = last._field;
+		_depth = last._depth - 1;
 
+		for (auto i = last._trajectories[_field->get_player()].begin(); i != last._trajectories[_field->get_player()].end(); i++)
+			if ((i->size() <= (_depth + 1) / 2 || (i->size() == (_depth + 1) / 2 + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(*_field, cur_pos))
+				add_trajectory(*i, cur_pos);
+
+		if (_depth > 1)
+			build_trajectories_recursive(_depth / 2 - 1, next_player(_field->get_player()));
 	}
 	void get_points(vector<pos> &moves)
 	{
