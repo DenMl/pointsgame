@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Config.h"
-#include "BasicTypes.h"
+#include "basic_types.h"
 #include "Field.h"
 #include "static_vector.h"
+#include <list>
 
 using namespace std;
 
@@ -30,5 +31,5 @@ struct uct_node
 	}
 };
 
-double UCTEstimate(field &MainField, ulong MaxSimulations, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
-double UCTEstimateWithTime(field &MainField, ulong Time, static_vector<pos, MAX_CHAIN_POINTS> &Moves);
+pos uct(field &cur_field, size_t max_simulations, list<pos> &moves);
+pos uct_with_time(field &cur_field, size_t time, list<pos> &moves);

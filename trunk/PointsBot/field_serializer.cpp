@@ -1,8 +1,8 @@
-#include "Config.h"
+#include "config.h"
 #include "field_serializer.h"
-#include "BasicTypes.h"
-#include "Player.h"
-#include "Field.h"
+#include "basic_types.h"
+#include "player.h"
+#include "field.h"
 #include <string>
 #include <fstream>
 

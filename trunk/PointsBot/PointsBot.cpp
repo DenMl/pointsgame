@@ -1,4 +1,4 @@
-#include "BasicTypes.h"
+#include "basic_types.h"
 #include "PointsBot.h"
 #include "Field.h"
 #include "Config.h"
@@ -49,5 +49,5 @@ void SetNextPlayer(field *MainField)
 void GetBotMove(field *MainField, size_t MinMaxDepth, size_t UCTIterations, coord &X, coord &Y)
 {
 	Randomize();
-	MainField->to_xy(SearchBestMove(*MainField, (uint)MinMaxDepth, (ulong)UCTIterations), X, Y);
+	MainField->to_xy(position_estimate_best_move(*MainField), X, Y);
 }

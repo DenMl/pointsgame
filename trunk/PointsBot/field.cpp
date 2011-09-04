@@ -174,7 +174,7 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 				{
 					return false;
 				}
-	});
+			});
 	// Изменение счета игроков.
 	add_sub_captured_freed(cur_player, CurCaptureCount, CurFreedCount);
 
