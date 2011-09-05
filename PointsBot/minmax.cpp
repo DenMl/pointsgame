@@ -1,7 +1,6 @@
 #include "Config.h"
-#include "MinMaxEstimate.h"
+#include "minmax.h"
 #include "Field.h"
-#include "static_vector.h"
 #include "trajectories.h"
 #include <omp.h>
 #include <algorithm>
@@ -16,50 +15,50 @@ using namespace std;
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-int negamax(field &cur_field, uint Depth, uint Pos, trajectories &last, int alpha, int beta)
+score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
 {
-	int BestEstimate = INT_MIN + 1;
+	score best_estimate = -SCORE_INFINITY;
 	trajectories cur_trajectories;
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
-	cur_field.do_unsafe_step(Pos);
+	cur_field.do_unsafe_step(cur_pos);
 
-	if (Depth == 0)
+	if (depth == 0)
 	{
-		BestEstimate = cur_field.get_score(cur_field.get_player());
+		best_estimate = cur_field.get_score(cur_field.get_player());
 		cur_field.undo_step();
-		return -BestEstimate;
+		return -best_estimate;
 	}
 
 	if (cur_field.get_d_score() < 0) // Если точка поставлена в окружение.
 	{
 		cur_field.undo_step();
-		return INT_MIN + 1; // Для CurPlayer это хорошо, то есть оценка Infinity.
+		return -SCORE_INFINITY; // Для CurPlayer это хорошо, то есть оценка Infinity.
 	}
 
-	cur_trajectories.build_trajectories(last, Pos);
+	cur_trajectories.build_trajectories(last, cur_pos);
 	
-	static_vector<pos, MAX_CHAIN_POINTS> Moves;
+	vector<pos> Moves;
 	cur_trajectories.get_points(Moves);
 
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
 	{
-		int CurEstimate = negamax(cur_field, Depth - 1, *i, cur_trajectories, -beta, -alpha);
-		if (CurEstimate > BestEstimate)
+		score CurEstimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha);
+		if (CurEstimate > best_estimate)
 		{
-			BestEstimate = CurEstimate;
-			if (BestEstimate >= beta)
+			best_estimate = CurEstimate;
+			if (best_estimate >= beta)
 				break;
-			if (BestEstimate > alpha)
-				alpha = BestEstimate;
+			if (best_estimate > alpha)
+				alpha = best_estimate;
 		}
 	}
-	if (BestEstimate == INT_MIN + 1)
-		BestEstimate = cur_field.get_score(cur_field.get_player());
+	if (best_estimate == -SCORE_INFINITY)
+		best_estimate = cur_field.get_score(cur_field.get_player());
 
 	cur_field.undo_step();
 
-	return -BestEstimate;
+	return -best_estimate;
 }
 
 // int get_enemy_estimate(field &cur_field, TrajectoryList &cur_trajectories, TrajectoryList &enemy_trajectories, size_t depth)
@@ -109,8 +108,7 @@ pos minmax(field &cur_field, size_t depth, list<pos> &moves)
 {
 	// Главные траектории - свои и вражеские.
 	trajectories cur_trajectories(cur_field, depth);
-	// Доска, на которую идет проецирование траекторий. Необходима для оптимизации работы с памятью.
-	static_vector<pos, MAX_CHAIN_POINTS> BestMoves, PossibleMoves, FirstMoves;
+	vector<pos> BestMoves, PossibleMoves, FirstMoves;
 	pos result;
 
 	// Делаем что-то только когда глубина просчета положительная и колическтво возможных ходов на входе не равно 0.
@@ -131,7 +129,7 @@ pos minmax(field &cur_field, size_t depth, list<pos> &moves)
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	int alpha = INT_MIN + 1;
+	score alpha = -SCORE_INFINITY;
 	#pragma omp parallel
 	{
 		field local_field(cur_field);
@@ -139,7 +137,7 @@ pos minmax(field &cur_field, size_t depth, list<pos> &moves)
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(FirstMoves.size()); i++)
 		{
-			int cur_estimate = negamax(local_field, depth - 1, FirstMoves[i], cur_trajectories, INT_MIN + 1, -alpha);
+			int cur_estimate = negamax(local_field, depth - 1, FirstMoves[i], cur_trajectories, -SCORE_INFINITY, -alpha);
 			omp_set_lock(&lock);
 			if (cur_estimate > alpha) // Обновляем нижнюю границу.
 			{
