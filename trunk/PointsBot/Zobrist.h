@@ -2,11 +2,10 @@
 
 #include "config.h"
 #include "basic_types.h"
-#include "BasicConstants.h"
 
 using namespace std;
 
-extern ulong Zobrist[2][2][PointsLength22];
+extern ulong Zobrist[2][2][2000];
 
 void ZobristInit();
 

@@ -2,7 +2,7 @@
 #include "PointsBot.h"
 #include "Field.h"
 #include "Config.h"
-#include "BotEngine.h"
+#include "bot_engine.h"
 #include "Random.h"
 
 field* InitField(size_t FieldWidth, size_t FieldHeight, size_t SurCond, size_t Pattern)

@@ -165,9 +165,8 @@
     <None Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicConstants.h" />
     <ClInclude Include="basic_types.h" />
-    <ClInclude Include="BotEngine.h" />
+    <ClInclude Include="bot_engine.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="field_serializer.h" />
     <ClInclude Include="field.h" />
@@ -184,7 +183,7 @@
     <ClInclude Include="Zobrist.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BotEngine.cpp" />
+    <ClCompile Include="bot_engine.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>

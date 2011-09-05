@@ -1,6 +1,6 @@
 #include "config.h"
 #include "basic_types.h"
-#include "BotEngine.h"
+#include "bot_engine.h"
 #include "Field.h"
 #include "minmax.h"
 #include "uct.h"
