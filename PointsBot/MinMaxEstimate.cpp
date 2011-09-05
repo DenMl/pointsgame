@@ -106,7 +106,6 @@ int get_enemy_estimate(field &cur_field, TrajectoryList &cur_trajectories, Traje
 
 	int alpha = INT_MIN + 1;
 	cur_field.set_next_player();
-	depth -= 2;
 	omp_lock_t lock;
 	omp_init_lock(&lock);
 	#pragma omp parallel
@@ -117,7 +116,7 @@ int get_enemy_estimate(field &cur_field, TrajectoryList &cur_trajectories, Traje
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(Moves.size()); i++)
 		{
-			int CurEstimate = negamax(LocalField, TrajectoriesBoard, depth, Moves[i], enemy_trajectories, cur_trajectories, INT_MIN + 1, -alpha);
+			int CurEstimate = negamax(LocalField, TrajectoriesBoard, depth - 2, Moves[i], enemy_trajectories, cur_trajectories, INT_MIN + 1, -alpha);
 			omp_set_lock(&lock);
 			if (CurEstimate > alpha) // Обновляем нижнюю границу.
 				alpha = CurEstimate;
