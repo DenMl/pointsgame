@@ -181,7 +181,6 @@
     <ClInclude Include="time.h" />
     <ClInclude Include="trajectories.h" />
     <ClInclude Include="trajectory.h" />
-    <ClInclude Include="TrajectoryList.h" />
     <ClInclude Include="uct.h" />
     <ClInclude Include="Zobrist.h" />
   </ItemGroup>

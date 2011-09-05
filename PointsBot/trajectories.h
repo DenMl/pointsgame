@@ -30,7 +30,7 @@ private:
 		// Высчитываем хеш траектории и сравниваем с уже существующими для исключения повторов.
 		for (auto i = begin; i < end; i++)
 			TempHash ^= GetZobristHash(*i);
-		for (auto i = _trajectories[cur_player].begin(); i < _trajectories[cur_player].end(); i++)
+		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (TempHash == i->hash())
 				return; // В теории возможны коллизии. Неплохо было бы сделать точную проверку.
 
@@ -192,7 +192,8 @@ private:
 		exclude_composite_trajectories(player_red);
 		exclude_composite_trajectories(player_black);
 	}
-	inline void get_points(vector<pos> &moves, player cur_player)
+	template<typename _Cont>
+	inline void get_points(_Cont &moves, player cur_player)
 	{
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (!i->excluded())
@@ -212,8 +213,8 @@ public:
 	trajectories(field &cur_field, size_t depth)
 	{
 		_field = &cur_field;
-		_depth[cur_field.get_player()] = (depth + 1) / 2;
-		_depth[next_player(cur_field.get_player())] = depth / 2;
+		_depth[get_cur_player()] = (depth + 1) / 2;
+		_depth[get_enemy_player()] = depth / 2;
 		_trajectories_board = new int[cur_field.length()];
 		fill_n(_trajectories_board, _field->length(), 0);
 	}
@@ -229,6 +230,14 @@ public:
 	{
 		delete _trajectories_board;
 	}
+	inline player get_cur_player()
+	{
+		return _field->get_player();
+	}
+	inline player get_enemy_player()
+	{
+		return next_player(_field->get_player());
+	}
 	void clear()
 	{
 		_trajectories[player_red].clear();
@@ -236,26 +245,27 @@ public:
 	}
 	void build_trajectories()
 	{
-		if (_depth[_field->get_player()] > 0)
-			build_trajectories_recursive(_depth[_field->get_player()] - 1, _field->get_player());
-		if (_depth[next_player(_field->get_player())] > 0)
-			build_trajectories_recursive(_depth[next_player(_field->get_player())] - 1, next_player(_field->get_player()));
+		if (_depth[get_cur_player()] > 0)
+			build_trajectories_recursive(_depth[get_cur_player()] - 1, get_cur_player());
+		if (_depth[get_enemy_player()] > 0)
+			build_trajectories_recursive(_depth[get_enemy_player()] - 1, get_enemy_player());
 	}
 	void build_trajectories(trajectories &last, pos cur_pos)
 	{
 		_field = last._field;
-		_depth[_field->get_player()] = last._depth[_field->get_player()];
-		_depth[next_player(_field->get_player())] = last._depth[next_player(_field->get_player())] - 1;
+		_depth[get_cur_player()] = last._depth[get_cur_player()];
+		_depth[get_enemy_player()] = last._depth[get_enemy_player()] - 1;
 
-		if (_depth[_field->get_player()] > 0)
-			build_trajectories_recursive(_depth[_field->get_player()] - 1, _field->get_player());
+		if (_depth[get_cur_player()] > 0)
+			build_trajectories_recursive(_depth[get_cur_player()] - 1, get_cur_player());
 
-		if (_depth[next_player(_field->get_player())] > 0)
-			for (auto i = last._trajectories[next_player(_field->get_player())].begin(); i != last._trajectories[next_player(_field->get_player())].end(); i++)
-				if ((i->size() <= _depth[next_player(_field->get_player())] || (i->size() == _depth[next_player(_field->get_player())] + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(*_field, cur_pos))
+		if (_depth[get_enemy_player()] > 0)
+			for (auto i = last._trajectories[get_enemy_player()].begin(); i != last._trajectories[get_enemy_player()].end(); i++)
+				if ((i->size() <= _depth[get_enemy_player()] || (i->size() == _depth[get_enemy_player()] + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(*_field, cur_pos))
 					add_trajectory(*i, cur_pos);
 	}
-	void get_points(vector<pos> &moves)
+	template<typename _Cont>
+	void get_points(_Cont &moves)
 	{
 		exclude_composite_trajectories();
 		// Проецируем неисключенные траектории на доску.
@@ -266,12 +276,10 @@ public:
 		moves.clear();
 		get_points(moves, player_red);
 		get_points(moves, player_black);
-
 #if ALPHABETA_SORT
 		// Сортируем точки по убыванию количества траекторий, в которые они входят.
 		sort(moves.begin(), moves.end(), [&](uint x, uint y){ return _trajectories_board[x] < _trajectories_board[y]; });
 #endif
-
 		// Очищаем доску от проекций.
 		unproject();
 		// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).

@@ -34,9 +34,6 @@
     <ClInclude Include="Zobrist.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="TrajectoryList.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="PointsBot.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
