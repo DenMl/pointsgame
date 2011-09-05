@@ -2,7 +2,7 @@
 #include "basic_types.h"
 #include "BotEngine.h"
 #include "Field.h"
-#include "MinMaxEstimate.h"
+#include "minmax.h"
 #include "uct.h"
 #include "position_estimate.h"
 #include "Random.h"

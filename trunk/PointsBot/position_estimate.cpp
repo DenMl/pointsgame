@@ -2,7 +2,6 @@
 #include "basic_types.h"
 #include "player.h"
 #include "field.h"
-#include "static_vector.h"
 #include <list>
 #include <climits>
 
