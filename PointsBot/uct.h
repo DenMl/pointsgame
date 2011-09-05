@@ -3,7 +3,6 @@
 #include "Config.h"
 #include "basic_types.h"
 #include "Field.h"
-#include "static_vector.h"
 #include <list>
 
 using namespace std;

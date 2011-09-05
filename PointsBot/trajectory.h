@@ -30,15 +30,6 @@ public:
 	list<pos>::const_reverse_iterator rbegin() const { return _points.rbegin(); }
 	list<pos>::const_reverse_iterator rend() const { return _points.rend(); }
 
-	inline void Copy(const trajectory &Orig, const pos Pos)
-	{
-		clear();
-		for (auto i = Orig.begin(); i != Orig.end(); i++)
-			if (*i != Pos)
-				push_back(*i);
-		_hash = Orig.hash() ^ GetZobristHash(Pos);
-		_excluded = Orig.excluded();
-	}
 	inline size_t hash() const { return _hash; }
 	inline void exclude() { _excluded = true; }
 	inline void include() { _excluded = false; }

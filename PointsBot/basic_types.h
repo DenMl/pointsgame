@@ -3,6 +3,7 @@
 #include "Config.h"
 #include <utility>
 #include <stack>
+#include <climits>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ typedef short value;
 typedef short player;
 typedef int score;
 typedef short coord;
+
+#define SCORE_INFINITY INT_MAX
 
 // Структура координат точки.
 struct point

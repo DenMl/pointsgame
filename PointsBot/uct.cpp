@@ -131,7 +131,8 @@ short play_simulation(field &cur_field, vector<pos> &possible_moves, uct_node &n
 	return randomresult;
 }
 
-inline void generate_possible_moves(field &cur_field, vector<pos> &possible_moves)
+template<typename _Cont>
+inline void generate_possible_moves(field &cur_field, _Cont &possible_moves)
 {
 	ushort* r_field = new ushort[cur_field.length()];
 	fill_n(r_field, cur_field.length(), 0);
