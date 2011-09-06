@@ -1,5 +1,5 @@
 #include "config.h"
-#include "minmax.h"
+#include "minimax.h"
 #include "field.h"
 #include "trajectories.h"
 #include <omp.h>
@@ -104,7 +104,7 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 // CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
 // Moves - на входе возможные ходы, на выходе лучшие из них.
-pos minmax(field &cur_field, size_t depth, list<pos> &moves)
+pos minimax(field &cur_field, size_t depth, list<pos> &moves)
 {
 	// Главные траектории - свои и вражеские.
 	trajectories cur_trajectories(cur_field, cur_field.get_zobrist(), depth);

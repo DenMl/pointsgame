@@ -58,13 +58,13 @@
     <ClInclude Include="trajectories.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="minmax.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="bot_engine.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="zobrist.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="minimax.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -87,10 +87,10 @@
     <ClCompile Include="position_estimate.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="minmax.cpp">
+    <ClCompile Include="bot_engine.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="bot_engine.cpp">
+    <ClCompile Include="minimax.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
