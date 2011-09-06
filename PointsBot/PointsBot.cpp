@@ -1,7 +1,7 @@
+#include "config.h"
 #include "basic_types.h"
 #include "PointsBot.h"
-#include "Field.h"
-#include "Config.h"
+#include "field.h"
 #include "bot_engine.h"
 #include "Random.h"
 

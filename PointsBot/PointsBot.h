@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Config.h"
-#include "Field.h"
+#include "config.h"
+#include "field.h"
 
 #define DLLEXPORT extern "C" __declspec(dllexport)
 

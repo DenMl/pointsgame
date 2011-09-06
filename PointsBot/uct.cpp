@@ -1,8 +1,8 @@
 #include "config.h"
 #include "basic_types.h"
 #include "uct.h"
-#include "Player.h"
-#include "Field.h"
+#include "player.h"
+#include "field.h"
 #include "Random.h"
 #include "time.h"
 #include <climits>
