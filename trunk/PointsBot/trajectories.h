@@ -13,6 +13,7 @@ private:
 	field* _field;
 	list<trajectory> _trajectories[2];
 	int* _trajectories_board;
+	zobrist* _zobrist;
 
 private:
 	template<typename _InIt>
@@ -29,7 +30,7 @@ private:
 
 		// Высчитываем хеш траектории и сравниваем с уже существующими для исключения повторов.
 		for (auto i = begin; i < end; i++)
-			TempHash ^= GetZobristHash(*i);
+			TempHash ^= _zobrist->get_hash(*i);
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (TempHash == i->hash())
 				return; // В теории возможны коллизии. Неплохо было бы сделать точную проверку.
@@ -39,7 +40,7 @@ private:
 		for (auto i = begin; i < end; i++)
 		{
 			// Добавляем точку в PointsSeq траектории.
-			_trajectories[cur_player].back().push_back(*i);
+			_trajectories[cur_player].back().push_back(*i, _zobrist->get_hash(*i));
 		}
 	}
 	inline void add_trajectory(trajectory &cur_trajectory, player cur_player)
@@ -54,7 +55,7 @@ private:
 		_trajectories[cur_player].push_back(trajectory());
 		for (auto i = cur_trajectory.begin(); i != cur_trajectory.end(); i++)
 			if (*i != cur_pos)
-				_trajectories[cur_player].back().push_back(*i);
+				_trajectories[cur_player].back().push_back(*i, _zobrist->get_hash(*i));
 	}
 
 	void build_trajectories_recursive(size_t depth, player cur_player)
@@ -138,12 +139,12 @@ private:
 		include_all_trajectories(player_black);
 	}
 	// Возвращает хеш Зобриста пересечения двух траекторий.
-	inline static ulong get_intersect_hash(trajectory &t1, trajectory &t2)
+	inline ulong get_intersect_hash(trajectory &t1, trajectory &t2)
 	{
 		ulong result_hash = t1.hash();
 		for (auto i = t2.begin(); i != t2.end(); i++)
 			if (find(t1.begin(), t1.end(), *i) == t1.end())
-				result_hash ^= GetZobristHash(*i);
+				result_hash ^= _zobrist->get_hash(*i);
 		return result_hash;
 	}
 	bool exclude_unnecessary_trajectories(player cur_player)
@@ -203,20 +204,22 @@ private:
 	}
 
 public:
-	trajectories()
+	trajectories(zobrist &cur_zobrist)
 	{
 		_field = NULL;
 		_depth[player_red] = 0;
 		_depth[player_black] = 0;
 		_trajectories_board = NULL;
+		_zobrist = &cur_zobrist;
 	}
-	trajectories(field &cur_field, size_t depth)
+	trajectories(field &cur_field, zobrist cur_zobrist, size_t depth)
 	{
 		_field = &cur_field;
 		_depth[get_cur_player()] = (depth + 1) / 2;
 		_depth[get_enemy_player()] = depth / 2;
 		_trajectories_board = new int[cur_field.length()];
 		fill_n(_trajectories_board, _field->length(), 0);
+		_zobrist = &cur_zobrist;
 	}
 	trajectories(const trajectories &other)
 	{
@@ -225,6 +228,7 @@ public:
 		_depth[player_black] = other._depth[player_black];
 		_trajectories_board = new int[_field->length()];
 		fill_n(_trajectories_board, _field->length(), 0);
+		_zobrist = other._zobrist;
 	}
 	~trajectories()
 	{

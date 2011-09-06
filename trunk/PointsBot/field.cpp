@@ -242,6 +242,7 @@ field::field(const coord width, const coord height, const sur_cond sur_cond, con
 	_changes.reserve(length());
 	points_seq.reserve(length());
 
+	_zobrist = new zobrist(length() * 2 * 2);
 	_hash = 0;
 
 	place_begin_pattern(begin_pattern);
@@ -267,6 +268,7 @@ field::field(const field &orig)
 	_changes.assign(orig._changes.begin(), orig._changes.end());
 	points_seq.assign(orig.points_seq.begin(), orig.points_seq.end());
 
+	_zobrist = orig._zobrist;
 	_hash = orig._hash;
 }
 

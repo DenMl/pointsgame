@@ -129,6 +129,8 @@ private:
 	// Количество захваченных точек.
 	score _capture_count[2];
 
+	zobrist* _zobrist;
+
 	size_t _hash;
 
 public:
@@ -240,7 +242,7 @@ private:
 	void remove_empty_base(const pos StartPos);
 	bool build_chain(const pos start_pos, const value enable_cond, const pos direction_pos, list<pos> &chain);
 	void find_surround(list<pos> &chain, pos inside_point, player cur_player);
-	inline void update_hash(player cur_player, short surrounded, pos cur_pos) { _hash ^= GetZobristHash(cur_player, surrounded, cur_pos); }
+	inline void update_hash(player cur_player, short surrounded, pos cur_pos) { _hash ^= _zobrist->get_hash((cur_player + 1) * (surrounded + 1) * cur_pos); }
 	inline intersection_state get_intersection_state(const pos cur_pos, const pos next_pos) const
 	{
 		point a, b;
@@ -278,6 +280,8 @@ public:
 	inline player get_player() const { return _player; }
 	inline sur_cond get_sur_cond() const { return _sur_cond; }
 	inline size_t get_hash() const { return _hash; }
+	inline size_t get_hash(pos cur_pos) const { return _zobrist->get_hash(cur_pos); }
+	inline zobrist& get_zobrist() const { return *_zobrist; };
 	inline coord width() const { return _width; }
 	inline coord height() const { return _height; }
 	inline pos length() const { return (_width + 2) * (_height + 2); }
