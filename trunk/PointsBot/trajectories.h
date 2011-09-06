@@ -204,12 +204,13 @@ private:
 	}
 
 public:
-	trajectories(zobrist &cur_zobrist)
+	trajectories(field &cur_field, zobrist &cur_zobrist)
 	{
-		_field = NULL;
+		_field = &cur_field;
 		_depth[player_red] = 0;
 		_depth[player_black] = 0;
-		_trajectories_board = NULL;
+		_trajectories_board = new int[cur_field.length()];
+		fill_n(_trajectories_board, _field->length(), 0);
 		_zobrist = &cur_zobrist;
 	}
 	trajectories(field &cur_field, zobrist cur_zobrist, size_t depth)
@@ -266,7 +267,7 @@ public:
 		if (_depth[get_enemy_player()] > 0)
 			for (auto i = last._trajectories[get_enemy_player()].begin(); i != last._trajectories[get_enemy_player()].end(); i++)
 				if ((i->size() <= _depth[get_enemy_player()] || (i->size() == _depth[get_enemy_player()] + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(*_field, cur_pos))
-					add_trajectory(*i, cur_pos);
+					add_trajectory(*i, cur_pos, get_enemy_player());
 	}
 	template<typename _Cont>
 	void get_points(_Cont &moves)
