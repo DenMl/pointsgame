@@ -1,6 +1,6 @@
-#include "Config.h"
+#include "config.h"
 #include "minmax.h"
-#include "Field.h"
+#include "field.h"
 #include "trajectories.h"
 #include <omp.h>
 #include <algorithm>

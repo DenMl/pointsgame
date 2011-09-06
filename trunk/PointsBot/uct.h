@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Config.h"
+#include "config.h"
 #include "basic_types.h"
-#include "Field.h"
+#include "field.h"
 #include <list>
 
 using namespace std;
