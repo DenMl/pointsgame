@@ -18,7 +18,7 @@ using namespace std;
 score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
 {
 	score best_estimate = -SCORE_INFINITY;
-	trajectories cur_trajectories(cur_field.get_zobrist());
+	trajectories cur_trajectories(cur_field, cur_field.get_zobrist());
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
 	cur_field.do_unsafe_step(cur_pos);
@@ -123,7 +123,7 @@ pos minimax(field &cur_field, size_t depth, list<pos> &moves)
 			FirstMoves.push_back(*i);
 	// Если нет возможных ходов, входящих в траектории - выходим.
 	if (FirstMoves.size() == 0)
-		return 0;
+		return -1;
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
 	//int enemy_estimate = get_enemy_estimate(cur_field, Trajectories[cur_field.get_player()], Trajectories[next_player(cur_field.get_player())], depth);
 

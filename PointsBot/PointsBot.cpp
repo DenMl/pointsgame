@@ -49,5 +49,5 @@ void SetNextPlayer(field *MainField)
 void GetBotMove(field *MainField, size_t MinMaxDepth, size_t UCTIterations, coord &X, coord &Y)
 {
 	Randomize();
-	MainField->to_xy(position_estimate_best_move(*MainField), X, Y);
+	MainField->to_xy(minimax_position_estimate_best_move(*MainField, MinMaxDepth), X, Y);
 }
