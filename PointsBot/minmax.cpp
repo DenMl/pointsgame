@@ -18,7 +18,7 @@ using namespace std;
 score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
 {
 	score best_estimate = -SCORE_INFINITY;
-	trajectories cur_trajectories;
+	trajectories cur_trajectories(cur_field.get_zobrist());
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
 	cur_field.do_unsafe_step(cur_pos);
@@ -107,7 +107,7 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 pos minmax(field &cur_field, size_t depth, list<pos> &moves)
 {
 	// Главные траектории - свои и вражеские.
-	trajectories cur_trajectories(cur_field, depth);
+	trajectories cur_trajectories(cur_field, cur_field.get_zobrist(), depth);
 	vector<pos> BestMoves, PossibleMoves, FirstMoves;
 	pos result;
 

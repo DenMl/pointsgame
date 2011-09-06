@@ -17,7 +17,7 @@ public:
 	inline trajectory(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; }
 	inline size_t size() const { return _points.size(); }
 	inline bool empty() const { return _points.empty(); }
-	inline void push_back(pos Pos) { _points.push_back(Pos); _hash ^= GetZobristHash(Pos); }
+	inline void push_back(pos cur_pos, size_t cur_hash) { _points.push_back(cur_pos); _hash ^= cur_hash; }
 	inline void clear() { _points.clear(); _hash = 0; _excluded = false; }
 	inline const trajectory& operator =(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; return *this; }
 	inline void swap(trajectory &other) { trajectory tmp(*this); *this = other; other = tmp; }

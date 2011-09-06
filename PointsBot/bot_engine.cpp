@@ -73,7 +73,22 @@ pos minmax_uct_with_time_best_move(field &cur_field, size_t depth, size_t time)
 	list<pos> moves;
 	build_all_moves(cur_field, moves);
 	pos result =  minmax(cur_field, depth, moves);
-	if (result == -1 && t.get() < time)
-		result = uct_with_time(cur_field, time - t.get(), moves);
+	ulong minmax_time = t.get();
+	if (result == -1 && minmax_time < time)
+		result = uct_with_time(cur_field, time - minmax_time, moves);
+	return result;
+}
+
+pos minmax_uct_with_time_position_estimate_best_move(field &cur_field, size_t depth, size_t time)
+{
+	timer t;
+	list<pos> moves;
+	build_all_moves(cur_field, moves);
+	pos result =  minmax(cur_field, depth, moves);
+	ulong minmax_time = t.get();
+	if (result == -1 && minmax_time < time)
+		result = uct_with_time(cur_field, time - minmax_time, moves);
+	if (result == -1)
+		result = position_estimate(cur_field, moves);
 	return result;
 }

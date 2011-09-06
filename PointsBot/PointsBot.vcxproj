@@ -180,7 +180,7 @@
     <ClInclude Include="trajectories.h" />
     <ClInclude Include="trajectory.h" />
     <ClInclude Include="uct.h" />
-    <ClInclude Include="Zobrist.h" />
+    <ClInclude Include="zobrist.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bot_engine.cpp" />
@@ -204,7 +204,6 @@
     <ClCompile Include="PointsBot.cpp" />
     <ClCompile Include="position_estimate.cpp" />
     <ClCompile Include="uct.cpp" />
-    <ClCompile Include="Zobrist.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
