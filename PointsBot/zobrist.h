@@ -18,7 +18,8 @@ public:
 		_size = size;
 		_hashes = new size_t[size];
 		Randomize();
-		fill_n(_hashes, size, Random());
+		for (size_t i = 0; i < size; i++)
+			_hashes[i] = Random();
 	}
 	inline zobrist(const zobrist &other)
 	{
