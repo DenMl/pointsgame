@@ -213,7 +213,7 @@ public:
 		fill_n(_trajectories_board, _field->length(), 0);
 		_zobrist = &cur_zobrist;
 	}
-	trajectories(field &cur_field, zobrist cur_zobrist, size_t depth)
+	trajectories(field &cur_field, zobrist &cur_zobrist, size_t depth)
 	{
 		_field = &cur_field;
 		_depth[get_cur_player()] = (depth + 1) / 2;
