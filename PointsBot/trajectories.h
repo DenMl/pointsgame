@@ -19,7 +19,7 @@ private:
 	template<typename _InIt>
 	inline void add_trajectory(_InIt begin, _InIt end, player cur_player)
 	{
-		size_t TempHash = 0;
+		size_t cur_hash = 0;
 
 		// Ёвристические проверки.
 		//  ажда€ точка траектории должна окружать что-либо и иметь р€дом хот€ бы 2 группы точек.
@@ -30,9 +30,9 @@ private:
 
 		// ¬ысчитываем хеш траектории и сравниваем с уже существующими дл€ исключени€ повторов.
 		for (auto i = begin; i < end; i++)
-			TempHash ^= _zobrist->get_hash(*i);
+			cur_hash ^= _zobrist->get_hash(*i);
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
-			if (TempHash == i->hash())
+			if (cur_hash == i->hash())
 				return; // ¬ теории возможны коллизии. Ќеплохо было бы сделать точную проверку.
 
 		_trajectories[cur_player].push_back(trajectory());
