@@ -204,23 +204,23 @@ private:
 	}
 
 public:
-	trajectories(field &cur_field, zobrist &cur_zobrist)
+	trajectories(field &cur_field)
 	{
 		_field = &cur_field;
 		_depth[player_red] = 0;
 		_depth[player_black] = 0;
 		_trajectories_board = new int[cur_field.length()];
 		fill_n(_trajectories_board, _field->length(), 0);
-		_zobrist = &cur_zobrist;
+		_zobrist = &cur_field.get_zobrist();
 	}
-	trajectories(field &cur_field, zobrist &cur_zobrist, size_t depth)
+	trajectories(field &cur_field, size_t depth)
 	{
 		_field = &cur_field;
 		_depth[get_cur_player()] = (depth + 1) / 2;
 		_depth[get_enemy_player()] = depth / 2;
 		_trajectories_board = new int[cur_field.length()];
 		fill_n(_trajectories_board, _field->length(), 0);
-		_zobrist = &cur_zobrist;
+		_zobrist = &cur_field.get_zobrist();
 	}
 	trajectories(const trajectories &other)
 	{
