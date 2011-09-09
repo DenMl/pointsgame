@@ -37,17 +37,17 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 
 	cur_trajectories.build_trajectories(last, cur_pos);
 	
-	vector<pos> Moves;
-	cur_trajectories.get_points(Moves);
+	vector<pos> moves;
+	cur_trajectories.get_points(moves);
 
-	if (Moves.size() == 0)
+	if (moves.size() == 0)
 	{
 		score best_estimate = cur_field.get_score(cur_field.get_player());
 		cur_field.undo_step();
 		return -best_estimate;
 	}
 
-	for (auto i = Moves.begin(); i < Moves.end(); i++)
+	for (auto i = moves.begin(); i < moves.end(); i++)
 	{
 		score cur_estimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha);
 		if (cur_estimate > alpha)

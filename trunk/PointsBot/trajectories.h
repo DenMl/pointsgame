@@ -67,7 +67,7 @@ private:
 				if (_field->is_in_empty_base(Pos)) // Если поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
 				{
 					_field->do_unsafe_step(Pos, cur_player);
-					if (_field->get_d_score() > 0)
+					if (_field->get_d_score(cur_player) > 0)
 						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
 					_field->undo_step();
 				}
@@ -76,14 +76,14 @@ private:
 					_field->do_unsafe_step(Pos, cur_player);
 
 #if SURROUND_CONDITIONS
-					if (_field->is_base_bound(Pos) && _field->get_d_score() == 0)
+					if (_field->is_base_bound(Pos) && _field->get_d_score(cur_player) == 0)
 					{
 						_field->undo_step();
 						continue;
 					}
 #endif
 
-					if (_field->get_d_score() > 0)
+					if (_field->get_d_score(cur_player) > 0)
 						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
 					else if (depth > 0)
 						build_trajectories_recursive(depth - 1, cur_player);

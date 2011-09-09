@@ -271,9 +271,9 @@ public:
 
 	inline score get_score(player cur_player) const { return _capture_count[cur_player] - _capture_count[next_player(cur_player)]; }
 	inline score get_prev_score(player cur_player) const { return _changes.back().capture_count[cur_player] - _changes.back().capture_count[next_player(cur_player)]; }
-	inline player get_prev_player() const { return _changes.back().player; }
+	inline player get_last_player() const { return get_player(points_seq.back()); }
 	inline score get_d_score(player cur_player) const { return get_score(cur_player) - get_prev_score(cur_player); }
-	inline score get_d_score() const { return get_d_score(get_prev_player()); }
+	inline score get_d_score() const { return get_d_score(get_last_player()); }
 	inline player get_player() const { return _player; }
 	inline sur_cond get_sur_cond() const { return _sur_cond; }
 	inline size_t get_hash() const { return _hash; }
