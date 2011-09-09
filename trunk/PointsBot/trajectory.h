@@ -43,7 +43,7 @@ public:
 				return false;
 		return true;
 	}
-	// Проверяет, во все ли точки траектории можно сделать ход, кроме, возможно, точки Pos.
+	// Проверяет, во все ли точки траектории можно сделать ход, кроме, возможно, точки cur_pos.
 	inline bool is_valid(field &cur_field, pos cur_pos) const
 	{
 		for (auto i = _points.begin(); i != _points.end(); i++)
