@@ -17,7 +17,6 @@ using namespace std;
 // На выходе оценка позиции для CurPlayer (до хода Pos).
 score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
 {
-	score best_estimate = -SCORE_INFINITY;
 	trajectories cur_trajectories(cur_field, cur_field.get_zobrist());
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
@@ -25,7 +24,7 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 
 	if (depth == 0)
 	{
-		best_estimate = cur_field.get_score(cur_field.get_player());
+		score best_estimate = cur_field.get_score(cur_field.get_player());
 		cur_field.undo_step();
 		return -best_estimate;
 	}
@@ -41,24 +40,25 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 	vector<pos> Moves;
 	cur_trajectories.get_points(Moves);
 
+	if (Moves.size() == 0)
+	{
+		cur_field.undo_step();
+		return -cur_field.get_score(cur_field.get_player());
+	}
+
 	for (auto i = Moves.begin(); i < Moves.end(); i++)
 	{
-		score CurEstimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha);
-		if (CurEstimate > best_estimate)
+		score cur_estimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha);
+		if (cur_estimate > alpha)
 		{
-			best_estimate = CurEstimate;
-			if (best_estimate >= beta)
+			alpha = cur_estimate;
+			if (alpha >= beta)
 				break;
-			if (best_estimate > alpha)
-				alpha = best_estimate;
 		}
 	}
-	if (best_estimate == -SCORE_INFINITY)
-		best_estimate = cur_field.get_score(cur_field.get_player());
 
 	cur_field.undo_step();
-
-	return -best_estimate;
+	return -alpha;
 }
 
 // int get_enemy_estimate(field &cur_field, TrajectoryList &cur_trajectories, TrajectoryList &enemy_trajectories, size_t depth)
