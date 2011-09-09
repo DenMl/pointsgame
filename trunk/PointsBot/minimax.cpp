@@ -42,8 +42,9 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 
 	if (Moves.size() == 0)
 	{
+		score best_estimate = cur_field.get_score(cur_field.get_player());
 		cur_field.undo_step();
-		return -cur_field.get_score(cur_field.get_player());
+		return -best_estimate;
 	}
 
 	for (auto i = Moves.begin(); i < Moves.end(); i++)

@@ -257,7 +257,6 @@ public:
 	}
 	void build_trajectories(trajectories &last, pos cur_pos)
 	{
-		_field = last._field;
 		_depth[get_cur_player()] = last._depth[get_cur_player()];
 		_depth[get_enemy_player()] = last._depth[get_enemy_player()] - 1;
 
