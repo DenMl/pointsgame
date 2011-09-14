@@ -16,8 +16,8 @@ using namespace std;
 inline short play_random_game(field &cur_field, vector<pos> &possible_moves)
 {
 	vector<pos> moves(possible_moves.size());
-	uint Putted = 0;
-	short result;
+	size_t putted = 0;
+	player result;
 
 	moves[0] = possible_moves[0];
 	for (uint i = 1; i < possible_moves.size(); i++)
@@ -31,7 +31,7 @@ inline short play_random_game(field &cur_field, vector<pos> &possible_moves)
 		if (cur_field.putting_allow(*i))
 		{
 			cur_field.do_unsafe_step(*i);
-			Putted++;
+			putted++;
 		}
 
 		if (cur_field.get_score(player_red) > 0)
@@ -41,7 +41,7 @@ inline short play_random_game(field &cur_field, vector<pos> &possible_moves)
 		else
 			result = -1;
 
-		for (uint i = 0; i < Putted; i++)
+		for (uint i = 0; i < putted; i++)
 			cur_field.undo_step();
 
 		return result;

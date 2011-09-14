@@ -1,187 +1,185 @@
-#include "Config.h"
+#include "config.h"
 #include "Random.h"
-#include "Field.h"
-#include "BasicTypes.h"
-#include "BasicConstants.h"
-#include "BotEngine.h"
+#include "field.h"
+#include "basic_types.h"
+#include "bot_engine.h"
 #include <iostream>
 #include <string>
 #include <map>
 
-Field *MainField;
+field *main_field;
 
-const uint min_MinMaxDepth = 0;
-const uint max_MinMaxDepth = 8;
-const ulong min_UCTIterations = 0;
-const ulong max_UCTIterations = 100000;
-const ulong min_P = 0;
-const ulong max_P = 100;
+const uint min_minimax_depth = 0;
+const uint max_minimax_depth = 8;
+const ulong min_uct_iterations = 0;
+const ulong max_uct_iterations = 100000;
+const ulong min_p = 0;
+const ulong max_p = 100;
 
-inline uint GetMinMaxDepth(ulong P)
+inline uint get_minimax_depth(ulong p)
 {
-	return (P - min_P) * (max_MinMaxDepth - min_MinMaxDepth) / (max_P - min_P) + min_MinMaxDepth;
+	return (p - min_p) * (max_minimax_depth - min_minimax_depth) / (max_p - min_p) + min_minimax_depth;
 }
 
-inline ulong GetUCTIterations(ulong P)
+inline ulong get_uct_iterations(ulong p)
 {
-	return (P - min_P) * (max_UCTIterations - min_UCTIterations) / (max_P - min_P) + min_UCTIterations;
+	return (p - min_p) * (max_uct_iterations - min_uct_iterations) / (max_p - min_p) + min_uct_iterations;
 }
 
-void boardsize(int id)
+void boardsize(size_t id)
 {
-	ushort X, Y;
-	cin >> X >> Y;
-	if (MainField != NULL)
-		delete MainField;
-	MainField = new Field(X, Y, Standart, CleanPattern);
+	coord x, y;
+
+	cin >> x >> y;
+	// Если существовало поле - удаляем его.
+	if (main_field != NULL)
+		delete main_field;
+	main_field = new field(x, y, SC_STANDART, BP_CLEAN);
 	cout << "=" << " " << id << " " << "boardsize" << endl;
 }
 
-void genmove(int id)
+void genmove(size_t id)
 {
-	ushort X, Y;
-	short color;
-	uint pos;
-	cin >> color;
-	if (MainField == NULL)
+	player cur_player;
+	pos cur_pos;
+
+	cin >> cur_player;
+	if (main_field == NULL)
 	{
 		cout << "?" << " " << id << " " << "genmove" << endl;
 	}
 	else
 	{
-		MainField->SetCurrentPlayer(color);
-		pos = SearchBestMove(*MainField, 8, 100000);
-		if (pos == -1)
+		main_field->set_player(cur_player);
+		cur_pos = minimax_uct_best_move(*main_field, 8, 100000);
+		if (cur_pos == -1)
 		{
 			cout << "?" << " " << id << " " << "genmove" << endl;
 			return;
 		}
-		MainField->DoStep(pos);
-		MainField->ConvertToXY(pos, X, Y);
-		cout << "=" << " " << id << " " << "genmove" << " " << X << " " << Y << " " << color << endl;
+		main_field->do_step(cur_pos);
+		cout << "=" << " " << id << " " << "genmove" << " " << main_field->to_x(cur_pos) << " " << main_field->to_y(cur_pos) << " " << cur_player << endl;
 	}
 }
 
-void list_commands(int id)
+void list_commands(size_t id)
 {
 	cout << "=" << " " << id << " " << "list_commands" << " " << "boardsize genmove list_commands name play quit reg_genmove reg_genmove_with_complexity reg_genmove_with_time undo version" << endl;
 }
 
-void name(int id)
+void name(size_t id)
 {
 	cout << "=" << " " << id << " " << "name" << " " << "kkai" << endl;
 }
 
-void play(int id)
+void play(size_t id)
 {
-	ushort X, Y;
-	short color;
-	cin >> X >> Y >> color;
-	if (MainField == NULL || !MainField->DoStep(MainField->ConvertToPos(X, Y), color))
+	coord x, y;
+	player cur_player;
+
+	cin >> x >> y >> cur_player;
+	if (main_field == NULL || !main_field->do_step(main_field->to_pos(x, y), cur_player))
 		cout << "?" << " " << id << " " << "play" << endl;
 	else
-		cout << "=" << " " << id << " " << "play" << " " << X << " " << Y << " " << color << endl;
+		cout << "=" << " " << id << " " << "play" << " " << x << " " << y << " " << cur_player << endl;
 }
 
-void quit(int id)
+void quit(size_t id)
 {
 	cout << "=" << " " << id << " " << "quit" << endl;
 	exit(0);
 }
 
-void reg_genmove(int id)
+void reg_genmove(size_t id)
 {
-	ushort X, Y;
-	short color;
-	uint pos;
-	cin >> color;
-	if (MainField == NULL)
+	player cur_player;
+	pos cur_pos;
+
+	cin >> cur_player;
+	if (main_field == NULL)
 	{
 		cout << "?" << " " << id << " " << "reg_genmove" << endl;
 	}
 	else
 	{
-		MainField->SetCurrentPlayer(color);
-		pos = SearchBestMove(*MainField, 8, 100000);
-		if (pos == -1)
+		main_field->set_player(cur_player);
+		cur_pos = minimax_uct_best_move(*main_field, 8, 100000);
+		if (cur_pos == -1)
 		{
 			cout << "?" << " " << id << " " << "reg_genmove" << endl;
 			return;
 		}
-		MainField->ConvertToXY(pos, X, Y);
-		cout << "=" << " " << id << " " << "reg_genmove" << " " << X << " " << Y << " " << color << endl;
+		cout << "=" << " " << id << " " << "reg_genmove" << " " << main_field->to_x(cur_pos) << " " << main_field->to_y(cur_pos) << " " << cur_player << endl;
 	}
 }
 
-void reg_genmove_with_complexity(int id)
+void reg_genmove_with_complexity(size_t id)
 {
-	ushort X, Y;
-	short color;
-	uint pos;
-	ulong P;
-	cin >> color >> P;
-	if (MainField == NULL)
+	player cur_player;
+	pos cur_pos;
+	size_t p;
+
+	cin >> cur_pos >> p;
+	if (main_field == NULL)
 	{
 		cout << "?" << " " << id << " " << "reg_genmove_with_complexity" << endl;
 	}
 	else
 	{
-		MainField->SetCurrentPlayer(color);
-		pos = SearchBestMove(*MainField, GetMinMaxDepth(P), GetUCTIterations(P));
-		if (pos == -1)
+		main_field->set_player(cur_player);
+		cur_pos = minimax_uct_best_move(*main_field, get_minimax_depth(p), get_uct_iterations(p));
+		if (cur_pos == -1)
 		{
 			cout << "?" << " " << id << " " << "reg_genmove_with_complexity" << endl;
 			return;
 		}
-		MainField->ConvertToXY(pos, X, Y);
-		cout << "=" << " " << id << " " << "reg_genmove_with_complexity" << " " << X << " " << Y << " " << color << endl;
+		cout << "=" << " " << id << " " << "reg_genmove_with_complexity" << " " << main_field->to_x(cur_pos) << " " << main_field->to_y(cur_pos) << " " << cur_player << endl;
 	}
 }
 
-void reg_genmove_with_time(int id)
+void reg_genmove_with_time(size_t id)
 {
-	ushort X, Y;
-	short color;
-	uint pos;
-	ulong time;
-	cin >> color >> time;
-	if (MainField == NULL)
+	player cur_player;
+	pos cur_pos;
+	size_t time;
+
+	cin >> cur_player >> time;
+	if (main_field == NULL)
 	{
 		cout << "?" << " " << id << " " << "reg_genmove_with_time" << endl;
 	}
 	else
 	{
-		MainField->SetCurrentPlayer(color);
-		pos = SearchBestMoveWithTime(*MainField, time);
-		if (pos == -1)
+		main_field->set_player(cur_player);
+		cur_pos = uct_with_time_best_move(*main_field, time);
+		if (cur_pos == -1)
 		{
 			cout << "?" << " " << id << " " << "reg_genmove_with_time" << endl;
 			return;
 		}
-		MainField->ConvertToXY(pos, X, Y);
-		cout << "=" << " " << id << " " << "reg_genmove_with_time" << " " << X << " " << Y << " " << color << endl;
+		cout << "=" << " " << id << " " << "reg_genmove_with_time" << " " << main_field->to_x(cur_pos) << " " << main_field->to_y(cur_pos) << " " << cur_player << endl;
 	}
 }
 
-void undo(int id)
+void undo(size_t id)
 {
-	if (MainField == NULL || MainField->PointsSeq.size() == 0)
+	if (main_field == NULL || main_field->points_seq.size() == 0)
 	{
 		cout << "?" << " " << id << " " << "undo" << endl;
 	}
 	else
 	{
-		MainField->UndoStep();
+		main_field->undo_step();
 		cout << "=" << " " << id << " " << "undo" << endl;
 	}
 }
 
-void version(int id)
+void version(size_t id)
 {
-	cout << "=" << " " << id << " " << "version" << " " << "1.4.0.0" << endl;
+	cout << "=" << " " << id << " " << "version" << " " << "1.9.9.9" << endl;
 }
 
-inline void FillCodes(map<string, void(*)(int)> &codes)
+inline void fill_codes(map<string, void(*)(size_t)> &codes)
 {
 	codes["boardsize"] = boardsize;
 	codes["genmove"] = genmove;
@@ -196,22 +194,20 @@ inline void FillCodes(map<string, void(*)(int)> &codes)
 	codes["version"] = version;
 }
 
-int main(int argc, char* argv[])
+int main()
 {
 	string s;
-	int id;
-	map<string, void(*)(int)> codes;
+	size_t id;
+	map<string, void(*)(size_t)> codes;
 
-	MainField = NULL;
-	FillCodes(codes);
+	main_field = NULL;
+	fill_codes(codes);
 	Randomize();
-
-	//cout << argv[0] << std::endl;
 	
 	while (true)
 	{
 		cin >> id >> s;
-		map<string, void(*)(int)>::iterator i = codes.find(s);
+		auto i = codes.find(s);
 		if (i != codes.end())
 			i->second(id);
 		else
