@@ -95,12 +95,12 @@ void field::place_begin_pattern(begin_pattern cur_pattern)
 void field::remove_empty_base(const pos start_pos)
 {
 	wave(	start_pos,
-			[&](pos Pos)->bool
+			[&](pos cur_pos)->bool
 			{
-				if (is_in_empty_base(Pos))
+				if (is_in_empty_base(cur_pos))
 				{
-					_changes.back().changes.push(pair<pos, value>(Pos, _points[Pos] & !tag_bit));
-					clear_empty_base(Pos);
+					_changes.back().changes.push(pair<pos, value>(cur_pos, _points[cur_pos] & !tag_bit));
+					clear_empty_base(cur_pos);
 					return true;
 				}
 				else
@@ -114,15 +114,15 @@ bool field::build_chain(const pos start_pos, const value enable_cond, const pos 
 {
 	chain.clear();
 	chain.push_back(start_pos);
-	pos Pos = direction_pos;
-	pos CenterPos = start_pos;
+	pos cur_pos = direction_pos;
+	pos center_pos = start_pos;
 	// Площадь базы.
-	int TempSquare = square(CenterPos, Pos);
+	int TempSquare = square(center_pos, cur_pos);
 	do
 	{
-		if (is_tagged(Pos))
+		if (is_tagged(cur_pos))
 		{
-			while (chain.back() != Pos)
+			while (chain.back() != cur_pos)
 			{
 				clear_tag(chain.back());
 				chain.pop_back();
@@ -130,16 +130,16 @@ bool field::build_chain(const pos start_pos, const value enable_cond, const pos 
 		}
 		else
 		{
-			set_tag(Pos);
-			chain.push_back(Pos);
+			set_tag(cur_pos);
+			chain.push_back(cur_pos);
 		}
-		swap(Pos, CenterPos);
-		get_first_next_pos(CenterPos, Pos);
-		while (is_not_enable(Pos, enable_cond))
-			get_next_pos(CenterPos, Pos);
-		TempSquare += square(CenterPos, Pos);
+		swap(cur_pos, center_pos);
+		get_first_next_pos(center_pos, cur_pos);
+		while (is_not_enable(cur_pos, enable_cond))
+			get_next_pos(center_pos, cur_pos);
+		TempSquare += square(center_pos, cur_pos);
 	}
-	while (Pos != start_pos);
+	while (cur_pos != start_pos);
 
 	for (auto i = chain.begin(); i != chain.end(); i++)
 		clear_tag(*i);
@@ -150,23 +150,23 @@ bool field::build_chain(const pos start_pos, const value enable_cond, const pos 
 void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 {
 	// Количество захваченных точек.
-	int CurCaptureCount = 0;
+	int cur_capture_count = 0;
 	// Количество захваченных пустых полей.
-	int CurFreedCount = 0;
+	int cur_freed_count = 0;
 
-	list<pos> SurPoints;
+	list<pos> sur_points;
 
 	// Помечаем точки цепочки.
 	for (auto i = chain.begin(); i != chain.end(); i++)
 		set_tag(*i);
 
 	wave(	inside_point,
-			[&, cur_player](pos Pos)->bool
+			[&, cur_player](pos cur_pos)->bool
 			{
-				if (is_not_bound(Pos, cur_player | put_bit | bound_bit))
+				if (is_not_bound(cur_pos, cur_player | put_bit | bound_bit))
 				{
-					check_captured_and_freed(Pos, cur_player, CurCaptureCount, CurFreedCount);
-					SurPoints.push_back(Pos);
+					check_captured_and_freed(cur_pos, cur_player, cur_capture_count, cur_freed_count);
+					sur_points.push_back(cur_pos);
 					return true;
 				}
 				else
@@ -175,12 +175,12 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 				}
 			});
 	// Изменение счета игроков.
-	add_sub_captured_freed(cur_player, CurCaptureCount, CurFreedCount);
+	add_sub_captured_freed(cur_player, cur_capture_count, cur_freed_count);
 
 #if SURROUND_CONDITIONS
-	if ((CurCaptureCount != 0) || (_sur_cond == SC_ALWAYS)) // Если захватили точки, или стоит опция захватывать всегда.
+	if ((cur_capture_count != 0) || (_sur_cond == SC_ALWAYS)) // Если захватили точки, или стоит опция захватывать всегда.
 #else
-	if (CurCaptureCount != 0) // Если захватили точки.
+	if (cur_capture_count != 0) // Если захватили точки.
 #endif
 	{
 		for (auto i = chain.begin(); i != chain.end(); i++)
@@ -192,7 +192,7 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 			set_base_bound(*i);
 		}
 
-		for (auto i = SurPoints.begin(); i != SurPoints.end(); i++)
+		for (auto i = sur_points.begin(); i != sur_points.end(); i++)
 		{
 			_changes.back().changes.push(pair<pos, value>(*i, _points[*i]));
 
@@ -204,7 +204,7 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 		for (auto i = chain.begin(); i != chain.end(); i++)
 			clear_tag(*i);
 
-		for (auto i = SurPoints.begin(); i != SurPoints.end(); i++)
+		for (auto i = sur_points.begin(); i != sur_points.end(); i++)
 		{
 			_changes.back().changes.push(pair<pos, value>(*i, _points[*i]));
 
@@ -242,7 +242,7 @@ field::field(const coord width, const coord height, const sur_cond sur_cond, con
 	_changes.reserve(length());
 	points_seq.reserve(length());
 
-	_zobrist = new zobrist(length() * 2 * 2);
+	_zobrist = new zobrist(length() * 2);
 	_hash = 0;
 
 	place_begin_pattern(begin_pattern);
@@ -268,12 +268,13 @@ field::field(const field &orig)
 	_changes.assign(orig._changes.begin(), orig._changes.end());
 	points_seq.assign(orig.points_seq.begin(), orig.points_seq.end());
 
-	_zobrist = orig._zobrist;
+	_zobrist = new zobrist(*orig._zobrist);
 	_hash = orig._hash;
 }
 
 field::~field()
 {
+	delete _zobrist;
 	delete _points;
 }
 
