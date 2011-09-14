@@ -11,8 +11,8 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 
-typedef int pos;
-typedef short value;
+typedef size_t pos;
+typedef char value;
 typedef short player;
 typedef int score;
 typedef short coord;

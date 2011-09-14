@@ -109,7 +109,7 @@ pos minimax(field &cur_field, size_t depth, list<pos> &moves)
 {
 	// Главные траектории - свои и вражеские.
 	trajectories cur_trajectories(cur_field, depth);
-	vector<pos> BestMoves, PossibleMoves, FirstMoves;
+	vector<pos> PossibleMoves, first_moves;
 	pos result;
 
 	// Делаем что-то только когда глубина просчета положительная и колическтво возможных ходов на входе не равно 0.
@@ -121,9 +121,9 @@ pos minimax(field &cur_field, size_t depth, list<pos> &moves)
 	cur_trajectories.get_points(PossibleMoves);
 	for (auto i = PossibleMoves.begin(); i < PossibleMoves.end(); i++)
 		if (find(moves.begin(), moves.end(), *i) != moves.end())
-			FirstMoves.push_back(*i);
+			first_moves.push_back(*i);
 	// Если нет возможных ходов, входящих в траектории - выходим.
-	if (FirstMoves.size() == 0)
+	if (first_moves.size() == 0)
 		return -1;
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
 	//int enemy_estimate = get_enemy_estimate(cur_field, Trajectories[cur_field.get_player()], Trajectories[next_player(cur_field.get_player())], depth);
@@ -136,14 +136,14 @@ pos minimax(field &cur_field, size_t depth, list<pos> &moves)
 		field local_field(cur_field);
 
 		#pragma omp for schedule(dynamic, 1)
-		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(FirstMoves.size()); i++)
+		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(first_moves.size()); i++)
 		{
-			int cur_estimate = negamax(local_field, depth - 1, FirstMoves[i], cur_trajectories, -SCORE_INFINITY, -alpha);
+			int cur_estimate = negamax(local_field, depth - 1, first_moves[i], cur_trajectories, -SCORE_INFINITY, -alpha);
 			omp_set_lock(&lock);
 			if (cur_estimate > alpha) // Обновляем нижнюю границу.
 			{
 				alpha = cur_estimate;
-				result = FirstMoves[i];
+				result = first_moves[i];
 			}
 			omp_unset_lock(&lock);
 		}
