@@ -86,6 +86,8 @@ void play(size_t id)
 
 void quit(size_t id)
 {
+	if (main_field != NULL)
+		delete main_field;
 	cout << "=" << " " << id << " " << "quit" << endl;
 	exit(0);
 }
