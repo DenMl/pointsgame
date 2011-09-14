@@ -204,7 +204,7 @@ pos uct(field &cur_field, size_t max_simulations, list<pos> &moves)
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > first_moves.size())
+	if (static_cast<size_t>(omp_get_max_threads()) > first_moves.size())
 		omp_set_num_threads(first_moves.size());
 	#pragma omp parallel
 	{
@@ -259,7 +259,7 @@ pos uct_with_time(field &cur_field, size_t time, list<pos> &moves)
 
 	omp_lock_t lock;
 	omp_init_lock(&lock);
-	if (omp_get_max_threads() > first_moves.size())
+	if (static_cast<size_t>(omp_get_max_threads()) > first_moves.size())
 		omp_set_num_threads(first_moves.size());
 	#pragma omp parallel
 	{

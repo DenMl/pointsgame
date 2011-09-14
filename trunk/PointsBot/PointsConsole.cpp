@@ -121,7 +121,7 @@ void reg_genmove_with_complexity(size_t id)
 	pos cur_pos;
 	size_t p;
 
-	cin >> cur_pos >> p;
+	cin >> cur_player >> p;
 	if (main_field == NULL)
 	{
 		cout << "?" << " " << id << " " << "reg_genmove_with_complexity" << endl;
