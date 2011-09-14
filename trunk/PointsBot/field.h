@@ -238,7 +238,7 @@ private:
 	void remove_empty_base(const pos StartPos);
 	bool build_chain(const pos start_pos, const value enable_cond, const pos direction_pos, list<pos> &chain);
 	void find_surround(list<pos> &chain, pos inside_point, player cur_player);
-	inline void update_hash(player cur_player, short surrounded, pos cur_pos) { _hash ^= _zobrist->get_hash((cur_player + 1) * (surrounded + 1) * cur_pos); }
+	inline void update_hash(player cur_player, pos cur_pos) { _hash ^= _zobrist->get_hash((cur_player + 1) * cur_pos); }
 	inline intersection_state get_intersection_state(const pos cur_pos, const pos next_pos) const
 	{
 		point a, b;

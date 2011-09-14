@@ -35,11 +35,4 @@ public:
 	{
 		return _hashes[num];
 	}
-	zobrist& operator =(const zobrist &other)
-	{
-		_size = other._size;
-		_hashes = new size_t[other._size];
-		copy_n(other._hashes, other._size, _hashes);
-		return *this;
-	}
 };
