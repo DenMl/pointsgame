@@ -16,6 +16,7 @@ typedef char value;
 typedef short player;
 typedef int score;
 typedef short coord;
+typedef size_t hash_t;
 
 #define SCORE_INFINITY INT_MAX
 
