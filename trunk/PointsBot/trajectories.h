@@ -35,12 +35,12 @@ private:
 			if (cur_hash == i->hash())
 				return; // В теории возможны коллизии. Неплохо было бы сделать точную проверку.
 
-		_trajectories[cur_player].push_back(trajectory());
+		_trajectories[cur_player].push_back(trajectory(begin, end, *_zobrist, cur_hash));
 
 		for (auto i = begin; i < end; i++)
 		{
 			// Добавляем точку в PointsSeq траектории.
-			_trajectories[cur_player].back().push_back(*i, _zobrist->get_hash(*i));
+			_trajectories[cur_player].back().push_back(*i);
 		}
 	}
 	inline void add_trajectory(trajectory &cur_trajectory, player cur_player)
@@ -52,10 +52,10 @@ private:
 		if (cur_trajectory.size() == 1)
 			return;
 
-		_trajectories[cur_player].push_back(trajectory());
+		_trajectories[cur_player].push_back(trajectory(*_zobrist));
 		for (auto i = cur_trajectory.begin(); i != cur_trajectory.end(); i++)
 			if (*i != cur_pos)
-				_trajectories[cur_player].back().push_back(*i, _zobrist->get_hash(*i));
+				_trajectories[cur_player].back().push_back(*i);
 	}
 	void build_trajectories_recursive(size_t depth, player cur_player)
 	{

@@ -9,17 +9,20 @@ class trajectory
 {
 private:
 	list<pos> _points;
+	zobrist *_zobrist;
 	size_t _hash;
 	bool _excluded;
 
 public:
-	inline trajectory() { _hash = 0; _excluded = false; }
-	inline trajectory(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; }
+	inline trajectory(zobrist &cur_zobrist) { _hash = 0; _excluded = false; _zobrist = &cur_zobrist; }
+	template<typename _InIt> inline trajectory(_InIt first, _InIt last, zobrist &cur_zobrist) { _hash = 0; _excluded = false; _zobrist = &cur_zobrist; assign(first, last); }
+	template<typename _InIt> inline trajectory(_InIt first, _InIt last, zobrist &cur_zobrist, size_t hash) { _hash = 0; _excluded = false; _zobrist = &cur_zobrist; assign(first, last, hash); }
+	inline trajectory(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; _zobrist = other._zobrist; }
 	inline size_t size() const { return _points.size(); }
 	inline bool empty() const { return _points.empty(); }
-	inline void push_back(pos cur_pos, size_t cur_hash) { _points.push_back(cur_pos); _hash ^= cur_hash; }
+	inline void push_back(pos cur_pos) { _points.push_back(cur_pos); _hash ^= _zobrist->get_hash(cur_pos); }
 	inline void clear() { _points.clear(); _hash = 0; _excluded = false; }
-	inline const trajectory& operator =(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; return *this; }
+	inline const trajectory& operator =(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; _zobrist = other._zobrist; return *this; }
 	inline void swap(trajectory &other) { trajectory tmp(*this); *this = other; other = tmp; }
 	list<pos>::iterator begin() { return _points.begin(); }
 	list<pos>::const_iterator begin() const { return _points.begin(); }
@@ -29,6 +32,19 @@ public:
 	list<pos>::reverse_iterator rend() { return _points.rend(); }
 	list<pos>::const_reverse_iterator rbegin() const { return _points.rbegin(); }
 	list<pos>::const_reverse_iterator rend() const { return _points.rend(); }
+
+	template<typename _InIt>
+	inline void assign(_InIt first, _InIt last)
+	{
+		for (auto i = first; i != last; i++)
+			push_back(*i, _zobrist->get_hash(*i));
+	}
+	template<typename _InIt>
+	inline void assign(_InIt first, _InIt last, size_t hash)
+	{
+		_points.assign(first, last);
+		_hash = hash;
+	}
 
 	inline size_t hash() const { return _hash; }
 	inline void exclude() { _excluded = true; }
