@@ -282,7 +282,7 @@ public:
 		get_points(moves, player_black);
 #if ALPHABETA_SORT
 		// Сортируем точки по убыванию количества траекторий, в которые они входят.
-		sort(moves.begin(), moves.end(), [&](uint x, uint y){ return _trajectories_board[x] < _trajectories_board[y]; });
+		sort(moves.begin(), moves.end(), [&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
 #endif
 		// Очищаем доску от проекций.
 		unproject();
