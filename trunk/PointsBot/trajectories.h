@@ -17,7 +17,7 @@ private:
 
 private:
 	template<typename _InIt>
-	inline void add_trajectory(_InIt begin, _InIt end, player cur_player)
+	void add_trajectory(_InIt begin, _InIt end, player cur_player)
 	{
 		size_t cur_hash = 0;
 
@@ -57,7 +57,6 @@ private:
 			if (*i != cur_pos)
 				_trajectories[cur_player].back().push_back(*i, _zobrist->get_hash(*i));
 	}
-
 	void build_trajectories_recursive(size_t depth, player cur_player)
 	{
 		for (pos Pos = _field->min_pos(); Pos <= _field->max_pos(); Pos++)
@@ -172,12 +171,12 @@ private:
 
 		return need_exclude;
 	}
-	void exclude_unnecessary_trajectories()
+	inline void exclude_unnecessary_trajectories()
 	{
 		while (exclude_unnecessary_trajectories(player_red) || exclude_unnecessary_trajectories(player_black));
 	}
 	// Исключает составные траектории.
-	inline void exclude_composite_trajectories(player cur_player)
+	void exclude_composite_trajectories(player cur_player)
 	{
 		list<trajectory>::iterator i, j, k;
 
@@ -204,7 +203,7 @@ private:
 	}
 
 public:
-	trajectories(field &cur_field)
+	inline trajectories(field &cur_field)
 	{
 		_field = &cur_field;
 		_depth[player_red] = 0;
@@ -213,7 +212,7 @@ public:
 		fill_n(_trajectories_board, _field->length(), 0);
 		_zobrist = &cur_field.get_zobrist();
 	}
-	trajectories(field &cur_field, size_t depth)
+	inline trajectories(field &cur_field, size_t depth)
 	{
 		_field = &cur_field;
 		_depth[get_cur_player()] = (depth + 1) / 2;
@@ -222,7 +221,7 @@ public:
 		fill_n(_trajectories_board, _field->length(), 0);
 		_zobrist = &cur_field.get_zobrist();
 	}
-	trajectories(const trajectories &other)
+	inline trajectories(const trajectories &other)
 	{
 		_field = other._field;
 		_depth[player_red] = other._depth[player_red];
@@ -231,7 +230,7 @@ public:
 		fill_n(_trajectories_board, _field->length(), 0);
 		_zobrist = other._zobrist;
 	}
-	~trajectories()
+	inline ~trajectories()
 	{
 		delete _trajectories_board;
 	}
@@ -243,17 +242,24 @@ public:
 	{
 		return next_player(_field->get_player());
 	}
-	void clear()
+	inline void clear(player cur_player)
 	{
-		_trajectories[player_red].clear();
-		_trajectories[player_black].clear();
+		_trajectories[cur_player].clear();
 	}
-	void build_trajectories()
+	inline void clear()
 	{
-		if (_depth[get_cur_player()] > 0)
-			build_trajectories_recursive(_depth[get_cur_player()] - 1, get_cur_player());
-		if (_depth[get_enemy_player()] > 0)
-			build_trajectories_recursive(_depth[get_enemy_player()] - 1, get_enemy_player());
+		clear(player_red);
+		clear(player_black);
+	}
+	inline void build_trajectories(player cur_player)
+	{
+		if (_depth[cur_player] > 0)
+			build_trajectories_recursive(_depth[cur_player] - 1, cur_player);
+	}
+	inline void build_trajectories()
+	{
+		build_trajectories(get_cur_player());
+		build_trajectories(get_enemy_player());
 	}
 	void build_trajectories(trajectories &last, pos cur_pos)
 	{
