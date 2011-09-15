@@ -39,7 +39,7 @@ private:
 	}
 	inline void add_trajectory(trajectory &cur_trajectory, player cur_player)
 	{
-		_trajectories[cur_player].push_back(cur_trajectory);
+		_trajectories[cur_player].push_back(trajectory(cur_trajectory));
 	}
 	inline void add_trajectory(trajectory &cur_trajectory, pos cur_pos, player cur_player)
 	{
@@ -53,23 +53,23 @@ private:
 	}
 	void build_trajectories_recursive(size_t depth, player cur_player)
 	{
-		for (pos Pos = _field->min_pos(); Pos <= _field->max_pos(); Pos++)
+		for (pos cur_pos = _field->min_pos(); cur_pos <= _field->max_pos(); cur_pos++)
 		{
-			if (_field->putting_allow(Pos) && _field->is_near_points(Pos, cur_player))
+			if (_field->putting_allow(cur_pos) && _field->is_near_points(cur_pos, cur_player))
 			{
-				if (_field->is_in_empty_base(Pos)) // Если поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
+				if (_field->is_in_empty_base(cur_pos)) // Если поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
 				{
-					_field->do_unsafe_step(Pos, cur_player);
+					_field->do_unsafe_step(cur_pos, cur_player);
 					if (_field->get_d_score(cur_player) > 0)
 						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
 					_field->undo_step();
 				}
 				else
 				{
-					_field->do_unsafe_step(Pos, cur_player);
+					_field->do_unsafe_step(cur_pos, cur_player);
 
 #if SURROUND_CONDITIONS
-					if (_field->is_base_bound(Pos) && _field->get_d_score(cur_player) == 0)
+					if (_field->is_base_bound(cur_pos) && _field->get_d_score(cur_player) == 0)
 					{
 						_field->undo_step();
 						continue;
