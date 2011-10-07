@@ -7,11 +7,6 @@
 
 using namespace std;
 
-#define UCTK 1
-// Радиус, внутри которого происходит анализ UCT.
-#define UCT_RADIUS 2
-#define UCT_ITERATIONS_BEFORE_CHECK_TIME 100
-
 struct uct_node
 {
 	ulong wins;

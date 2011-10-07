@@ -9,6 +9,16 @@
 // ќпредел€ет условие победы дл€ UCT - абсолютна€ или относительна€ (счита€ от текущей позиции) победа.
 //#define ABSOLUTE_UCT 0
 
+// Larger values give uniform search.
+// Smaller values give very selective search.
+#define UCTK 1
+
+// –адиус, внутри которого происходит анализ UCT.
+#define UCT_RADIUS 2
+
+//  оличество итераций uct перед проверкой времени.
+#define UCT_ITERATIONS_BEFORE_CHECK_TIME 100
+
 // 1, если компил€ци€ происходит дл€ Windows.
 #define WINDOWS 1
 
