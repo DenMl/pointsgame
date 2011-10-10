@@ -38,6 +38,9 @@ enum sur_cond
 };
 
 // Используемый шаблон в начале игры.
+// BP_CLEAN - начало с чистого поля.
+// BP_CROSSWIRE - начало со скреста.
+// BP_SQUARE - начало с квадрата.
 enum begin_pattern
 {
 	BP_CLEAN,
@@ -53,10 +56,15 @@ enum intersection_state
 	IS_TARGET
 };
 
+// Одно изменение доски.
 struct board_change
 {
-	uint capture_count[2];
+	// Предыдущий счет захваченных точек.
+	score capture_count[2];
+	// Предыдущий игрок.
 	player player;
-	ulong hash;
+	// Предыдущий хеш.
+	hash_t hash;
+	// Список изменных точек (координата - значение до изменения).
 	stack<pair<pos, value>> changes;
 };
