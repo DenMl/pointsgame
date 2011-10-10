@@ -37,7 +37,7 @@ return arguments — none.
 
 *`name`*
 
-return arguments — name of the AI, like "keij&kvanttt AI", "kropkiAI".
+return arguments — name of the AI.
 
 *`version`*
 
