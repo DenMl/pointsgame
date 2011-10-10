@@ -41,7 +41,7 @@ return arguments — name of the AI, like "keij&kvanttt AI", "kropkiAI".
 
 *`version`*
 
-return arguments — version of the AI, like "1.2.1".
+return arguments — version of the AI.
 
 *`play X Y Color`*
 
