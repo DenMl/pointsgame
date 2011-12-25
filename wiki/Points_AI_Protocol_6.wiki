@@ -30,7 +30,7 @@ return arguments — a space separated list of commands that the AI supports (ca
 
 return arguments — none.
 
-*`boardsize X Y`* — initialization. X - field width (number of crosses), Y - field height.
+*`boardsize width height`* — initialization.
 
 return arguments — none.
 
@@ -46,33 +46,33 @@ return arguments — name of the AI.
 
 return arguments — version of the AI.
 
-*`play X Y Color`*
+*`play x y color`*
 
-return arguments — X, Y, Color  of a played move.
+return arguments — x, y, color  of a played move.
 
 *`genmove color`* — request to calculate an AI move, play it on the field and return it.
 
-return arguments — X, Y, Color of the played move.
+return arguments — x, y, color of the played move.
 
 *`reg_genmove color`* — request to calculate an AI move, but do NOT make it on the field.
 
-return arguments — X, Y, Color of the suggested move.
+return arguments — x, y, color of the suggested move.
 
 *`genmove_with_complexity color complexity`* — request to calculate an AI move with the given complexity. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
 
-return arguments — X, Y, Color of the suggested move.
+return arguments — x, y, color of the suggested move.
 
 *`reg_genmove_with_complexity color complexity`* — request to calculate an AI move with the given complexity, but NOT to make it on the field. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
 
-return arguments — X, Y, Color of the suggested move.
+return arguments — x, y, color of the suggested move.
 
 *`genmove_with_time color time`* — request to calculate an AI move within the given time (milliseconds).
 
-return arguments — X, Y, Color of the suggested move.
+return arguments — x, y, color of the suggested move.
 
 *`reg_genmove_with_time color time`* — request to calculate an AI move within the given time (milliseconds), but NOT to make it on the field.
 
-return arguments — X, Y, Color of the suggested move.
+return arguments — x, y, color of the suggested move.
 
 *`undo`* — undo move.
 
@@ -80,6 +80,6 @@ return arguments — none.
 
 ===Explanations:===
 
-  * X is a number from 0 to fieldSizeX - 1. For Y it's the same, of course.
+  * x is a number from 0 to fieldSizeX - 1. For y it's the same, of course.
 
   * color is a boolean value typed as "0" or "1".
