@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PointsShell
+﻿namespace PointsShell
 {
-	interface IBot
+	public interface IBot
 	{
-		void PutPoint(Pos pos);
+		void Init(int width, int height);
 		void PutPoint(Pos pos, PlayerColor player);
 		void RemoveLastPoint();
-		Pos GetBotMovie(string command);
-		void SetCurrentPlayer(PlayerColor player);
-		PlayerColor GetCurrentPlayer();
-		void SetNextPlayer();
+		Pos GetBotMovie(PlayerColor player);
+		Pos GetBotMovieWithComplexity(PlayerColor player, int complexity);
+		Pos GetBotMovieWithTime(PlayerColor player, int time);
+		string GetName();
+		string GetVersion();
 	}
 }
