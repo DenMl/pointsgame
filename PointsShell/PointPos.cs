@@ -6,10 +6,10 @@
         public GamePoint Point;
         public Pos Pos;
 
-        public PointPos(Pos Pos, GamePoint Point)
+        public PointPos(Pos pos, GamePoint point)
         {
-            this.Pos = Pos;
-            this.Point = Point;
+            Pos = pos;
+            Point = point;
         }
     }
 }
