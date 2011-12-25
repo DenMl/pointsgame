@@ -6,18 +6,8 @@ namespace PointsShell
 {
 	public class GamePreferences
 	{
-		private int _width = 39;
-		private int _height = 32;
-		public int Width
-		{
-			get { return _width; }
-			set { _width = value <= 39 ? value : 39; }
-		}
-		public int Height
-		{
-			get { return _height; }
-			set { _height = value <= 32 ? value : 32; }
-		}
+		public int Width = 39;
+		public int Height = 32;
 		public SurroundCond SurCond = SurroundCond.Standart;
 		public BeginPattern BeginPattern = BeginPattern.CleanPattern;
 		public bool AI = true;
@@ -61,32 +51,32 @@ namespace PointsShell
 
 		public GamePreferences() {}
 
-		public GamePreferences(GamePreferences Preferences)
+		public GamePreferences(GamePreferences preferences)
 		{
-			Width = Preferences.Width;
-			Height = Preferences.Height;
-			SurCond = Preferences.SurCond;
-			BeginPattern = Preferences.BeginPattern;
-			AI = Preferences.AI;
-			MinMaxDepth = Preferences.MinMaxDepth;
-			UCTIterations = Preferences.UCTIterations;
-			RedName = Preferences.RedName;
-			BlackName = Preferences.BlackName;
-			RedColor = Preferences.RedColor;
-			BlackColor = Preferences.BlackColor;
-			FillingAlpha = Preferences.FillingAlpha;
-			BackgroundColor = Preferences.BackgroundColor;
-			Sounds = Preferences.Sounds;
-			FullFill = Preferences.FullFill;
-			CellSize = Preferences.CellSize;
+			Width = preferences.Width;
+			Height = preferences.Height;
+			SurCond = preferences.SurCond;
+			BeginPattern = preferences.BeginPattern;
+			AI = preferences.AI;
+			MinMaxDepth = preferences.MinMaxDepth;
+			UCTIterations = preferences.UCTIterations;
+			RedName = preferences.RedName;
+			BlackName = preferences.BlackName;
+			RedColor = preferences.RedColor;
+			BlackColor = preferences.BlackColor;
+			FillingAlpha = preferences.FillingAlpha;
+			BackgroundColor = preferences.BackgroundColor;
+			Sounds = preferences.Sounds;
+			FullFill = preferences.FullFill;
+			CellSize = preferences.CellSize;
 		}
 
-		public static GamePreferences Load(string File)
+		public static GamePreferences Load(string file)
 		{
 			try
 			{
 				var serializer = new XmlSerializer(typeof(GamePreferences));
-				using (Stream stream = System.IO.File.OpenRead(File))
+				using (Stream stream = File.OpenRead(file))
 				{
 					return (GamePreferences)serializer.Deserialize(stream);
 				}
