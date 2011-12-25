@@ -37,9 +37,9 @@ namespace PointsShell
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void SetNextPlayer(size_t field);
 
-		public PointsBot(int Width, int Height, SurroundCond SurCond, BeginPattern BeginPattern)
+		public PointsBot(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
-			_handle = InitField((size_t)Width, (size_t)Height, (size_t)SurCond, (size_t)BeginPattern);
+			_handle = InitField((size_t)width, (size_t)height, (size_t)surCond, (size_t)beginPattern);
 		}
 
 		~PointsBot()
