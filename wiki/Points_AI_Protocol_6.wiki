@@ -50,23 +50,11 @@ return arguments — version of the AI.
 
 return arguments — x, y, color  of a played move.
 
-*`genmove color`* — request to calculate an AI move, play it on the field and return it.
-
-return arguments — x, y, color of the played move.
-
 *`reg_genmove color`* — request to calculate an AI move, but do NOT make it on the field.
 
 return arguments — x, y, color of the suggested move.
 
-*`genmove_with_complexity color complexity`* — request to calculate an AI move with the given complexity. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
-
-return arguments — x, y, color of the suggested move.
-
 *`reg_genmove_with_complexity color complexity`* — request to calculate an AI move with the given complexity, but NOT to make it on the field. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
-
-return arguments — x, y, color of the suggested move.
-
-*`genmove_with_time color time`* — request to calculate an AI move within the given time (milliseconds).
 
 return arguments — x, y, color of the suggested move.
 
