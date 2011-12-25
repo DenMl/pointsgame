@@ -5,8 +5,8 @@ namespace PointsShell
 	// Возможные цвета игроков.
 	public enum PlayerColor
 	{
-		Red,
-		Black
+		Red = 0,
+		Black = 1
 	}
 
 	// Возможные типы игры:
@@ -15,16 +15,16 @@ namespace PointsShell
 	// AlwaysEnemy - захватывать даже пустые области.
 	public enum SurroundCond
 	{
-		Standart,
-		Always,
-		AlwaysEnemy
+		Standart = 0,
+		Always = 1,
+		AlwaysEnemy = 2
 	}
 
 	public enum BeginPattern
 	{
-		CleanPattern,
-		CrosswisePattern,
-		SquarePattern
+		CleanPattern = 0,
+		CrosswisePattern = 1,
+		SquarePattern = 2
 	}
 
 	public class Field

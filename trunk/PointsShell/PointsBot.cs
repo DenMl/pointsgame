@@ -1,13 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace PointsShell
 {
-#if x32
-	using size_t = System.Int32;
-#elif x64
-	using size_t = System.Int64;
-#endif
-
 	class PointsBot
 	{
 #if DEBUG
@@ -16,30 +11,30 @@ namespace PointsShell
 		const string DllName = "PointsBot.dll";
 #endif
 
-		private readonly size_t _handle;
+		private readonly IntPtr _handle;
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern int InitField(size_t width, size_t height, size_t surCond, size_t beginPattern);
+		private static extern IntPtr InitField(int width, int height, SurroundCond surCond, BeginPattern beginPattern);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void FinalField(size_t field);
+		private static extern void FinalField(IntPtr field);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void PutPoint(size_t field, size_t x, size_t y);
+		private static extern void PutPoint(IntPtr field, int x, int y);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void PutPlayersPoint(size_t field, size_t x, size_t y, size_t player);
+		private static extern void PutPlayersPoint(IntPtr field, int x, int y, PlayerColor player);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void RemoveLastPoint(size_t field);
+		private static extern void RemoveLastPoint(IntPtr field);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void GetBotMove(size_t field, size_t minMaxDepth, size_t UCTIterations, ref short x, ref short y);
+		private static extern void GetBotMove(IntPtr field, int minMaxDepth, int UCTIterations, ref int x, ref int y);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void SetCurrentPlayer(size_t field, size_t player);
+		private static extern void SetCurrentPlayer(IntPtr field, PlayerColor player);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern size_t GetCurrentPlayer(size_t field);
+		private static extern PlayerColor GetCurrentPlayer(IntPtr field);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void SetNextPlayer(size_t field);
+		private static extern void SetNextPlayer(IntPtr field);
 
 		public PointsBot(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
-			_handle = InitField((size_t)width, (size_t)height, (size_t)surCond, (size_t)beginPattern);
+			_handle = InitField(width, height, surCond, beginPattern);
 		}
 
 		~PointsBot()
@@ -49,12 +44,12 @@ namespace PointsShell
 
 		public void PutPoint(Pos pos)
 		{
-			PutPoint(_handle, (size_t)(pos.X - 1), (size_t)(pos.Y - 1));
+			PutPoint(_handle, pos.X - 1, pos.Y - 1);
 		}
 
 		public void PutPoint(Pos pos, PlayerColor player)
 		{
-			PutPlayersPoint(_handle, (size_t)(pos.X - 1), (size_t)(pos.Y - 1), (size_t)player);
+			PutPlayersPoint(_handle, pos.X - 1, pos.Y - 1, player);
 		}
 
 		public void RemoveLastPoint()
@@ -64,8 +59,8 @@ namespace PointsShell
 
 		public Pos GetBotMovie(int minMaxDepth, int UCTIterations)
 		{
-			short x = 0, y = 0;
-			GetBotMove(_handle, (size_t)minMaxDepth, (size_t)UCTIterations, ref x, ref y);
+			int x = 0, y = 0;
+			GetBotMove(_handle, minMaxDepth, UCTIterations, ref x, ref y);
 			x++;
 			y++;
 			return new Pos(x, y);
@@ -73,12 +68,12 @@ namespace PointsShell
 
 		public void SetCurrentPlayer(PlayerColor player)
 		{
-			SetCurrentPlayer(_handle, (size_t)player);
+			SetCurrentPlayer(_handle, player);
 		}
 
 		public PlayerColor GetCurrentPlayer()
 		{
-			return (PlayerColor)GetCurrentPlayer(_handle);
+			return GetCurrentPlayer(_handle);
 		}
 
 		public void SetNextPlayer()
