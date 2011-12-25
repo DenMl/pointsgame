@@ -1,140 +1,136 @@
-﻿<UserControl Padding="2"
-             x:Class="PointsShell.GamePreferencesDialog"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:osc="clr-namespace:OpenSourceControls">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+﻿<UserControl Padding="2" x:Class="PointsShell.GamePreferencesDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:osc="clr-namespace:OpenSourceControls">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
 
-        <WrapPanel Orientation="Horizontal" Grid.Row="0">
-            <GroupBox Name="GamePreferencesGroupBox" Header="Game preferences" Padding="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+		<WrapPanel Orientation="Horizontal" Grid.Row="0">
+			<GroupBox Name="GamePreferencesGroupBox" Header="Game preferences" Padding="2">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
 
-                    <TextBlock Name="WidthTextBlock" Text="Width" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
-                    <TextBlock Name="HeightTextBlock" Text="Height" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
+					<TextBlock Name="WidthTextBlock" Text="Width" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
+					<TextBlock Name="HeightTextBlock" Text="Height" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
 
-                    <TextBox Name="WidthBox" MaxLength="2" Grid.Column="1" Grid.Row="0"/>
-                    <TextBox Name="HeightBox" MaxLength="2" Grid.Column="1" Grid.Row="1"/>
+					<TextBox Name="WidthBox" MaxLength="2" Grid.Column="1" Grid.Row="0"/>
+					<TextBox Name="HeightBox" MaxLength="2" Grid.Column="1" Grid.Row="1"/>
 
-                    <GroupBox Name="SurroundConditionGroupBox" Header="Surround condition" Padding="2" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
-                        <StackPanel>
-                            <RadioButton Name="StandartRadioButton" Content="Standart" />
-                            <RadioButton Name="AlwaysRadioButton" Content="Always" />
-                            <RadioButton Name="AlwaysEnemyRadioButton" Content="Always enemy" />
-                        </StackPanel>
-                    </GroupBox>
+					<GroupBox Name="SurroundConditionGroupBox" Header="Surround condition" Padding="2" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+						<StackPanel>
+							<RadioButton Name="StandartRadioButton" Content="Standart" />
+							<RadioButton Name="AlwaysRadioButton" Content="Always" />
+							<RadioButton Name="AlwaysEnemyRadioButton" Content="Always enemy" />
+						</StackPanel>
+					</GroupBox>
 
-                    <GroupBox Name="BeginPatternGroupBox" Header="Begin pattern" Padding="2" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
-                        <StackPanel>
-                            <RadioButton Name="CleanRadioButton" Content="Clean" />
-                            <RadioButton Name="CrosswireRadioButton" Content="Crosswire" />
-                            <RadioButton Name="SquareRadioButton"  Content="Square" />
-                        </StackPanel>
-                    </GroupBox>
-                </Grid>
-            </GroupBox>
+					<GroupBox Name="BeginPatternGroupBox" Header="Begin pattern" Padding="2" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
+						<StackPanel>
+							<RadioButton Name="CleanRadioButton" Content="Clean" />
+							<RadioButton Name="CrosswireRadioButton" Content="Crosswire" />
+							<RadioButton Name="SquareRadioButton"  Content="Square" />
+						</StackPanel>
+					</GroupBox>
+				</Grid>
+			</GroupBox>
 
-            <GroupBox Name="AIPreferencesGroupBox" Header="AI preferences" Padding="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+			<GroupBox Name="AIPreferencesGroupBox" Header="AI preferences" Padding="2">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
 
-                    <CheckBox Name="AICheckBox" Content="AI" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" />
+					<CheckBox Name="AICheckBox" Content="AI" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" />
 
-                    <TextBlock Name="MinMaxDepthTextBlock" Text="MinMax depth" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
-                    <TextBox Name="MinMaxDepthBox" MaxLength="2" Grid.Column="1" Grid.Row="1" />
+					<TextBlock Name="MinMaxDepthTextBlock" Text="MinMax depth" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
+					<TextBox Name="MinMaxDepthBox" MaxLength="2" Grid.Column="1" Grid.Row="1" />
 
-                    <TextBlock Name="UCTIterationsTextBlock" Text="UCT iterations" Grid.Column="0" Margin="0,0,5,0" Grid.Row="2" />
-                    <TextBox Name="UCTIterationsBox" MaxLength="8" Grid.Column="1" Grid.Row="2" />
-                </Grid>
-            </GroupBox>
+					<TextBlock Name="UCTIterationsTextBlock" Text="UCT iterations" Grid.Column="0" Margin="0,0,5,0" Grid.Row="2" />
+					<TextBox Name="UCTIterationsBox" MaxLength="8" Grid.Column="1" Grid.Row="2" />
+				</Grid>
+			</GroupBox>
 
-            <GroupBox Name="PlayersPreferencesGroupBox" Header="Players preferences" Padding="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+			<GroupBox Name="PlayersPreferencesGroupBox" Header="Players preferences" Padding="2">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
 
-                    <TextBlock Name="RedNameTextBlock" Text="Red name" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
-                    <TextBox Name="RedNameBox" MinWidth="40" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
-                    
-                    <TextBlock Name="BlackNameTextBlock" Text="Black name" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
-                    <TextBox Name="BlackNameBox" MinWidth="40" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" />
+					<TextBlock Name="RedNameTextBlock" Text="Red name" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
+					<TextBox Name="RedNameBox" MinWidth="40" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
+					
+					<TextBlock Name="BlackNameTextBlock" Text="Black name" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
+					<TextBox Name="BlackNameBox" MinWidth="40" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" />
 
-                    <TextBlock Name="RedColorTextBlock" Text="Red color" Margin="0,0,5,0" Grid.Column="0" Grid.Row="2" />
-                    <TextBox MaxLength="9" Text="{Binding ElementName=RedColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="2"/>
-                    <osc:ComboColorPicker x:Name="RedColorPicker" Grid.Column="2" Grid.Row="2" />
+					<TextBlock Name="RedColorTextBlock" Text="Red color" Margin="0,0,5,0" Grid.Column="0" Grid.Row="2" />
+					<TextBox MaxLength="9" Text="{Binding ElementName=RedColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="2"/>
+					<osc:ComboColorPicker x:Name="RedColorPicker" Grid.Column="2" Grid.Row="2" />
 
-                    <TextBlock Name="BlackColorTextBlock" Text="Black color" Margin="0,0,5,0" Grid.Column="0" Grid.Row="3" />
-                    <TextBox MaxLength="9" Text="{Binding ElementName=BlackColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="3"/>
-                    <osc:ComboColorPicker x:Name="BlackColorPicker" Grid.Column="2" Grid.Row="3" />
-                </Grid>
-            </GroupBox>
-            
-            <GroupBox Name="OtherPreferencesGroupBox" Header="Other preferences" Padding="2">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+					<TextBlock Name="BlackColorTextBlock" Text="Black color" Margin="0,0,5,0" Grid.Column="0" Grid.Row="3" />
+					<TextBox MaxLength="9" Text="{Binding ElementName=BlackColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="3"/>
+					<osc:ComboColorPicker x:Name="BlackColorPicker" Grid.Column="2" Grid.Row="3" />
+				</Grid>
+			</GroupBox>
+			
+			<GroupBox Name="OtherPreferencesGroupBox" Header="Other preferences" Padding="2">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
 
-                    <TextBlock Name="FillingAlphaTextBlock" Text="Filling alpha" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
-                    <TextBox Name="FillingAlphaBox" MaxLength="3" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
+					<TextBlock Name="FillingAlphaTextBlock" Text="Filling alpha" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
+					<TextBox Name="FillingAlphaBox" MaxLength="3" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
 
-                    <TextBlock Name="BackgroundColorTextBlock" Text="Background color" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
-                    <TextBox MaxLength="9" Text="{Binding ElementName=BackgroundColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="1"/>
-                    <osc:ComboColorPicker x:Name="BackgroundColorPicker" Grid.Column="2" Grid.Row="1" />
+					<TextBlock Name="BackgroundColorTextBlock" Text="Background color" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
+					<TextBox MaxLength="9" Text="{Binding ElementName=BackgroundColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="1"/>
+					<osc:ComboColorPicker x:Name="BackgroundColorPicker" Grid.Column="2" Grid.Row="1" />
 
-                    <CheckBox Name="FullFillCheckBox" Content="Full fill" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" />
-                    <CheckBox Name="SoundsCheckBox" Content="Sounds" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" />
-                </Grid>
-            </GroupBox>
-        </WrapPanel>
+					<CheckBox Name="FullFillCheckBox" Content="Full fill" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" />
+					<CheckBox Name="SoundsCheckBox" Content="Sounds" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" />
+				</Grid>
+			</GroupBox>
+		</WrapPanel>
 
-        <Grid Grid.Row="1">
-            <!--Кнопки OK и Cancel-->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+		<Grid Grid.Row="1">
+			<!--Кнопки OK и Cancel-->
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
 
-            <Button Name="OKButton" Content="OK" Height="40" Click="OKClick" Grid.Column="0" />
-            <Button Name="CancelButton" Content="Cancel" Height="40" Click="CancelClick" Grid.Column="1" />
-        </Grid>
-    </Grid>
+			<Button Name="OKButton" Content="OK" Height="40" Click="OKClick" Grid.Column="0" />
+			<Button Name="CancelButton" Content="Cancel" Height="40" Click="CancelClick" Grid.Column="1" />
+		</Grid>
+	</Grid>
 </UserControl>
