@@ -6,35 +6,36 @@
 		public int X;
 		public int Y;
 
-		public Pos(int X, int Y)
+		public Pos(int x, int y)
 		{
-			this.X = X;
-			this.Y = Y;
+			X = x;
+			Y = y;
 		}
 
-		public Pos(Pos Pos)
+		public Pos(Pos pos)
 		{
-			X = Pos.X;
-			Y = Pos.Y;
+			X = pos.X;
+			Y = pos.Y;
 		}
 
-		public static bool operator ==(Pos Pos1, Pos Pos2)
+		public static bool operator ==(Pos pos1, Pos pos2)
 		{
-			return Pos1.X == Pos2.X && Pos1.Y == Pos2.Y;
+			return pos1.X == pos2.X && pos1.Y == pos2.Y;
 		}
 
-		public static bool operator !=(Pos Pos1, Pos Pos2)
+		public static bool operator !=(Pos pos1, Pos pos2)
 		{
-			return Pos1.X != Pos2.X || Pos1.Y != Pos2.Y;
+			return pos1.X != pos2.X || pos1.Y != pos2.Y;
 		}
 
-		public void Swap(ref Pos Pos)
+		public void Swap(ref Pos pos)
 		{
-			var TempPos = new Pos(Pos.X, Pos.Y);
-			Pos.X = X;
-			Pos.Y = Y;
-			X = TempPos.X;
-			Y = TempPos.Y;
+			var tempX = pos.X;
+			var tempY = pos.Y;
+			pos.X = X;
+			pos.Y = Y;
+			X = tempX;
+			Y = tempY;
 		}
 	}
 }
