@@ -6,21 +6,21 @@ namespace PointsShell
 	public struct GamePoint
 	{
 		// Цвет точки.
-		public PlayerColor Color;
+		public PlayerColor Color { get; set; }
 		// Поставлена ли точка.
-		public bool Putted;
+		public bool Putted { get; set; }
 		// Окружена ли точка.
-		public bool Surrounded;
+		public bool Surrounded { get; set; }
 		// Окружает ли что-то точка.
-		public bool Bound;
+		public bool Bound { get; set; }
 		// Находится ли в пустой базе точка.
-		public bool EmptyBase;
+		public bool EmptyBase { get; set; }
 		// Вспомогательный бит (используется при работе алгоритма "заливки" точек в базе).
-		public bool Tagged;
+		public bool Tagged { get; set; }
 		// Указывает на то, что координаты точки невалидны.
-		public bool Bad;
+		public bool Bad { get; set; }
 
-		public GamePoint(GamePoint point)
+		public GamePoint(GamePoint point) : this()
 		{
 			Color = point.Color;
 			Putted = point.Putted;

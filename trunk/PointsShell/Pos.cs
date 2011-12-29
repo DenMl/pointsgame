@@ -3,16 +3,16 @@
 	// Описание позиции.
 	public struct Pos
 	{
-		public int X;
-		public int Y;
+		public int X { get; set; }
+		public int Y { get; set; }
 
-		public Pos(int x, int y)
+		public Pos(int x, int y) : this()
 		{
 			X = x;
 			Y = y;
 		}
 
-		public Pos(Pos pos)
+		public Pos(Pos pos) : this()
 		{
 			X = pos.X;
 			Y = pos.Y;
@@ -30,12 +30,9 @@
 
 		public void Swap(ref Pos pos)
 		{
-			var tempX = pos.X;
-			var tempY = pos.Y;
-			pos.X = X;
-			pos.Y = Y;
-			X = tempX;
-			Y = tempY;
+			var temp = pos;
+			pos = this;
+			this = temp;
 		}
 	}
 }
