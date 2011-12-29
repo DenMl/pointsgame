@@ -102,7 +102,7 @@ namespace PointsShell
 			}
 		}
 
-		// Направленная площадь параллелограмма с вершинами в (0; 0) и (Pos1, Pos2).
+		// Направленная площадь параллелограмма на векторах pos1 и pos2.
 		static int Square(Pos pos1, Pos pos2)
 		{
 			return pos1.X * pos2.Y - pos1.Y * pos2.X;
@@ -112,8 +112,8 @@ namespace PointsShell
 		// InpChainPoints - возможные точки цикла, InpSurPoints - возможные окруженные точки.
 		int GetInputPoints(Pos centerPos, PlayerColor player, out List<Pos> inpChainPoints, out List<Pos> inpSurPoints)
 		{
-			inpChainPoints = new List<Pos>(4);
-			inpSurPoints = new List<Pos>(4);
+			inpChainPoints = new List<Pos>();
+			inpSurPoints = new List<Pos>();
 
 			if (!Points[centerPos.X - 1, centerPos.Y].Enabled(player))
 			{
