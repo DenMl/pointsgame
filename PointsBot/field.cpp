@@ -414,7 +414,7 @@ void field::check_closure(const pos start_pos, player cur_player)
 				if (build_chain(Pos, next_player(cur_player) | put_bit, inp_chain_points[i], chain))
 					if (is_point_inside_ring(start_pos, chain))
 					{
-						find_surround(chain, inp_sur_points[i], get_player(Pos));
+						find_surround(chain, inp_sur_points[i], next_player(cur_player));
 						break;
 					}
 		} while (!is_captured(start_pos));
@@ -424,13 +424,13 @@ void field::check_closure(const pos start_pos, player cur_player)
 		inp_points_count = get_input_points(start_pos, cur_player | put_bit, inp_chain_points, inp_sur_points);
 		if (inp_points_count > 1)
 		{
-			short ChainsCount = 0;
+			short chains_count = 0;
 			for (short i = 0; i < inp_points_count; i++)
-				if (build_chain(start_pos, get_player(start_pos) | put_bit, inp_chain_points[i], chain))
+				if (build_chain(start_pos, cur_player | put_bit, inp_chain_points[i], chain))
 				{
 					find_surround(chain, inp_sur_points[i], cur_player);
-					ChainsCount++;
-					if (ChainsCount == inp_points_count - 1)
+					chains_count++;
+					if (chains_count == inp_points_count - 1)
 						break;
 				}
 		}

@@ -21,10 +21,6 @@ namespace PointsShell
 
 		public PlayerColor EnemyPlayer { get { return NextPlayer(CurPlayer); } }
 
-		protected int DCaptureCount;
-
-		protected int DFreedCount;
-
 		// Глобальный массив точек.
 		public GamePoint[,] Points { get; protected set; }
 
@@ -430,41 +426,6 @@ namespace PointsShell
 			return (tempSquare < 0) && (chain.Count > 2);
 		}
 
-		private int BuildChains(Pos StartPos, IList<Pos> InpChainPoints, IList<Pos> InpSurPoints, int InpPointsCount, out List<Pos>[] Chains, out Pos[] InsidePoints)
-		{
-			Chains = new List<Pos>[4];
-			InsidePoints = new Pos[4];
-
-			var count = 0;
-			for (var i = 0; i < InpPointsCount; i++)
-				if (BuildChain(StartPos, InpChainPoints[i], out Chains[count]))
-				{
-					InsidePoints[count] = InpSurPoints[i];
-					count++;
-				}
-
-			return count;
-		}
-
-		private int BuildChainsFast(Pos startPos, IList<Pos> inpChainPoints, IList<Pos> inpSurPoints, int inpPointsCount, out List<Pos>[] chains, out Pos[] insidePoints)
-		{
-			chains = new List<Pos>[4];
-			insidePoints = new Pos[4];
-
-			var count = 0;
-			for (var i = 0; i < inpPointsCount; i++)
-				if (BuildChain(startPos, inpChainPoints[i], out chains[count]))
-				{
-					insidePoints[count] = inpSurPoints[i];
-					count++;
-
-					if (count == inpPointsCount - 1)
-						break;
-				}
-
-			return count;
-		}
-
 		protected virtual void FindSurround(List<Pos> chain, Pos insidePoint, PlayerColor player)
 		{
 			int curCaptureCount, curFreedCount;
@@ -478,27 +439,25 @@ namespace PointsShell
 			CapturedAndFreedCount(insidePoint, player, out curCaptureCount, out curFreedCount, out surPoints);
 			// Изменение счета игроков.
 			AddSubCapturedFreed(player, curCaptureCount, curFreedCount);
-			DCaptureCount += curCaptureCount;
-			DFreedCount += curFreedCount;
 
 			if ((curCaptureCount != 0) || (SurCond == SurroundCond.Always)) // Если захватили точки, или стоит опция захватывать всегда.
 			{
-				for (var i = 0; i < chain.Count; i++)
+				foreach (var p in chain)
 				{
-					Points[chain[i].X, chain[i].Y].Tagged = false;
+					Points[p.X, p.Y].Tagged = false;
 					// Добавляем в список изменений точки цепочки.
-					MainState.AddPosPoint(chain[i], Points[chain[i].X, chain[i].Y]);
+					MainState.AddPosPoint(p, Points[p.X, p.Y]);
 					// Помечаем точки цепочки.
-					Points[chain[i].X, chain[i].Y].Bound = true;
+					Points[p.X, p.Y].Bound = true;
 				}
 
-				for (var j = 0; j < surPoints.Count; j++)
+				foreach (var p in surPoints)
 				{
-					Points[surPoints[j].X, surPoints[j].Y].Tagged = false;
+					Points[p.X, p.Y].Tagged = false;
 
-					MainState.AddPosPoint(surPoints[j], Points[surPoints[j].X, surPoints[j].Y]);
+					MainState.AddPosPoint(p, Points[p.X, p.Y]);
 
-					SetCaptureFreeState(surPoints[j], player);
+					SetCaptureFreeState(p, player);
 				}
 
 				LastChains.Add(chain);
@@ -508,14 +467,14 @@ namespace PointsShell
 				foreach (var p in chain)
 					Points[p.X, p.Y].Tagged = false;
 
-				for (var i = 0; i < surPoints.Count; i++)
+				foreach (var p in surPoints)
 				{
-					Points[surPoints[i].X, surPoints[i].Y].Tagged = false;
+					Points[p.X, p.Y].Tagged = false;
 
-					MainState.AddPosPoint(surPoints[i], Points[surPoints[i].X, surPoints[i].Y]);
+					MainState.AddPosPoint(p, Points[p.X, p.Y]);
 
-					if (!Points[surPoints[i].X, surPoints[i].Y].Putted)
-						Points[surPoints[i].X, surPoints[i].Y].EmptyBase = true;
+					if (!Points[p.X, p.Y].Putted)
+						Points[p.X, p.Y].EmptyBase = true;
 				}
 			}
 		}
@@ -589,12 +548,7 @@ namespace PointsShell
 			int inpPointsCount;
 			List<Pos> inpChainPoints, inpSurPoints;
 
-			List<Pos>[] chains;
-			Pos[] insidePoints;
-			int chainsCount;
-
-			DCaptureCount = 0;
-			DFreedCount = 0;
+			List<Pos> chain;
 
 			LastChains = new List<List<Pos>>();
 
@@ -619,8 +573,15 @@ namespace PointsShell
 					inpPointsCount = GetInputPoints(startPos, outPlayer, out inpChainPoints, out inpSurPoints);
 					if (inpPointsCount > 1)
 					{
-						chainsCount = BuildChainsFast(startPos, inpChainPoints, inpSurPoints, inpPointsCount, out chains, out insidePoints);
-						FindSurrounds(chains, insidePoints, chainsCount, outPlayer);
+						var chainsCount = 0;
+						for (var i = 0; i < inpPointsCount; i++)
+							if (BuildChain(startPos, inpChainPoints[i], out chain))
+							{
+								FindSurround(chain, inpSurPoints[i], CurPlayer);
+								chainsCount++;
+								if (chainsCount == inpPointsCount - 1)
+									break;
+							}
 						if (Points[startPos.X, startPos.Y].Bound)
 						{
 							RemoveEmptyBase(startPos);
@@ -632,32 +593,34 @@ namespace PointsShell
 				pos.X++;
 				do
 				{
-					do
-					{
+					pos.X--;
+					while (!Points[pos.X, pos.Y].Enabled(NextPlayer(outPlayer)))
 						pos.X--;
-						while (!Points[pos.X, pos.Y].Enabled(NextPlayer(outPlayer)))
-							pos.X--;
-						inpPointsCount = GetInputPoints(pos, Points[pos.X, pos.Y].Color, out inpChainPoints, out inpSurPoints);
-						chainsCount = BuildChains(pos, inpChainPoints, inpSurPoints, inpPointsCount, out chains, out insidePoints);
-					} while (chainsCount == 0);
-
-					for (var i = 0; i < chainsCount; i++)
-						if (PointInsideRing(startPos, chains[i]))
-						{
-							FindSurround(chains[i], insidePoints[i], Points[pos.X, pos.Y].Color);
-							break;
-						}
+					inpPointsCount = GetInputPoints(pos, NextPlayer(outPlayer), out inpChainPoints, out inpSurPoints);
+					for (var i = 0; i < inpPointsCount; i++)
+						if (BuildChain(pos, inpChainPoints[i], out chain))
+							if (PointInsideRing(startPos, chain))
+							{
+								FindSurround(chain, inpSurPoints[i], NextPlayer(outPlayer));
+								break;
+							}
 				} while (!Points[startPos.X, startPos.Y].Surrounded);
-
-				DCaptureCount = -1;
-				return;
 			}
-
-			inpPointsCount = GetInputPoints(startPos, outPlayer, out inpChainPoints, out inpSurPoints);
-			if (inpPointsCount > 1)
+			else
 			{
-				chainsCount = BuildChainsFast(startPos, inpChainPoints, inpSurPoints, inpPointsCount, out chains, out insidePoints);
-				FindSurrounds(chains, insidePoints, chainsCount, outPlayer);
+				inpPointsCount = GetInputPoints(startPos, outPlayer, out inpChainPoints, out inpSurPoints);
+				if (inpPointsCount > 1)
+				{
+					var chainsCount = 0;
+					for (var i = 0; i < inpPointsCount; i++)
+						if (BuildChain(startPos, inpChainPoints[i], out chain))
+						{
+							FindSurround(chain, inpSurPoints[i], outPlayer);
+							chainsCount++;
+							if (chainsCount == inpPointsCount - 1)
+								break;
+						}
+				}
 			}
 		}
 
