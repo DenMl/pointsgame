@@ -123,6 +123,10 @@
     <Compile Include="ComboColorPicker.xaml.cs">
       <DependentUpon>ComboColorPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ConsoleBot.cs" />
+    <Compile Include="Enums\BeginPattern.cs" />
+    <Compile Include="Enums\PlayerColor.cs" />
+    <Compile Include="Enums\SurroundCond.cs" />
     <Compile Include="GameLanguage.cs" />
     <Compile Include="IBot.cs" />
     <Compile Include="State.cs" />

@@ -249,16 +249,16 @@ private:
 			switch (b.y - a.y)
 			{
 				case (1):
-					return IS_UP;
+					return INTERSECTION_STATE_UP;
 				case (0):
-					return IS_TARGET;
+					return INTERSECTION_STATE_TARGET;
 				case (-1):
-					return IS_DOWN;
+					return INTERSECTION_STATE_DOWN;
 				default:
-					return IS_NONE;
+					return INTERSECTION_STATE_NONE;
 			}
 		else
-			return IS_NONE;
+			return INTERSECTION_STATE_NONE;
 	}
 
 public:

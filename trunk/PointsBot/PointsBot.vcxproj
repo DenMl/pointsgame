@@ -172,7 +172,7 @@
     <ClInclude Include="field.h" />
     <ClInclude Include="minimax.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="PointsBot.h" />
+    <ClInclude Include="points_bot.h" />
     <ClInclude Include="position_estimate.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="targetver.h" />
@@ -201,7 +201,7 @@
     <ClCompile Include="field.cpp" />
     <ClCompile Include="field_serializer.cpp" />
     <ClCompile Include="minimax.cpp" />
-    <ClCompile Include="PointsBot.cpp" />
+    <ClCompile Include="points_bot.cpp" />
     <ClCompile Include="position_estimate.cpp" />
     <ClCompile Include="uct.cpp" />
   </ItemGroup>

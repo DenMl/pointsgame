@@ -14,7 +14,7 @@ bool field_serializer::to_xt(field &cur_field, string file_name)
 		return false;
 
 #if SURROUND_CONDITIONS
-	if (cur_field.get_sur_cond() != SC_STANDART)
+	if (cur_field.get_sur_cond() != SUR_COND_STANDART)
 		return false;
 #endif
 

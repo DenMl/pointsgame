@@ -1,4 +1,6 @@
-﻿namespace PointsShell
+﻿using PointsShell.Enums;
+
+namespace PointsShell
 {
 	// Описание точки.
 	public struct GamePoint

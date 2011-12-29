@@ -77,13 +77,13 @@ void field::place_begin_pattern(begin_pattern cur_pattern)
 {
 	switch (cur_pattern)
 	{
-	case (BP_CROSSWIRE):
+	case (BEGIN_PATTERN_CROSSWIRE):
 		do_step(to_pos(_width / 2 - 1, _height / 2 - 1));
 		do_step(to_pos(_width / 2, _height / 2 - 1));
 		do_step(to_pos(_width / 2, _height / 2));
 		do_step(to_pos(_width / 2 - 1, _height / 2));
 		break;
-	case (BP_SQUARE):
+	case (BEGIN_PATTERN_SQUARE):
 		do_step(to_pos(_width / 2 - 1, _height / 2 - 1));
 		do_step(to_pos(_width / 2, _height / 2 - 1));
 		do_step(to_pos(_width / 2 - 1, _height / 2));
@@ -178,7 +178,7 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 	add_sub_captured_freed(cur_player, cur_capture_count, cur_freed_count);
 
 #if SURROUND_CONDITIONS
-	if ((cur_capture_count != 0) || (_sur_cond == SC_ALWAYS)) // Если захватили точки, или стоит опция захватывать всегда.
+	if ((cur_capture_count != 0) || (_sur_cond == SUR_COND_ALWAYS)) // Если захватили точки, или стоит опция захватывать всегда.
 #else
 	if (cur_capture_count != 0) // Если захватили точки.
 #endif
@@ -322,37 +322,37 @@ bool field::is_point_inside_ring(const pos cur_pos, const list<pos> &ring) const
 {
 	uint intersections = 0;
 
-	intersection_state state = IS_NONE;
+	intersection_state state = INTERSECTION_STATE_NONE;
 
 	for (auto i = ring.begin(); i != ring.end(); i++)
 	{
 		switch (get_intersection_state(cur_pos, *i))
 		{
-		case (IS_NONE):
-			state = IS_NONE;
+		case (INTERSECTION_STATE_NONE):
+			state = INTERSECTION_STATE_NONE;
 			break;
-		case (IS_UP):
-			if (state == IS_DOWN)
+		case (INTERSECTION_STATE_UP):
+			if (state == INTERSECTION_STATE_DOWN)
 				intersections++;
-			state = IS_UP;
+			state = INTERSECTION_STATE_UP;
 			break;
-		case (IS_DOWN):
-			if (state == IS_UP)
+		case (INTERSECTION_STATE_DOWN):
+			if (state == INTERSECTION_STATE_UP)
 				intersections++;
-			state = IS_DOWN;
+			state = INTERSECTION_STATE_DOWN;
 			break;
 		}
 	}
-	if (state == IS_UP || state == IS_DOWN)
+	if (state == INTERSECTION_STATE_UP || state == INTERSECTION_STATE_DOWN)
 	{
 		auto i = ring.begin();
 		intersection_state TempState = get_intersection_state(cur_pos, *i);
-		while (TempState == state || TempState == IS_TARGET)
+		while (TempState == state || TempState == INTERSECTION_STATE_TARGET)
 		{
 			i++;
 			TempState = get_intersection_state(cur_pos, *i);
 		}
-		if (TempState != IS_NONE)
+		if (TempState != INTERSECTION_STATE_NONE)
 			intersections++;
 	}
 
@@ -380,7 +380,7 @@ void field::check_closure(const pos start_pos, player cur_player)
 		}
 
 #if SURROUND_CONDITIONS
-		if (_sur_cond != SC_ALWAYS_ENEMY) // Если приоритет не всегда у врага.
+		if (_sur_cond != SUR_COND_ALWAYS_ENEMY) // Если приоритет не всегда у врага.
 #endif
 		{
 			inp_points_count = get_input_points(start_pos, cur_player | put_bit, inp_chain_points, inp_sur_points);

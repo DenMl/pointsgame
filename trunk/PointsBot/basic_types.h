@@ -32,9 +32,9 @@ struct point
 // SC_ALWAYS_ENEMY = 2 - обводит всегда PlayerBlack, если PlayerRed поставил точку в пустую базу.
 enum sur_cond
 {
-	SC_STANDART,
-	SC_ALWAYS,
-	SC_ALWAYS_ENEMY
+	SUR_COND_STANDART,
+	SUR_COND_ALWAYS,
+	SUR_COND_ALWAYS_ENEMY
 };
 
 // Используемый шаблон в начале игры.
@@ -43,17 +43,17 @@ enum sur_cond
 // BP_SQUARE - начало с квадрата.
 enum begin_pattern
 {
-	BP_CLEAN,
-	BP_CROSSWIRE,
-	BP_SQUARE
+	BEGIN_PATTERN_CLEAN,
+	BEGIN_PATTERN_CROSSWIRE,
+	BEGIN_PATTERN_SQUARE
 };
 
 enum intersection_state
 {
-	IS_NONE,
-	IS_UP,
-	IS_DOWN,
-	IS_TARGET
+	INTERSECTION_STATE_NONE,
+	INTERSECTION_STATE_UP,
+	INTERSECTION_STATE_DOWN,
+	INTERSECTION_STATE_TARGET
 };
 
 // Одно изменение доски.

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using PointsShell.Enums;
 
 namespace PointsShell
 {
