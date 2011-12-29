@@ -424,8 +424,8 @@ namespace PointsShell
 			}
 			while (pos != startPos);
 
-			for (var j = 0; j < chain.Count; j++)
-				Points[chain[j].X, chain[j].Y].Tagged = false;
+			foreach (var p in chain)
+				Points[p.X, p.Y].Tagged = false;
 
 			return (tempSquare < 0) && (chain.Count > 2);
 		}
@@ -471,8 +471,8 @@ namespace PointsShell
 			List<Pos> surPoints;
 
 			// Помечаем точки цепочки.
-			for (var i = 0; i < chain.Count; i++)
-				Points[chain[i].X, chain[i].Y].Tagged = true;
+			foreach (var p in chain)
+				Points[p.X, p.Y].Tagged = true;
 
 			// Заливка захваченной области.
 			CapturedAndFreedCount(insidePoint, player, out curCaptureCount, out curFreedCount, out surPoints);
@@ -505,8 +505,8 @@ namespace PointsShell
 			}
 			else // Если ничего не захватили.
 			{
-				for (var i = 0; i < chain.Count; i++)
-					Points[chain[i].X, chain[i].Y].Tagged = false;
+				foreach (var p in chain)
+					Points[p.X, p.Y].Tagged = false;
 
 				for (var i = 0; i < surPoints.Count; i++)
 				{
@@ -526,13 +526,6 @@ namespace PointsShell
 				FindSurround(chains[i], insidePoints[i], player);
 		}
 
-		private enum IntersectionState
-		{
-			None,
-			Up,
-			Down,
-			Target
-		}
 		private static IntersectionState GetIntersectionState(Pos pos, Pos nextPos)
 		{
 			if (nextPos.X <= pos.X)
