@@ -6,9 +6,6 @@
 // Включает сортировку по вероятностям для улучшения альфабета-отсечения.
 #define ALPHABETA_SORT 1
 
-// Определяет условие победы для UCT - абсолютная или относительная (считая от текущей позиции) победа.
-//#define ABSOLUTE_UCT 0
-
 // Larger values give uniform search.
 // Smaller values give very selective search.
 #define UCTK 1
