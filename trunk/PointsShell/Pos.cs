@@ -34,5 +34,22 @@
 			pos = this;
 			this = temp;
 		}
+
+		public bool Equals(Pos pos)
+		{
+			return pos.X == X && pos.Y == Y;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+				return false;
+			return obj is Pos && Equals((Pos)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return (X * 397) ^ Y;
+		}
 	}
 }
