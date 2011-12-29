@@ -1,52 +1,36 @@
 ﻿using System.Collections.Generic;
+using PointsShell.Enums;
 
 namespace PointsShell
 {
-	// Возможные цвета игроков.
-	public enum PlayerColor
-	{
-		Red = 0,
-		Black = 1
-	}
-
-	// Возможные типы игры:
-	// Standart - классический тип.
-	// Always - всегда захватывает тот игрок, в чье пустое окружение поставлена точка.
-	// AlwaysEnemy - захватывать даже пустые области.
-	public enum SurroundCond
-	{
-		Standart = 0,
-		Always = 1,
-		AlwaysEnemy = 2
-	}
-
-	public enum BeginPattern
-	{
-		CleanPattern = 0,
-		CrosswisePattern = 1,
-		SquarePattern = 2
-	}
-
 	public class Field
 	{
 		// Ширина поля.
 		public int Width { get; protected set; }
+
 		// Высота поля.
 		public int Height { get; protected set; }
+
 		public SurroundCond SurCond { get; protected set; }
 
-		public int CaptureCountRed;
-		public int CaptureCountBlack;
-		public PlayerColor CurPlayer;
-		public PlayerColor EnemyPlayer;
+		public int CaptureCountRed { get; protected set; }
+
+		public int CaptureCountBlack { get; protected set; }
+
+		public PlayerColor CurPlayer { get; set; }
+
+		public PlayerColor EnemyPlayer { get { return NextPlayer(CurPlayer); } }
 
 		protected int DCaptureCount;
+
 		protected int DFreedCount;
 
 		// Глобальный массив точек.
 		public GamePoint[,] Points { get; protected set; }
+
 		// Последовательность поставленных точек.
 		public List<Pos> PointsSeq { get; protected set; }
+
 		protected readonly StateChange MainState;
 
 		// Количество поставленных точек.
@@ -65,7 +49,6 @@ namespace PointsShell
 			CaptureCountRed = 0;
 			CaptureCountBlack = 0;
 			CurPlayer = PlayerColor.Red;
-			EnemyPlayer = PlayerColor.Black;
 
 			Points = new GamePoint[width + 2, height + 2];
 			PointsSeq = new List<Pos>();
@@ -92,7 +75,6 @@ namespace PointsShell
 		public void SetNextPlayer()
 		{
 			CurPlayer = NextPlayer(CurPlayer);
-			EnemyPlayer = NextPlayer(EnemyPlayer);
 		}
 
 		public void PlaceBeginPattern(BeginPattern beginPattern)
@@ -694,7 +676,6 @@ namespace PointsShell
 				// Стоит подумать над откатом поставленной точки отдельно. Но проблема - посталенная точка в свою пустую базу.
 				Points[MainState.States[MainState.States.Count - 1].PointPoses[i].Pos.X, MainState.States[MainState.States.Count - 1].PointPoses[i].Pos.Y] = MainState.States[MainState.States.Count - 1].PointPoses[i].Point;
 			CurPlayer = MainState.States[MainState.States.Count - 1].Player;
-			EnemyPlayer = NextPlayer(CurPlayer);
 			MainState.DeleteLastState();
 			PointsSeq.RemoveAt(PointsCount - 1);
 		}

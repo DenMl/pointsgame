@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Media;
+using PointsShell.Enums;
 
 namespace PointsShell
 {
@@ -18,6 +19,7 @@ namespace PointsShell
 	{
 		PointsXT,
 		SGF,
+		XGF,
 		VKontacte,
 		Unknown
 	}
@@ -437,7 +439,7 @@ namespace PointsShell
 				return;
 
 			_thinking = true;
-			var botMovie = _bot.GetBotMovie(Preferences.MinMaxDepth, Preferences.UCTIterations);
+			var botMovie = _bot.GetMove(Field.CurPlayer);
 			Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() => PutPoint(botMovie)));
 			_thinking = false;
 		}
@@ -473,7 +475,6 @@ namespace PointsShell
 		public void SetNextPlayer()
 		{
 			Field.SetNextPlayer();
-			_bot.SetNextPlayer();
 			UpdateTextInfo();
 		}
 
@@ -482,10 +483,10 @@ namespace PointsShell
 			if (_thinking)
 				return;
 
-			var Movie = ConvertToPos(e.GetPosition(canvas));
-			if (!PutPoint(Movie))
+			var movie = ConvertToPos(e.GetPosition(canvas));
+			if (!PutPoint(movie))
 				return;
-			_bot.PutPoint(Movie);
+			_bot.PutPoint(movie, Field.EnemyPlayer);
 			if (Preferences.AI)
 				(new Thread(DoBotStep)).Start();
 		}
