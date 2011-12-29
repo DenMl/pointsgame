@@ -60,23 +60,26 @@ namespace PointsShell
 
 		public Pos GetMove(PlayerColor player)
 		{
-			var result = new Pos();
-			DllGetMove(_handle, ref result.X, ref result.Y, player);
-			return result;
+			var x = 0;
+			var y = 0;
+			DllGetMove(_handle, ref x, ref y, player);
+			return new Pos(x, y);
 		}
 
 		public Pos GetMoveWithComplexity(PlayerColor player, int complexity)
 		{
-			var result = new Pos();
-			DllGetMoveWithComplexity(_handle, ref result.X, ref result.Y, player, complexity);
-			return result;
+			var x = 0;
+			var y = 0;
+			DllGetMoveWithComplexity(_handle, ref x, ref y, player, complexity);
+			return new Pos(x, y);
 		}
 
 		public Pos GetMoveWithTime(PlayerColor player, int time)
 		{
-			var result = new Pos();
-			DllGetMoveWithTime(_handle, ref result.X, ref result.Y, player, time);
-			return result;
+			var x = 0;
+			var y = 0;
+			DllGetMoveWithTime(_handle, ref x, ref y, player, time);
+			return new Pos(x, y);
 		}
 
 		public string GetName()
