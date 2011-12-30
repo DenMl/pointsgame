@@ -17,8 +17,8 @@ private:
 public:
 	bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern);
 	~bot();
-	void do_step(coord x, coord y, player cur_player);
-	void undo_step();
+	bool do_step(coord x, coord y, player cur_player);
+	bool undo_step();
 	void set_player(player cur_player);
 	// Возвращает лучший найденный ход.
 	// Если не найдено - -1.
