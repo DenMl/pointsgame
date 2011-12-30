@@ -31,14 +31,17 @@ void bot::build_all_moves(list<pos> &moves) const
 			moves.push_back(i);
 }
 
-void bot::do_step(coord x, coord y, player cur_player)
+bool bot::do_step(coord x, coord y, player cur_player)
 {
-	_field->do_step(_field->to_pos(static_cast<coord>(x), static_cast<coord>(y)), cur_player);
+	return _field->do_step(_field->to_pos(static_cast<coord>(x), static_cast<coord>(y)), cur_player);
 }
 
-void bot::undo_step()
+bool bot::undo_step()
 {
+	if (_field->points_seq.size() == 0)
+		return false;
 	_field->undo_step();
+	return true;
 }
 
 void bot::set_player(player cur_player)
