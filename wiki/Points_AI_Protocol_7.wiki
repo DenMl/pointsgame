@@ -34,8 +34,6 @@ return arguments — none.
 
 return arguments — none.
 
-return arguments — none.
-
 *`name`*
 
 return arguments — name of the AI.
