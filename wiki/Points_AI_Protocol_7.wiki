@@ -1,4 +1,4 @@
-=Points AI Protocol, version 7=
+=Points AI Protocol, version 7, draft=
 
 The communication between the AI and the GUI interface is done via messages to *standart input* of the AI and messages from *standart output* of the AI. For example, if AI wants to say something, it must send a message to his standart output. The GUI then must capture this message and analyze it. If the GUI wants to say something, it sends a message to the standart input of the AI.
 
