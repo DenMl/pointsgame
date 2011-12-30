@@ -26,19 +26,7 @@ inline ulong get_uct_iterations(ulong p)
 	return (p - min_p) * (max_uct_iterations - min_uct_iterations) / (max_p - min_p) + min_uct_iterations;
 }
 
-void boardsize(size_t id)
-{
-	coord x, y;
-
-	cin >> x >> y;
-	// Если существовало поле - удаляем его.
-	if (main_bot != NULL)
-		delete main_bot;
-	main_bot = new bot(x, y, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN);
-	cout << "=" << " " << id << " " << "boardsize" << endl;
-}
-
-void genmove(size_t id)
+void gen_move(size_t id)
 {
 	player cur_player;
 	coord x, y;
@@ -56,7 +44,7 @@ void genmove(size_t id)
 	}
 }
 
-void genmove_with_complexity(size_t id)
+void gen_move_with_complexity(size_t id)
 {
 	player cur_player;
 	coord x, y;
@@ -75,7 +63,7 @@ void genmove_with_complexity(size_t id)
 	}
 }
 
-void genmove_with_time(size_t id)
+void gen_move_with_time(size_t id)
 {
 	player cur_player;
 	coord x, y;
@@ -94,9 +82,22 @@ void genmove_with_time(size_t id)
 	}
 }
 
+void init(size_t id)
+{
+	coord x, y;
+	long seed;
+
+	cin >> x >> y >> seed;
+	// Если существовало поле - удаляем его.
+	if (main_bot != NULL)
+		delete main_bot;
+	main_bot = new bot(x, y, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN);
+	cout << "=" << " " << id << " " << "boardsize" << endl;
+}
+
 void list_commands(size_t id)
 {
-	cout << "=" << " " << id << " " << "list_commands" << " " << "boardsize genmove genmove_with_complexity genmove_with_time list_commands name play quit undo version" << endl;
+	cout << "=" << " " << id << " " << "list_commands" << " " << "gen_move gen_move_with_complexity gen_move_with_time init list_commands name play quit undo version" << endl;
 }
 
 void name(size_t id)
@@ -134,15 +135,15 @@ void undo(size_t id)
 
 void version(size_t id)
 {
-	cout << "=" << " " << id << " " << "version" << " " << "1.9.9.9" << endl;
+	cout << "=" << " " << id << " " << "version" << " " << "2.0.0.0" << endl;
 }
 
 inline void fill_codes(map<string, void(*)(size_t)> &codes)
 {
-	codes["boardsize"] = boardsize;
-	codes["genmove"] = genmove;
-	codes["genmove_with_complexity"] = genmove_with_complexity;
-	codes["genmove_with_time"] = genmove_with_time;
+	codes["gen_move"] = gen_move;
+	codes["gen_move_with_complexity"] = gen_move_with_complexity;
+	codes["gen_move_with_time"] = gen_move_with_time;
+	codes["init"] = init;
 	codes["list_commands"] = list_commands;
 	codes["name"] = name;
 	codes["play"] = play;
