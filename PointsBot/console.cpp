@@ -1,5 +1,4 @@
 #include "config.h"
-#include "Random.h"
 #include "field.h"
 #include "basic_types.h"
 #include "bot.h"
@@ -85,13 +84,13 @@ void gen_move_with_time(size_t id)
 void init(size_t id)
 {
 	coord x, y;
-	long seed;
+	ptrdiff_t seed;
 
 	cin >> x >> y >> seed;
 	// Если существовало поле - удаляем его.
 	if (main_bot != NULL)
 		delete main_bot;
-	main_bot = new bot(x, y, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN);
+	main_bot = new bot(x, y, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN, seed);
 	cout << "=" << " " << id << " " << "boardsize" << endl;
 }
 
@@ -160,7 +159,6 @@ int main()
 
 	main_bot = NULL;
 	fill_codes(codes);
-	Randomize();
 	
 	while (true)
 	{

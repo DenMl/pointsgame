@@ -6,21 +6,27 @@
 #include "minimax.h"
 #include "uct.h"
 #include "position_estimate.h"
-#include "Random.h"
+#include "zobrist.h"
 #include <list>
 
 using namespace std;
 
-bot::bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern)
+bot::bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, ptrdiff_t seed)
 {
-	_field = new field(width, height, sur_cond, begin_pattern);
+	_gen = new mt(seed);
+	_zobrist = new zobrist((width + 2) * (height + 2), _gen);
+	_field = new field(width, height, sur_cond, begin_pattern, _zobrist);
 	_position_estimate = new position_estimate(_field);
+	_uct = new uct(_field, _gen);
 }
 
 bot::~bot()
 {
+	delete _uct;
 	delete _position_estimate;
 	delete _field;
+	delete _zobrist;
+	delete _gen;
 }
 
 void bot::build_all_moves(list<pos> &moves) const
@@ -73,7 +79,7 @@ void bot::uct_best_move(coord& x, coord& y, size_t max_simulations)
 {
 	list<pos> moves;
 	build_all_moves(moves);
-	pos result = uct(*_field, max_simulations, moves);
+	pos result = _uct->get(max_simulations, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 }
@@ -82,7 +88,7 @@ void bot::uct_with_time_best_move(coord& x, coord& y, size_t time)
 {
 	list<pos> moves;
 	build_all_moves(moves);
-	pos result = uct_with_time(*_field, time, moves);
+	pos result = _uct->get_with_time(time, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 }
@@ -93,7 +99,7 @@ void bot::minimax_uct_best_move(coord& x, coord& y, size_t depth, size_t max_sim
 	build_all_moves(moves);
 	pos result =  minimax(*_field, depth, moves);
 	if (result == -1)
-		result = uct(*_field, max_simulations, moves);
+		result = _uct->get(max_simulations, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 }
@@ -106,7 +112,7 @@ void bot::minimax_uct_with_time_best_move(coord& x, coord& y, size_t depth, size
 	pos result =  minimax(*_field, depth, moves);
 	ulong minmax_time = t.get();
 	if (result == -1 && minmax_time < time)
-		result = uct_with_time(*_field, time - minmax_time, moves);
+		result = _uct->get_with_time(time - minmax_time, moves);
 	if (result == -1)
 		result = _position_estimate->get(moves);
 	x = _field->to_x(result);

@@ -95,7 +95,6 @@
     <ClInclude Include="field.h" />
     <ClInclude Include="minimax.h" />
     <ClInclude Include="position_estimate.h" />
-    <ClInclude Include="Random.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="trajectory.h" />
     <ClInclude Include="trajectories.h" />
