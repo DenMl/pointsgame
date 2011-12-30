@@ -166,7 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic_types.h" />
-    <ClInclude Include="bot_engine.h" />
+    <ClInclude Include="bot.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="field_serializer.h" />
     <ClInclude Include="field.h" />
@@ -183,21 +183,7 @@
     <ClInclude Include="zobrist.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bot_engine.cpp" />
-    <ClCompile Include="dllmain.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="bot.cpp" />
     <ClCompile Include="field.cpp" />
     <ClCompile Include="field_serializer.cpp" />
     <ClCompile Include="minimax.cpp" />

@@ -2,7 +2,7 @@
 #include "basic_types.h"
 #include "dll.h"
 #include "field.h"
-#include "bot_engine.h"
+#include "bot.h"
 #include "Random.h"
 
 const uint min_minimax_depth = 0;
@@ -22,41 +22,54 @@ inline ulong get_uct_iterations(ulong p)
 	return (p - min_p) * (max_uct_iterations - min_uct_iterations) / (max_p - min_p) + min_uct_iterations;
 }
 
-field* init(int width, int height)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
-	return new field(static_cast<coord>(width), static_cast<coord>(height), SUR_COND_STANDART, BEGIN_PATTERN_CLEAN);
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		break;
+	case DLL_THREAD_ATTACH:
+		break;
+	case DLL_THREAD_DETACH:
+		break;
+	case DLL_PROCESS_DETACH:
+		break;
+	}
+	return TRUE;
 }
 
-void final(field* cur_field)
+bot* init(coord width, coord height)
 {
-	delete cur_field;
+	return new bot(width, height, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN);
 }
 
-void put_point(field* cur_field, int x, int y, int cur_player)
+void final(bot* cur_bot)
 {
-	cur_field->do_step(cur_field->to_pos(static_cast<coord>(x), static_cast<coord>(y)), cur_player);
+	delete cur_bot;
 }
 
-void remove_last_point(field* cur_field)
+void put_point(bot* cur_bot, coord x, coord y, player cur_player)
 {
-	cur_field->undo_step();
+	cur_bot->do_step(x, y, cur_player);
 }
 
-void get_move(field* cur_field, int& x, int& y, int cur_player)
+void remove_last_point(bot* cur_bot)
 {
-	pos cur_pos;
-	cur_field->set_player(static_cast<player>(cur_player));
-	cur_pos = minimax_uct_best_move(*cur_field, 8, 100000);
-	x = cur_field->to_x(cur_pos);
-	y = cur_field->to_y(cur_pos);
+	cur_bot->undo_step();
 }
 
-void get_move_with_complexity(field* cur_field, int& x, int& y, int cur_player, int complexity)
+void get_move(bot* cur_bot, coord& x, coord& y, player cur_player)
+{
+	cur_bot->set_player(cur_player);
+	cur_bot->minimax_uct_best_move(x, y, 8, 100000);
+}
+
+void get_move_with_complexity(field* cur_field, coord& x, coord& y, player cur_player, int complexity)
 {
 
 }
 
-void get_move_with_time(field* cur_field, int& x, int& y, int cur_player, int time)
+void get_move_with_time(field* cur_field, coord& x, coord& y, player cur_player, int time)
 {
 
 }
