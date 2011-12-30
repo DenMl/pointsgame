@@ -1,4 +1,4 @@
-=Points AI Protocol, version 6=
+=Points AI Protocol, version 7, draft=
 
 The communication between the AI and the GUI interface is done via messages to *standart input* of the AI and messages from *standart output* of the AI. For example, if AI wants to say something, it must send a message to his standart output. The GUI then must capture this message and analyze it. If the GUI wants to say something, it sends a message to the standart input of the AI.
 
@@ -30,11 +30,7 @@ return arguments — a space separated list of commands that the AI supports (ca
 
 return arguments — none.
 
-*`boardsize width height`* — initialization.
-
-return arguments — none.
-
-*`set_random_seed seed`* — seed for random number generator, useful for reproducing games. Seed is 64-bit integer.
+*`init width height random_seed`* — initialization. random_seed — seed (signed 64-bit integer) for random number generator, useful for reproducing games.
 
 return arguments — none.
 
@@ -50,15 +46,15 @@ return arguments — version of the AI.
 
 return arguments — x, y, color  of a played move.
 
-*`reg_genmove color`* — request to calculate an AI move, but do NOT make it on the field.
+*`gen_move color`* — request to calculate an AI move, but do NOT make it on the field.
 
 return arguments — x, y, color of the suggested move.
 
-*`reg_genmove_with_complexity color complexity`* — request to calculate an AI move with the given complexity, but NOT to make it on the field. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
+*`gen_move_with_complexity color complexity`* — request to calculate an AI move with the given complexity, but NOT to make it on the field. Complexity is a number from 0 to 100. The interpretation of this number lies on the AI.
 
 return arguments — x, y, color of the suggested move.
 
-*`reg_genmove_with_time color time`* — request to calculate an AI move within the given time (milliseconds), but NOT to make it on the field.
+*`gen_move_with_time color time`* — request to calculate an AI move within the given time (milliseconds), but NOT to make it on the field.
 
 return arguments — x, y, color of the suggested move.
 
