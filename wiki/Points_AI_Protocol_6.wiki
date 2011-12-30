@@ -30,7 +30,7 @@ return arguments — a space separated list of commands that the AI supports (ca
 
 return arguments — none.
 
-*`init width height random_seed`* — initialization. random_seed — seed (signed 64-bit integer) for random number generator, useful for reproducing games.
+*`init width height random_seed`* — initialization. random_seed — seed for random number generator, useful for reproducing games.
 
 return arguments — none.
 
