@@ -1,6 +1,6 @@
 #include "config.h"
 #include "basic_types.h"
-#include "points_bot.h"
+#include "dll.h"
 #include "field.h"
 #include "bot_engine.h"
 #include "Random.h"

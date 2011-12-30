@@ -4,7 +4,7 @@ using PointsShell.Enums;
 
 namespace PointsShell
 {
-	class PointsBot : IBot
+	class DllBot : IBot
 	{
 #if DEBUG
 		const string DllName = "../../../../PointsBot/Debug/PointsBot.dll";
@@ -33,12 +33,12 @@ namespace PointsShell
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_verion")]
 		private static extern string DllGetVersion();
 
-		public PointsBot(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
+		public DllBot(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
 			Init(width, height, surCond, beginPattern);
 		}
 
-		~PointsBot()
+		~DllBot()
 		{
 			DllFinal(_handle);
 		}
