@@ -168,7 +168,7 @@
       <DependentUpon>GamePreferencesDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="PointPos.cs" />
-    <Compile Include="PointsBot.cs" />
+    <Compile Include="DllBot.cs" />
     <Compile Include="Pos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

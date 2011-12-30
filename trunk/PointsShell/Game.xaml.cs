@@ -59,7 +59,7 @@ namespace PointsShell
 		}
 
 		public Field Field { get; private set; }
-		private PointsBot _bot;
+		private DllBot _bot;
 
 		// Переменная, показывающая, выполняются ли в данный момент вычисления для хода ИИ.
 		private bool _thinking;
@@ -76,7 +76,7 @@ namespace PointsShell
 			InitializeComponent();
 			_preferences = preferences;
 			Field = new Field(preferences.Width, preferences.Height, preferences.SurCond);
-			_bot = new PointsBot(preferences.Width, preferences.Height, preferences.SurCond, BeginPattern.CleanPattern);
+			_bot = new DllBot(preferences.Width, preferences.Height, preferences.SurCond, BeginPattern.CleanPattern);
 			DrawField(_preferences.Width, _preferences.Height);
 			PlaceBeginPattern(preferences.BeginPattern);
 			UpdateTextInfo();
@@ -87,7 +87,7 @@ namespace PointsShell
 			InitializeComponent();
 			_preferences = preferences;
 			Field = new Field(preferences.Width, preferences.Height, preferences.SurCond);
-			_bot = new PointsBot(preferences.Width, preferences.Height, preferences.SurCond, BeginPattern.CleanPattern);
+			_bot = new DllBot(preferences.Width, preferences.Height, preferences.SurCond, BeginPattern.CleanPattern);
 			DrawField(_preferences.Width, _preferences.Height);
 			PlaceBeginPattern(preferences.BeginPattern);
 			SetLanguage(language);
@@ -558,7 +558,7 @@ namespace PointsShell
 		private void LoadXT(string pointsXTFileName)
 		{
 			Field = new Field(39, 32, SurroundCond.Standart);
-			_bot = new PointsBot(39, 32, SurroundCond.Standart, BeginPattern.CleanPattern);
+			_bot = new DllBot(39, 32, SurroundCond.Standart, BeginPattern.CleanPattern);
 			DrawField(39, 32);
 
 			var stream = new StreamReader(pointsXTFileName);
