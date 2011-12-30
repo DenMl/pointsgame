@@ -4,8 +4,10 @@
 #include <utility>
 #include <stack>
 #include <climits>
+#include <boost/random.hpp>
 
 using namespace std;
+using namespace boost;
 
 typedef unsigned short ushort;
 typedef unsigned int uint;
@@ -68,3 +70,9 @@ struct board_change
 	// Список изменных точек (координата - значение до изменения).
 	stack<pair<pos, value>> changes;
 };
+
+#if X64
+typedef random::mt19937_64 mt;
+#else
+typedef random::mt19937 mt;
+#endif

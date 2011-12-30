@@ -263,7 +263,7 @@ private:
 
 public:
 	// Конструктор.
-	field(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern);
+	field(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, zobrist* zobr);
 	// Конструктор копирования.
 	field(const field &orig);
 	// Деструктор.

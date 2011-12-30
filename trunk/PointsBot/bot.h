@@ -5,17 +5,22 @@
 #include "player.h"
 #include "field.h"
 #include "position_estimate.h"
+#include "uct.h"
+#include "zobrist.h"
 
 using namespace std;
 
 class bot
 {
 private:
+	mt* _gen;
+	zobrist* _zobrist;
 	field* _field;
 	position_estimate* _position_estimate;
+	uct* _uct;
 	void build_all_moves(list<pos>& moves) const;
 public:
-	bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern);
+	bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, ptrdiff_t seed);
 	~bot();
 	bool do_step(coord x, coord y, player cur_player);
 	bool undo_step();
