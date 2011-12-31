@@ -62,8 +62,10 @@ return arguments — x, y, color of the suggested move.
 
 return arguments — none.
 
-===Explanations:===
+==Explanations:==
 
   * x is a number from 0 to fieldSizeX - 1. For y it's the same, of course.
 
   * color is a boolean value typed as "0" or "1".
+
+  * An error message should not contain return arguments.
