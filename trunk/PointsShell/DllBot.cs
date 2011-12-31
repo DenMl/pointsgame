@@ -15,7 +15,7 @@ namespace PointsShell
 		private IntPtr _handle;
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "init")]
-		private static extern IntPtr DllInit(int width, int height, SurroundCond surCond, BeginPattern beginPattern);
+		private static extern IntPtr DllInit(int width, int height, IntPtr seed);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "final")]
 		private static extern void DllFinal(IntPtr field);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "put_point")]
@@ -45,7 +45,7 @@ namespace PointsShell
 
 		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
-			_handle = DllInit(width, height, surCond, beginPattern);
+			_handle = DllInit(width, height, new IntPtr(78526081));
 		}
 
 		public void PutPoint(Pos pos, PlayerColor player)
