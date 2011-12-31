@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="ConsoleBot.cs" />
     <Compile Include="Enums\BeginPattern.cs" />
+    <Compile Include="Enums\GetMoveType.cs" />
     <Compile Include="Enums\IntersectionState.cs" />
     <Compile Include="Enums\PlayerColor.cs" />
     <Compile Include="Enums\SurroundCond.cs" />
