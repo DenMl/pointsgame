@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Media;
+using PointsShell.Bots;
 using PointsShell.Enums;
 
 namespace PointsShell
@@ -96,8 +97,8 @@ namespace PointsShell
 
 		public static Game Load(string fileName, GamePreferences preferences)
 		{
-			var Format = GetFormat(fileName);
-			switch (Format)
+			var format = GetFormat(fileName);
+			switch (format)
 			{
 				case (GameFormat.PointsXT):
 					var result = new Game {_preferences = preferences};
@@ -138,11 +139,11 @@ namespace PointsShell
 			return true;
 		}
 
-		public static bool IsSGF(string FileName)
+		public static bool IsSGF(string fileName)
 		{
 			var s = "";
 
-			using (var stream = new StreamReader(FileName))
+			using (var stream = new StreamReader(fileName))
 				while (!stream.EndOfStream)
 					s += stream.ReadLine();
 
@@ -159,11 +160,11 @@ namespace PointsShell
 		}
 
 		// Определяет формат сохранения для файла.
-		public static GameFormat GetFormat(string FileName)
+		public static GameFormat GetFormat(string fileName)
 		{
-			if (IsXT(FileName))
+			if (IsXT(fileName))
 				return GameFormat.PointsXT;
-			if (IsSGF(FileName))
+			if (IsSGF(fileName))
 				return GameFormat.SGF;
 			return GameFormat.Unknown;
 		}
@@ -234,7 +235,7 @@ namespace PointsShell
 		private void PlaceBeginPattern(BeginPattern beginPattern)
 		{
 			// Отключаем звуки.
-			var Sounds = _preferences.Sounds;
+			var sounds = _preferences.Sounds;
 			_preferences.Sounds = false;
 
 			Pos pos;
@@ -263,7 +264,7 @@ namespace PointsShell
 					break;
 			}
 
-			_preferences.Sounds = Sounds;
+			_preferences.Sounds = sounds;
 		}
 
 		public void ReDraw()
@@ -278,7 +279,7 @@ namespace PointsShell
 				PutPoint(new Pos(pos.X - 1, pos.Y - 1), LastField.Points[pos.X, pos.Y].Color);
 		}
 
-		private void FillTriangle(Pos pos1, Pos pos2, Pos pos3, PlayerColor Player)
+		private void FillTriangle(Pos pos1, Pos pos2, Pos pos3, PlayerColor player)
 		{
 			canvas.Children.Add(new Polygon
 									{
@@ -290,7 +291,7 @@ namespace PointsShell
 													ConvertToGraphicsPoint(pos3)
 												},
 										Fill =
-											Player == PlayerColor.Red
+											player == PlayerColor.Red
 												? new SolidColorBrush(Color.FromArgb(Preferences.FillingAlpha,
 																					 Preferences.RedColor.R,
 																					 Preferences.RedColor.G,

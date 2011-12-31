@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using PointsShell.Enums;
 
-namespace PointsShell
+namespace PointsShell.Bots
 {
 	public class ConsoleBot : IBot
 	{
@@ -147,12 +147,42 @@ namespace PointsShell
 
 		public Pos GetMoveWithComplexity(PlayerColor player, int complexity)
 		{
-			throw new NotImplementedException();
+			int x, y;
+			if (_bot == null)
+				throw new Exception("gen_move_with_complexity: Not initialized.");
+			if (!_commands.Contains("gen_move_with_complexity"))
+				throw new Exception("gen_move_with_complexity: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} gen_move_with_complexity {1} {2}", id, player, complexity);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("gen_move_with_complexity: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "gen_move_with_complexity")
+				throw new Exception("gen_move_with_complexity: Error while executing.");
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_complexity" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != player.ToString())
+				throw new Exception("gen_move_with_complexity: Error while executing.");
+			return new Pos(x, y);
 		}
 
 		public Pos GetMoveWithTime(PlayerColor player, int time)
 		{
-			throw new NotImplementedException();
+			int x, y;
+			if (_bot == null)
+				throw new Exception("gen_move_with_time: Not initialized.");
+			if (!_commands.Contains("gen_move_with_time"))
+				throw new Exception("gen_move_with_time: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} gen_move_with_time {1} {2}", id, player, time);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("gen_move_with_time: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "gen_move_with_time")
+				throw new Exception("gen_move_with_time: Error while executing.");
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_time" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != player.ToString())
+				throw new Exception("gen_move_with_time: Error while executing.");
+			return new Pos(x, y);
 		}
 
 		public string GetName()
