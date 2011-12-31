@@ -1,5 +1,8 @@
-﻿namespace PointsShell.Enums
+﻿using System;
+
+namespace PointsShell.Enums
 {
+	[Serializable]
 	public enum IntersectionState
 	{
 		None,
