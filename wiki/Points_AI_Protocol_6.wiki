@@ -69,3 +69,5 @@ return arguments — none.
   * color is a boolean value typed as "0" or "1".
 
   * An error message should not contain return arguments.
+
+  * If the argument string is returned, it should not contain spaces.
