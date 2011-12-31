@@ -1,6 +1,6 @@
 ﻿using PointsShell.Enums;
 
-namespace PointsShell
+namespace PointsShell.Bots
 {
 	public interface IBot
 	{

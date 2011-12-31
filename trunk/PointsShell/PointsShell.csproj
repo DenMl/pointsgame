@@ -123,14 +123,15 @@
     <Compile Include="ComboColorPicker.xaml.cs">
       <DependentUpon>ComboColorPicker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ConsoleBot.cs" />
+    <Compile Include="Bots\ConsoleBot.cs" />
     <Compile Include="Enums\BeginPattern.cs" />
     <Compile Include="Enums\GetMoveType.cs" />
     <Compile Include="Enums\IntersectionState.cs" />
     <Compile Include="Enums\PlayerColor.cs" />
     <Compile Include="Enums\SurroundCond.cs" />
     <Compile Include="GameLanguage.cs" />
-    <Compile Include="IBot.cs" />
+    <Compile Include="Bots\IBot.cs" />
+    <Compile Include="Bots\SafeBot.cs" />
     <Compile Include="State.cs" />
     <Compile Include="StateChange.cs" />
     <Page Include="ComboColorPicker.xaml">
@@ -169,7 +170,7 @@
       <DependentUpon>GamePreferencesDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="PointPos.cs" />
-    <Compile Include="DllBot.cs" />
+    <Compile Include="Bots\DllBot.cs" />
     <Compile Include="Pos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

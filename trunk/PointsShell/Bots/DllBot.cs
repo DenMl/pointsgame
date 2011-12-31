@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using PointsShell.Enums;
 
-namespace PointsShell
+namespace PointsShell.Bots
 {
 	class DllBot : IBot
 	{
