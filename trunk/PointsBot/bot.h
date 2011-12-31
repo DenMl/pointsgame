@@ -6,6 +6,7 @@
 #include "field.h"
 #include "position_estimate.h"
 #include "uct.h"
+#include "minimax.h"
 #include "zobrist.h"
 
 using namespace std;
@@ -18,6 +19,7 @@ private:
 	field* _field;
 	position_estimate* _position_estimate;
 	uct* _uct;
+	minimax* _minimax;
 	void build_all_moves(list<pos>& moves) const;
 public:
 	bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, ptrdiff_t seed);
