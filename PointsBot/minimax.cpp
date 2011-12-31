@@ -15,7 +15,7 @@ using namespace std;
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
+score minimax::negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
 {
 	trajectories cur_trajectories(cur_field);
 
@@ -102,13 +102,18 @@ score negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, in
 // 	return -alpha;
 // }
 
+minimax::minimax(field* cur_field)
+{
+	_field = cur_field;
+}
+
 // CurField - поле, на котором производится оценка.
 // Depth - глубина оценки.
 // Moves - на входе возможные ходы, на выходе лучшие из них.
-pos minimax(field &cur_field, size_t depth, list<pos> &moves)
+pos minimax::get(size_t depth, list<pos> &moves)
 {
 	// Главные траектории - свои и вражеские.
-	trajectories cur_trajectories(cur_field, depth);
+	trajectories cur_trajectories(*_field, depth);
 	vector<pos> PossibleMoves, first_moves;
 	pos result;
 
@@ -133,7 +138,7 @@ pos minimax(field &cur_field, size_t depth, list<pos> &moves)
 	score alpha = -SCORE_INFINITY;
 	#pragma omp parallel
 	{
-		field local_field(cur_field);
+		field local_field(*_field);
 
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(first_moves.size()); i++)

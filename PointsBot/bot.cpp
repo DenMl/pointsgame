@@ -18,10 +18,12 @@ bot::bot(const coord width, const coord height, const sur_cond sur_cond, const b
 	_field = new field(width, height, sur_cond, begin_pattern, _zobrist);
 	_position_estimate = new position_estimate(_field);
 	_uct = new uct(_field, _gen);
+	_minimax = new minimax(_field);
 }
 
 bot::~bot()
 {
+	delete _minimax;
 	delete _uct;
 	delete _position_estimate;
 	delete _field;
@@ -68,7 +70,7 @@ void bot::minimax_best_move(coord& x, coord& y, size_t depth)
 {
 	list<pos> moves;
 	build_all_moves(moves);
-	pos result =  minimax(*_field, depth, moves);
+	pos result =  _minimax->get(depth, moves);
 	if (result == -1)
 		result = _position_estimate->get(moves);
 	x = _field->to_x(result);
@@ -97,7 +99,7 @@ void bot::minimax_uct_best_move(coord& x, coord& y, size_t depth, size_t max_sim
 {
 	list<pos> moves;
 	build_all_moves(moves);
-	pos result =  minimax(*_field, depth, moves);
+	pos result =  _minimax->get(depth, moves);
 	if (result == -1)
 		result = _uct->get(max_simulations, moves);
 	x = _field->to_x(result);
@@ -109,7 +111,7 @@ void bot::minimax_uct_with_time_best_move(coord& x, coord& y, size_t depth, size
 	timer t;
 	list<pos> moves;
 	build_all_moves(moves);
-	pos result =  minimax(*_field, depth, moves);
+	pos result =  _minimax->get(depth, moves);
 	ulong minmax_time = t.get();
 	if (result == -1 && minmax_time < time)
 		result = _uct->get_with_time(time - minmax_time, moves);
