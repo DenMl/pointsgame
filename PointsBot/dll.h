@@ -5,7 +5,7 @@
 
 #define DLLEXPORT extern "C" __declspec(dllexport)
 
-DLLEXPORT bot* init(coord width, coord height);
+DLLEXPORT bot* init(coord width, coord height, ptrdiff_t seed);
 DLLEXPORT void final(bot* cur_bot);
 DLLEXPORT void put_point(bot* cur_bot, coord x, coord y, player cur_player);
 DLLEXPORT void remove_last_point(bot* cur_bot);

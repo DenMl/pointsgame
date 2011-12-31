@@ -3,7 +3,7 @@
 #include "dll.h"
 #include "field.h"
 #include "bot.h"
-#include "Random.h"
+#include <Windows.h>
 
 const uint min_minimax_depth = 0;
 const uint max_minimax_depth = 8;
@@ -38,9 +38,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 	return TRUE;
 }
 
-bot* init(coord width, coord height)
+bot* init(coord width, coord height, ptrdiff_t seed)
 {
-	return new bot(width, height, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN);
+	return new bot(width, height, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN, seed);
 }
 
 void final(bot* cur_bot)
