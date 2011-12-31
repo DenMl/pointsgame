@@ -5,6 +5,7 @@ namespace PointsShell
 	public interface IBot
 	{
 		void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern);
+		void Final();
 		void PutPoint(Pos pos, PlayerColor player);
 		void RemoveLastPoint();
 		Pos GetMove(PlayerColor player);

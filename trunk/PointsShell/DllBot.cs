@@ -48,6 +48,11 @@ namespace PointsShell
 			_handle = DllInit(width, height, new IntPtr(78526081));
 		}
 
+		public void Final()
+		{
+			
+		}
+
 		public void PutPoint(Pos pos, PlayerColor player)
 		{
 			DllPutPoint(_handle, pos.X, pos.Y, player);
