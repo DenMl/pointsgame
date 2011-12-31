@@ -54,7 +54,9 @@ namespace PointsShell
 			if (answer == null)
 				throw new Exception("list_commands: Answer is null.");
 			var splittedAnswer = answer.Split();
-			if (splittedAnswer.Length < 4 || (splittedAnswer[0] != "=" && splittedAnswer[0] != "?") || (splittedAnswer[1] != id.ToString()) || (splittedAnswer[2] != "list_commands"))
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "list_commands")
+				throw new Exception("list_commands: Error while executing.");
+			if (splittedAnswer.Length < 4 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "list_commands")
 				throw new Exception("list_commands: Invalid answer.");
 			for (var i = 3; i < splittedAnswer.Length; i++)
 				_commands.Add(splittedAnswer[i]);
@@ -67,18 +69,21 @@ namespace PointsShell
 			if (answer == null)
 				throw new Exception("init: Answer is null.");
 			splittedAnswer = answer.Split();
-			if (splittedAnswer.Length != 3 || (splittedAnswer[0] != "=" && splittedAnswer[0] != "?") || (splittedAnswer[1] != id.ToString()) || (splittedAnswer[2] != "init"))
-				throw new Exception("init: Invalid answer.");
-			if (splittedAnswer[0] == "?")
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "init")
 				throw new Exception("init: Error while executing.");
+			if (splittedAnswer.Length != 3 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "init")
+				throw new Exception("init: Invalid answer.");
 		}
 
 		public void Final()
 		{
 			if (_bot == null)
 				return;
-			_bot.StandardInput.WriteLine("{0} quit", _random.Next());
-			_bot.WaitForExit(50);
+			if (_commands.Contains("quit"))
+			{
+				_bot.StandardInput.WriteLine("{0} quit", _random.Next());
+				_bot.WaitForExit(50);
+			}
 			if (!_bot.HasExited)
 				_bot.Kill();
 			_bot = null;
@@ -86,17 +91,58 @@ namespace PointsShell
 
 		public void PutPoint(Pos pos, PlayerColor player)
 		{
-			throw new NotImplementedException();
+			if (_bot == null)
+				throw new Exception("play: Not initialized.");
+			if (!_commands.Contains("play"))
+				throw new Exception("play: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} play {1} {2} {3}", id, pos.X, pos.Y, player);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("play: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "play")
+				throw new Exception("play: Error while executing.");
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "play" || splittedAnswer[3] != pos.X.ToString() || splittedAnswer[4] != pos.Y.ToString() || splittedAnswer[5] != player.ToString())
+				throw new Exception("play: Invalid answer.");
 		}
 
 		public void RemoveLastPoint()
 		{
-			throw new NotImplementedException();
+			if (_bot == null)
+				throw new Exception("undo: Not initialized.");
+			if (!_commands.Contains("undo"))
+				throw new Exception("undo: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} undo", id);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("undo: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "undo")
+				throw new Exception("undo: Error while executing.");
+			if (splittedAnswer.Length != 3 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "undo")
+				throw new Exception("undo: Invalid answer.");
 		}
 
 		public Pos GetMove(PlayerColor player)
 		{
-			throw new NotImplementedException();
+			int x, y;
+			if (_bot == null)
+				throw new Exception("gen_move: Not initialized.");
+			if (!_commands.Contains("gen_move"))
+				throw new Exception("gen_move: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} gen_move {1}", id, player);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("gen_move: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "gen_move")
+				throw new Exception("gen_move: Error while executing.");
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != player.ToString())
+				throw new Exception("gen_move: Error while executing.");
+			return new Pos(x, y);
 		}
 
 		public Pos GetMoveWithComplexity(PlayerColor player, int complexity)
@@ -111,12 +157,40 @@ namespace PointsShell
 
 		public string GetName()
 		{
-			throw new NotImplementedException();
+			if (_bot == null)
+				throw new Exception("name: Not initialized.");
+			if (!_commands.Contains("name"))
+				throw new Exception("name: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} name", id);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("name: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "version")
+				throw new Exception("name: Error while executing.");
+			if (splittedAnswer.Length != 4 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "name")
+				throw new Exception("name: Invalid answer.");
+			return splittedAnswer[3];
 		}
 
 		public string GetVersion()
 		{
-			throw new NotImplementedException();
+			if (_bot == null)
+				throw new Exception("version: Not initialized.");
+			if (!_commands.Contains("version"))
+				throw new Exception("version: Not supported.");
+			var id = _random.Next();
+			_bot.StandardInput.WriteLine("{0} version", id);
+			var answer = _bot.StandardOutput.ReadLine();
+			if (answer == null)
+				throw new Exception("version: Answer is null.");
+			var splittedAnswer = answer.Split();
+			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "version")
+				throw new Exception("version: Error while executing.");
+			if (splittedAnswer.Length != 4 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "version")
+				throw new Exception("version: Invalid answer.");
+			return splittedAnswer[3];
 		}
 	}
 }
