@@ -12,7 +12,7 @@ namespace PointsShell.Bots
 		const string DllName = "PointsBot.dll";
 #endif
 
-		private IntPtr _handle;
+		private IntPtr _handle = IntPtr.Zero;
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "init")]
 		private static extern IntPtr DllInit(int width, int height, IntPtr seed);
@@ -40,31 +40,41 @@ namespace PointsShell.Bots
 
 		~DllBot()
 		{
-			DllFinal(_handle);
+			Final();
 		}
 
 		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
+			if (_handle != IntPtr.Zero)
+				Final();
 			_handle = DllInit(width, height, new IntPtr(78526081));
 		}
 
 		public void Final()
 		{
-			
+			if (_handle != IntPtr.Zero)
+				DllFinal(_handle);
+			_handle = IntPtr.Zero;
 		}
 
 		public void PutPoint(Pos pos, PlayerColor player)
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("put_point: Not initialized.");
 			DllPutPoint(_handle, pos.X, pos.Y, player);
 		}
 
 		public void RemoveLastPoint()
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("remove_last_point: Not initialized.");
 			DllRemoveLastPoint(_handle);
 		}
 
 		public Pos GetMove(PlayerColor player)
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("get_move: Not initialized.");
 			var x = 0;
 			var y = 0;
 			DllGetMove(_handle, ref x, ref y, player);
@@ -73,6 +83,8 @@ namespace PointsShell.Bots
 
 		public Pos GetMoveWithComplexity(PlayerColor player, int complexity)
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("get_move_with_complexity: Not initialized.");
 			var x = 0;
 			var y = 0;
 			DllGetMoveWithComplexity(_handle, ref x, ref y, player, complexity);
@@ -81,6 +93,8 @@ namespace PointsShell.Bots
 
 		public Pos GetMoveWithTime(PlayerColor player, int time)
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("get_move_with_time: Not initialized.");
 			var x = 0;
 			var y = 0;
 			DllGetMoveWithTime(_handle, ref x, ref y, player, time);
@@ -89,11 +103,15 @@ namespace PointsShell.Bots
 
 		public string GetName()
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("get_name: Not initialized.");
 			return DllGetName();
 		}
 
 		public string GetVersion()
 		{
+			if (_handle == IntPtr.Zero)
+				throw new Exception("get_version: Not initialized.");
 			return DllGetVersion();
 		}
 	}
