@@ -64,7 +64,7 @@ struct board_change
 	// Предыдущий счет захваченных точек.
 	score capture_count[2];
 	// Предыдущий игрок.
-	player player;
+	player last_player;
 	// Предыдущий хеш.
 	hash_t hash;
 	// Список изменных точек (координата - значение до изменения).

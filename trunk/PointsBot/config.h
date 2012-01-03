@@ -22,4 +22,4 @@
 // 1, если компил€ци€ происходит дл€ Linux.
 #define LINUX 0
 
-#define X64 1
+#define X64 0
