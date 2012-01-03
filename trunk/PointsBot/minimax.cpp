@@ -15,9 +15,9 @@ using namespace std;
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-score minimax::negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta)
+score minimax::negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta, int* empty_board)
 {
-	trajectories cur_trajectories(cur_field);
+	trajectories cur_trajectories(cur_field, empty_board);
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
 	cur_field.do_unsafe_step(cur_pos);
@@ -49,7 +49,7 @@ score minimax::negamax(field &cur_field, uint depth, uint cur_pos, trajectories 
 
 	for (auto i = moves.begin(); i < moves.end(); i++)
 	{
-		score cur_estimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha);
+		score cur_estimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha, empty_board);
 		if (cur_estimate > alpha)
 		{
 			alpha = cur_estimate;
@@ -113,7 +113,7 @@ minimax::minimax(field* cur_field)
 pos minimax::get(size_t depth, list<pos> &moves)
 {
 	// Главные траектории - свои и вражеские.
-	trajectories cur_trajectories(*_field, depth);
+	trajectories cur_trajectories(*_field, NULL, depth);
 	vector<pos> PossibleMoves, first_moves;
 	pos result;
 
@@ -139,11 +139,12 @@ pos minimax::get(size_t depth, list<pos> &moves)
 	#pragma omp parallel
 	{
 		field local_field(*_field);
+		int* empty_board = new int[_field->length()];
 
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(first_moves.size()); i++)
 		{
-			int cur_estimate = negamax(local_field, depth - 1, first_moves[i], cur_trajectories, -SCORE_INFINITY, -alpha);
+			int cur_estimate = negamax(local_field, depth - 1, first_moves[i], cur_trajectories, -SCORE_INFINITY, -alpha, empty_board);
 			omp_set_lock(&lock);
 			if (cur_estimate > alpha) // Обновляем нижнюю границу.
 			{
@@ -152,6 +153,8 @@ pos minimax::get(size_t depth, list<pos> &moves)
 			}
 			omp_unset_lock(&lock);
 		}
+
+		delete empty_board;
 	}
 	omp_destroy_lock(&lock);
 	return result;

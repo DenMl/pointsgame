@@ -13,6 +13,7 @@ private:
 	field* _field;
 	list<trajectory> _trajectories[2];
 	int* _trajectories_board;
+	bool _trajectories_board_owner;
 	zobrist* _zobrist;
 
 private:
@@ -197,36 +198,28 @@ private:
 	}
 
 public:
-	inline trajectories(field &cur_field)
-	{
-		_field = &cur_field;
-		_depth[player_red] = 0;
-		_depth[player_black] = 0;
-		_trajectories_board = new int[cur_field.length()];
-		fill_n(_trajectories_board, _field->length(), 0);
-		_zobrist = &cur_field.get_zobrist();
-	}
-	inline trajectories(field &cur_field, size_t depth)
+	inline trajectories(field &cur_field, int* empty_board = NULL, size_t depth = 0)
 	{
 		_field = &cur_field;
 		_depth[get_cur_player()] = (depth + 1) / 2;
 		_depth[get_enemy_player()] = depth / 2;
-		_trajectories_board = new int[cur_field.length()];
-		fill_n(_trajectories_board, _field->length(), 0);
+		if (empty_board == NULL)
+		{
+			_trajectories_board = new int[cur_field.length()];
+			fill_n(_trajectories_board, _field->length(), 0);
+			_trajectories_board_owner = true;
+		}
+		else
+		{
+			_trajectories_board = empty_board;
+			_trajectories_board_owner = false;
+		}
 		_zobrist = &cur_field.get_zobrist();
 	}
-	inline trajectories(const trajectories &other)
+	~trajectories()
 	{
-		_field = other._field;
-		_depth[player_red] = other._depth[player_red];
-		_depth[player_black] = other._depth[player_black];
-		_trajectories_board = new int[_field->length()];
-		fill_n(_trajectories_board, _field->length(), 0);
-		_zobrist = other._zobrist;
-	}
-	inline ~trajectories()
-	{
-		delete _trajectories_board;
+		if (_trajectories_board_owner)
+			delete _trajectories_board;
 	}
 	inline player get_cur_player()
 	{
