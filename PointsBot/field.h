@@ -326,7 +326,7 @@ public:
 		_changes.push_back(board_change());
 		_changes.back().capture_count[0] = _capture_count[0];
 		_changes.back().capture_count[1] = _capture_count[1];
-		_changes.back().player = _player;
+		_changes.back().last_player = _player;
 
 		// ƒобавл€ем в изменени€ поставленную точку.
 		_changes.back().changes.push(pair<pos, value>(cur_pos, _points[cur_pos]));
@@ -345,7 +345,7 @@ public:
 		_changes.push_back(board_change());
 		_changes.back().capture_count[0] = _capture_count[0];
 		_changes.back().capture_count[1] = _capture_count[1];
-		_changes.back().player = _player;
+		_changes.back().last_player = _player;
 
 		// ƒобавл€ем в изменени€ поставленную точку.
 		_changes.back().changes.push(pair<pos, value>(cur_pos, _points[cur_pos]));
@@ -362,7 +362,7 @@ public:
 		_changes.push_back(board_change());
 		_changes.back().capture_count[0] = _capture_count[0];
 		_changes.back().capture_count[1] = _capture_count[1];
-		_changes.back().player = _player;
+		_changes.back().last_player = _player;
 
 		// ƒобавл€ем в изменени€ поставленную точку.
 		_changes.back().changes.push(pair<pos, value>(cur_pos, _points[cur_pos]));
@@ -383,7 +383,7 @@ public:
 			_points[_changes.back().changes.top().first] = _changes.back().changes.top().second;
 			_changes.back().changes.pop();
 		}
-		_player = _changes.back().player;
+		_player = _changes.back().last_player;
 		_capture_count[0] = _changes.back().capture_count[0];
 		_capture_count[1] = _changes.back().capture_count[1];
 		_changes.pop_back();
