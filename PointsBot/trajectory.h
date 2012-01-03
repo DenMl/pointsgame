@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include "basic_types.h"
-#include "Zobrist.h"
+#include "zobrist.h"
 #include <list>
 
 class trajectory
