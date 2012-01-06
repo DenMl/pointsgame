@@ -16,15 +16,6 @@ using PointsShell.Enums;
 
 namespace PointsShell
 {
-	public enum GameFormat
-	{
-		PointsXT,
-		SGF,
-		XGF,
-		VKontacte,
-		Unknown
-	}
-
 	public partial class Game
 	{
 		private GamePreferences _preferences;
