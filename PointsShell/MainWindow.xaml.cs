@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using System.Linq;
+using PointsShell.Enums;
 
 namespace PointsShell
 {
@@ -129,22 +130,20 @@ namespace PointsShell
 			if (!(MainTabControl.SelectedContent is Game))
 				return;
 
-			var SFD = new SaveFileDialog { Filter = "PointsXT|*.sav" };
-			if (SFD.ShowDialog() != true)
+			var dialog = new SaveFileDialog { Filter = "PointsXT|*.sav" };
+			if (dialog.ShowDialog() != true)
 				return;
 
-			if (!(MainTabControl.SelectedContent as Game).Save(SFD.FileName, GameFormat.PointsXT))
+			if (!(MainTabControl.SelectedContent as Game).Save(dialog.FileName, GameFormat.PointsXT))
 				MessageBox.Show("Invalid game preferences for this format!");
 		}
 
 		private void LoadClick(object sender, RoutedEventArgs e)
 		{
-			var OFD = new OpenFileDialog { Filter = "PointsXT|*.sav|All files|*" };
-
-			if (OFD.ShowDialog() != true)
+			var dialog = new OpenFileDialog { Filter = "PointsXT|*.sav|All files|*" };
+			if (dialog.ShowDialog() != true)
 				return;
-
-			var game = Game.Load(OFD.FileName, new GamePreferences(_globalPreferences), GlobalLanguage);
+			var game = Game.Load(dialog.FileName, new GamePreferences(_globalPreferences), GlobalLanguage);
 
 			if (game == null)
 			{
