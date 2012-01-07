@@ -27,6 +27,7 @@ public:
 	bool do_step(coord x, coord y, player cur_player);
 	bool undo_step();
 	void set_player(player cur_player);
+	bool boundary_check(coord& x, coord& y);
 	// Возвращает лучший найденный ход.
 	// Если не найдено - -1.
 	void position_estimate_best_move(coord& x, coord& y);

@@ -57,10 +57,29 @@ void bot::set_player(player cur_player)
 	_field->set_player(cur_player);
 }
 
+bool bot::boundary_check(coord& x, coord& y)
+{
+	if (_field->points_seq.size() == 0)
+	{
+		x = _field->width() / 2;
+		y = _field->height() / 2;
+		return true;
+	}
+	return false;
+}
+
 void bot::position_estimate_best_move(coord& x, coord& y)
 {
 	list<pos> moves;
+	if (boundary_check(x, y))
+		return;
 	build_all_moves(moves);
+	if (moves.size() == 0)
+	{
+		x = -1;
+		y = -1;
+		return;
+	}
 	pos result = _position_estimate->get(moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
@@ -69,7 +88,15 @@ void bot::position_estimate_best_move(coord& x, coord& y)
 void bot::minimax_best_move(coord& x, coord& y, size_t depth)
 {
 	list<pos> moves;
+	if (boundary_check(x, y))
+		return;
 	build_all_moves(moves);
+	if (moves.size() == 0)
+	{
+		x = -1;
+		y = -1;
+		return;
+	}
 	pos result =  _minimax->get(depth, moves);
 	if (result == -1)
 		result = _position_estimate->get(moves);
@@ -80,7 +107,15 @@ void bot::minimax_best_move(coord& x, coord& y, size_t depth)
 void bot::uct_best_move(coord& x, coord& y, size_t max_simulations)
 {
 	list<pos> moves;
+	if (boundary_check(x, y))
+		return;
 	build_all_moves(moves);
+	if (moves.size() == 0)
+	{
+		x = -1;
+		y = -1;
+		return;
+	}
 	pos result = _uct->get(max_simulations, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
@@ -89,7 +124,15 @@ void bot::uct_best_move(coord& x, coord& y, size_t max_simulations)
 void bot::uct_with_time_best_move(coord& x, coord& y, size_t time)
 {
 	list<pos> moves;
+	if (boundary_check(x, y))
+		return;
 	build_all_moves(moves);
+	if (moves.size() == 0)
+	{
+		x = -1;
+		y = -1;
+		return;
+	}
 	pos result = _uct->get_with_time(time, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
@@ -98,7 +141,15 @@ void bot::uct_with_time_best_move(coord& x, coord& y, size_t time)
 void bot::minimax_uct_best_move(coord& x, coord& y, size_t depth, size_t max_simulations)
 {
 	list<pos> moves;
+	if (boundary_check(x, y))
+		return;
 	build_all_moves(moves);
+	if (moves.size() == 0)
+	{
+		x = -1;
+		y = -1;
+		return;
+	}
 	pos result =  _minimax->get(depth, moves);
 	if (result == -1)
 		result = _uct->get(max_simulations, moves);
@@ -110,7 +161,15 @@ void bot::minimax_uct_with_time_best_move(coord& x, coord& y, size_t depth, size
 {
 	timer t;
 	list<pos> moves;
+	if (boundary_check(x, y))
+		return;
 	build_all_moves(moves);
+	if (moves.size() == 0)
+	{
+		x = -1;
+		y = -1;
+		return;
+	}
 	pos result =  _minimax->get(depth, moves);
 	ulong minmax_time = t.get();
 	if (result == -1 && minmax_time < time)
