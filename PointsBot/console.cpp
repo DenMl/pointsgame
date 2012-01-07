@@ -33,13 +33,13 @@ void gen_move(size_t id)
 	cin >> cur_player;
 	if (main_bot == NULL)
 	{
-		cout << "?" << " " << id << " " << "genmove" << endl;
+		cout << "?" << " " << id << " " << "gen_move" << endl;
 	}
 	else
 	{
 		main_bot->set_player(cur_player);
 		main_bot->minimax_uct_best_move(x, y, 8, 100000);
-		cout << "=" << " " << id << " " << "genmove" << " " << x << " " << y << " " << cur_player << endl;
+		cout << "=" << " " << id << " " << "gen_move" << " " << x << " " << y << " " << cur_player << endl;
 	}
 }
 
@@ -52,13 +52,13 @@ void gen_move_with_complexity(size_t id)
 	cin >> cur_player >> p;
 	if (main_bot == NULL)
 	{
-		cout << "?" << " " << id << " " << "reg_genmove_with_complexity" << endl;
+		cout << "?" << " " << id << " " << "gen_move_with_complexity" << endl;
 	}
 	else
 	{
 		main_bot->set_player(cur_player);
 		main_bot->minimax_uct_best_move(x, y, get_minimax_depth(p), get_uct_iterations(p));
-		cout << "=" << " " << id << " " << "reg_genmove_with_complexity" << " " << x << " " << y << " " << cur_player << endl;
+		cout << "=" << " " << id << " " << "gen_move_with_complexity" << " " << x << " " << y << " " << cur_player << endl;
 	}
 }
 
@@ -71,13 +71,13 @@ void gen_move_with_time(size_t id)
 	cin >> cur_player >> time;
 	if (main_bot == NULL)
 	{
-		cout << "?" << " " << id << " " << "reg_genmove_with_time" << endl;
+		cout << "?" << " " << id << " " << "gen_move_with_time" << endl;
 	}
 	else
 	{
 		main_bot->set_player(cur_player);
 		main_bot->uct_with_time_best_move(x, y, time);
-		cout << "=" << " " << id << " " << "reg_genmove_with_time" << " " << x << " " << y << " " << cur_player << endl;
+		cout << "=" << " " << id << " " << "gen_move_with_time" << " " << x << " " << y << " " << cur_player << endl;
 	}
 }
 
@@ -91,7 +91,7 @@ void init(size_t id)
 	if (main_bot != NULL)
 		delete main_bot;
 	main_bot = new bot(x, y, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN, seed);
-	cout << "=" << " " << id << " " << "boardsize" << endl;
+	cout << "=" << " " << id << " " << "init" << endl;
 }
 
 void list_commands(size_t id)
