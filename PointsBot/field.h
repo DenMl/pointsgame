@@ -12,7 +12,6 @@
 #include <utility>
 
 using namespace std;
-using std::tr1::function;
 
 class field
 {
@@ -263,7 +262,11 @@ private:
 
 public:
 	// Конструктор.
+#if SURROUND_CONDITIONS
 	field(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, zobrist* zobr);
+#else
+	field(const coord width, const coord height, const begin_pattern begin_pattern, zobrist* zobr);
+#endif
 	// Конструктор копирования.
 	field(const field &orig);
 	// Деструктор.
@@ -275,7 +278,9 @@ public:
 	inline score get_d_score(player cur_player) const { return get_score(cur_player) - get_prev_score(cur_player); }
 	inline score get_d_score() const { return get_d_score(get_last_player()); }
 	inline player get_player() const { return _player; }
+#if SURROUND_CONDITIONS
 	inline sur_cond get_sur_cond() const { return _sur_cond; }
+#endif
 	inline size_t get_hash() const { return _hash; }
 	inline size_t get_hash(pos cur_pos) const { return _zobrist->get_hash(cur_pos); }
 	inline zobrist& get_zobrist() const { return *_zobrist; };

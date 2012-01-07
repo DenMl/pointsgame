@@ -99,7 +99,11 @@ void init(size_t id)
 	// Если существовало поле - удаляем его.
 	if (main_bot != NULL)
 		delete main_bot;
+#if SURROUND_CONDITIONS
 	main_bot = new bot(x, y, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN, seed);
+#else
+	main_bot = new bot(x, y, BEGIN_PATTERN_CLEAN, seed);
+#endif
 	cout << "=" << " " << id << " " << "init" << endl;
 }
 
