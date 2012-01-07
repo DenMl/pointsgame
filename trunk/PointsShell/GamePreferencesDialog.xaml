@@ -49,6 +49,8 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -56,12 +58,33 @@
 					</Grid.ColumnDefinitions>
 
 					<CheckBox Name="AICheckBox" Content="AI" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" />
+					
+					<GroupBox Header="Bot type" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+						<StackPanel>
+							<RadioButton Content="DLL" />
+							<RadioButton Content="Console" />
+						</StackPanel>
+					</GroupBox>
 
-					<TextBlock Name="MinMaxDepthTextBlock" Text="MinMax depth" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
-					<TextBox Name="MinMaxDepthBox" MaxLength="2" Grid.Column="1" Grid.Row="1" />
+					<GroupBox Header="Get move type" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+						<StackPanel>
+							<RadioButton Content="Simple" />
+							<RadioButton Content="With complexity" />
+							<RadioButton Content="With time" />
+							<RadioButton Content="Position estimate" />
+							<RadioButton Content="Minimax" />
+							<RadioButton Content="Minimax with UCT" />
+							<RadioButton Content="Minimax with UCT with time" />
+							<RadioButton Content="UCT" />
+							<RadioButton Content="UCT with time" />
+						</StackPanel>
+					</GroupBox>
 
-					<TextBlock Name="UCTIterationsTextBlock" Text="UCT iterations" Grid.Column="0" Margin="0,0,5,0" Grid.Row="2" />
-					<TextBox Name="UCTIterationsBox" MaxLength="8" Grid.Column="1" Grid.Row="2" />
+					<TextBlock Name="MinMaxDepthTextBlock" Text="Minimax depth" Margin="0,0,5,0" Grid.Column="0" Grid.Row="3" />
+					<TextBox Name="MinMaxDepthBox" MaxLength="2" Grid.Column="1" Grid.Row="3" />
+
+					<TextBlock Name="UCTIterationsTextBlock" Text="UCT iterations" Grid.Column="0" Margin="0,0,5,0" Grid.Row="4" />
+					<TextBox Name="UCTIterationsBox" MaxLength="8" Grid.Column="1" Grid.Row="4" />
 				</Grid>
 			</GroupBox>
 
