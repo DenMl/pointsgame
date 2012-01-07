@@ -39,7 +39,10 @@ void gen_move(size_t id)
 	{
 		main_bot->set_player(cur_player);
 		main_bot->minimax_uct_best_move(x, y, 8, 100000);
-		cout << "=" << " " << id << " " << "gen_move" << " " << x << " " << y << " " << cur_player << endl;
+		if (x == -1 || y == -1)
+			cout << "?" << " " << id << " " << "gen_move" << endl;
+		else
+			cout << "=" << " " << id << " " << "gen_move" << " " << x << " " << y << " " << cur_player << endl;
 	}
 }
 
@@ -58,7 +61,10 @@ void gen_move_with_complexity(size_t id)
 	{
 		main_bot->set_player(cur_player);
 		main_bot->minimax_uct_best_move(x, y, get_minimax_depth(p), get_uct_iterations(p));
-		cout << "=" << " " << id << " " << "gen_move_with_complexity" << " " << x << " " << y << " " << cur_player << endl;
+		if (x == -1 || y == -1)
+			cout << "?" << " " << id << " " << "gen_move_with_complexity" << endl;
+		else
+			cout << "=" << " " << id << " " << "gen_move_with_complexity" << " " << x << " " << y << " " << cur_player << endl;
 	}
 }
 
@@ -77,7 +83,10 @@ void gen_move_with_time(size_t id)
 	{
 		main_bot->set_player(cur_player);
 		main_bot->uct_with_time_best_move(x, y, time);
-		cout << "=" << " " << id << " " << "gen_move_with_time" << " " << x << " " << y << " " << cur_player << endl;
+		if (x == -1 || y == -1)
+			cout << "?" << " " << id << " " << "gen_move_with_time" << endl;
+		else
+			cout << "=" << " " << id << " " << "gen_move_with_time" << " " << x << " " << y << " " << cur_player << endl;
 	}
 }
 
