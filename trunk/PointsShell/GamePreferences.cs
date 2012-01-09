@@ -1,21 +1,23 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 using System.Xml.Serialization;
 using System.IO;
 using PointsShell.Enums;
 
 namespace PointsShell
 {
+	[Serializable]
 	public class GamePreferences
 	{
-		public int Width = 39;
-		public int Height = 32;
-		public SurroundCond SurCond = SurroundCond.Standart;
-		public BeginPattern BeginPattern = BeginPattern.CleanPattern;
-		public bool AI = true;
-		public int MinMaxDepth = 8;
-		public int UCTIterations = 100000;
-		private string _redName = "";
-		private string _blackName = "";
+		public int Width { get; set; }
+		public int Height { get; set; }
+		public SurroundCond SurCond { get; set; }
+		public BeginPattern BeginPattern { get; set; }
+		public bool AI { get; set; }
+		public int Depth { get; set; }
+		public int Iterations { get; set; }
+		private string _redName;
+		private string _blackName;
 		public string RedName
 		{
 			get { return _redName; }
@@ -26,20 +28,22 @@ namespace PointsShell
 			get { return _blackName; }
 			set { _blackName = value.Trim(); }
 		}
-		public Color RedColor = Colors.Red;
-		public Color BlackColor = Colors.Black;
-		public byte FillingAlpha = 127;
-		public Color BackgroundColor = Colors.White;
-		public bool Sounds = true;
-		public string Language = "English.xml";
-		public bool FullFill = true;
-		public int CellSize = 18;
+		public Color RedColor { get; set; }
+		public Color BlackColor { get; set; }
+		public byte FillingAlpha { get; set; }
+		public Color BackgroundColor { get; set; }
+		public bool Sounds { get; set; }
+		public string Language { get; set; }
+		public bool FullFill { get; set; }
+		public int CellSize { get; set; }
+		public BotType BotType { get; set; }
+		public GetMoveType GetMoveType { get; set; }
 
 		public string Header
 		{
 			get
 			{
-				var header = "";
+				var header = string.Empty;
 				if (!string.IsNullOrEmpty(RedName))
 					header += RedName;
 				if (!string.IsNullOrEmpty(RedName) && !string.IsNullOrEmpty(BlackName))
@@ -50,7 +54,28 @@ namespace PointsShell
 			}
 		}
 
-		public GamePreferences() {}
+		public GamePreferences()
+		{
+			Width = 39;
+			Height = 32;
+			SurCond = SurroundCond.Standart;
+			BeginPattern = BeginPattern.CleanPattern;
+			AI = true;
+			Depth = 8;
+			Iterations = 100000;
+			RedName = string.Empty;
+			BlackName = string.Empty;
+			RedColor = Colors.Red;
+			BlackColor = Colors.Black;
+			FillingAlpha = 127;
+			BackgroundColor = Colors.White;
+			Sounds = true;
+			Language = "English.xml";
+			FullFill = true;
+			CellSize = 18;
+			BotType = BotType.Dll;
+			GetMoveType = GetMoveType.GetMove;
+		}
 
 		public GamePreferences(GamePreferences preferences)
 		{
@@ -59,8 +84,8 @@ namespace PointsShell
 			SurCond = preferences.SurCond;
 			BeginPattern = preferences.BeginPattern;
 			AI = preferences.AI;
-			MinMaxDepth = preferences.MinMaxDepth;
-			UCTIterations = preferences.UCTIterations;
+			Depth = preferences.Depth;
+			Iterations = preferences.Iterations;
 			RedName = preferences.RedName;
 			BlackName = preferences.BlackName;
 			RedColor = preferences.RedColor;
@@ -68,8 +93,11 @@ namespace PointsShell
 			FillingAlpha = preferences.FillingAlpha;
 			BackgroundColor = preferences.BackgroundColor;
 			Sounds = preferences.Sounds;
+			Language = preferences.Language;
 			FullFill = preferences.FullFill;
 			CellSize = preferences.CellSize;
+			BotType = preferences.BotType;
+			GetMoveType = preferences.GetMoveType;
 		}
 
 		public static GamePreferences Load(string file)
