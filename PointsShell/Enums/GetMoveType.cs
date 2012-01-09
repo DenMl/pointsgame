@@ -7,6 +7,12 @@ namespace PointsShell.Enums
 	{
 		GetMove,
 		GetMoveWithComplexity,
-		GetMoveWithTime
+		GetMoveWithTime,
+		PositionEstimate,
+		Minimax,
+		MinimaxWithUCT,
+		MinimaxWithUCTWithTime,
+		UCT,
+		UCTWithTime
 	}
 }

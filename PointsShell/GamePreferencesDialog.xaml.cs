@@ -36,8 +36,8 @@ namespace PointsShell
 			WidthBox.Text = preferences.Width.ToString();
 			HeightBox.Text = preferences.Height.ToString();
 			AICheckBox.IsChecked = preferences.AI;
-			MinMaxDepthBox.Text = preferences.MinMaxDepth.ToString();
-			UCTIterationsBox.Text = preferences.UCTIterations.ToString();
+			MinMaxDepthBox.Text = preferences.Depth.ToString();
+			UCTIterationsBox.Text = preferences.Iterations.ToString();
 			RedNameBox.Text = preferences.RedName;
 			BlackNameBox.Text = preferences.BlackName;
 			RedColorPicker.SelectedColor = preferences.RedColor;
@@ -112,8 +112,8 @@ namespace PointsShell
 				preferences.Width = int.Parse(WidthBox.Text);
 				preferences.Height = int.Parse(HeightBox.Text);
 				preferences.AI = (bool)AICheckBox.IsChecked;
-				preferences.MinMaxDepth = int.Parse(MinMaxDepthBox.Text);
-				preferences.UCTIterations = int.Parse(UCTIterationsBox.Text);
+				preferences.Depth = int.Parse(MinMaxDepthBox.Text);
+				preferences.Iterations = int.Parse(UCTIterationsBox.Text);
 				preferences.RedName = RedNameBox.Text;
 				preferences.BlackName = BlackNameBox.Text;
 				preferences.RedColor = RedColorPicker.SelectedColor;

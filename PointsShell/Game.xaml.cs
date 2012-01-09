@@ -25,8 +25,8 @@ namespace PointsShell
 			set
 			{
 				_preferences.AI = value.AI;
-				_preferences.MinMaxDepth = value.MinMaxDepth;
-				_preferences.UCTIterations = value.UCTIterations;
+				_preferences.Depth = value.Depth;
+				_preferences.Iterations = value.Iterations;
 				_preferences.RedName = value.RedName;
 				_preferences.BlackName = value.BlackName;
 				_preferences.BackgroundColor = value.BackgroundColor;
