@@ -64,6 +64,8 @@ return arguments — none.
 
 ==Extended optional commands for generating an AI move (draft)==
 
+*`random`*
+
 *`position_estimate`*
 
 *`uct`*
@@ -71,10 +73,6 @@ return arguments — none.
 *`uct_with_time`*
 
 *`minimax`*
-
-*`minimax_uct`*
-
-*`minimax_uct_with_time`*
 
 ==Explanations:==
 
