@@ -64,15 +64,15 @@ return arguments — none.
 
 ==Extended optional commands for generating an AI move (draft)==
 
-*`random`*
+*`random color`*
 
-*`position_estimate`*
+*`position_estimate color`*
 
-*`uct`*
+*`uct color iterations`*
 
-*`uct_with_time`*
+*`uct_with_time color time`*
 
-*`minimax`*
+*`minimax color depth`*
 
 ==Explanations:==
 
