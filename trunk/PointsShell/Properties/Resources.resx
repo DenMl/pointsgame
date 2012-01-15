@@ -150,8 +150,8 @@
   <data name="BlackTextBlock" xml:space="preserve">
     <value>Black</value>
   </data>
-  <data name="BotTypeGroupBox" xml:space="preserve">
-    <value>Bot type</value>
+  <data name="AITypeGroupBox" xml:space="preserve">
+    <value>AI type</value>
   </data>
   <data name="CancelButton" xml:space="preserve">
     <value>_Cancel</value>
@@ -192,8 +192,8 @@
   <data name="GamePreferencesGroupBox" xml:space="preserve">
     <value>Game preferences</value>
   </data>
-  <data name="GetMoveTypeGroupBox" xml:space="preserve">
-    <value>Get move type</value>
+  <data name="GetMoveMethodGroupBox" xml:space="preserve">
+    <value>Get move method</value>
   </data>
   <data name="GlobalPreferencesMenuItem" xml:space="preserve">
     <value>_Global preferences</value>

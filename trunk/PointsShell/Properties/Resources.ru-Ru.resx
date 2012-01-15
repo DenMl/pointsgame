@@ -150,8 +150,8 @@
   <data name="BlackTextBlock" xml:space="preserve">
     <value>Черные</value>
   </data>
-  <data name="BotTypeGroupBox" xml:space="preserve">
-    <value>Bot type</value>
+  <data name="AITypeGroupBox" xml:space="preserve">
+    <value>Тип ИИ</value>
   </data>
   <data name="CancelButton" xml:space="preserve">
     <value>_Отмена</value>
@@ -163,7 +163,7 @@
     <value>_Закрыть</value>
   </data>
   <data name="ComplexityTextBlock" xml:space="preserve">
-    <value>Complexity</value>
+    <value>Сила</value>
   </data>
   <data name="ConsoleRadioButton" xml:space="preserve">
     <value>Console</value>
@@ -192,8 +192,8 @@
   <data name="GamePreferencesGroupBox" xml:space="preserve">
     <value>Настройки игры</value>
   </data>
-  <data name="GetMoveTypeGroupBox" xml:space="preserve">
-    <value>Get move type</value>
+  <data name="GetMoveMethodGroupBox" xml:space="preserve">
+    <value>Способ получения хода</value>
   </data>
   <data name="GlobalPreferencesMenuItem" xml:space="preserve">
     <value>_Глобальные настройки</value>
@@ -241,7 +241,7 @@
     <value>_Сохранить</value>
   </data>
   <data name="SimpleRadioButton" xml:space="preserve">
-    <value>Simple</value>
+    <value>Простой</value>
   </data>
   <data name="SoundsCheckBox" xml:space="preserve">
     <value>Звуки</value>
@@ -260,16 +260,16 @@
     <value>Условие захвата</value>
   </data>
   <data name="TimeTextBlock" xml:space="preserve">
-    <value>Time</value>
+    <value>Время</value>
   </data>
   <data name="WidthTextBlock" xml:space="preserve">
     <value>Ширина</value>
   </data>
   <data name="WithComplexityRadioButton" xml:space="preserve">
-    <value>With complexity</value>
+    <value>С силой</value>
   </data>
   <data name="WithTimeRadioButton" xml:space="preserve">
-    <value>With time</value>
+    <value>Со временем</value>
   </data>
   <data name="GameHeader" xml:space="preserve">
     <value>Игра</value>
