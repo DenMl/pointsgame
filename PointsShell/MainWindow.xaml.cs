@@ -72,7 +72,7 @@ namespace PointsShell
 
 			GlobalLanguage = GameLanguage.LoadLanguage(LanguagesDirectory + _globalPreferences.Language);
 
-			MainTabControl.Items.Add(new TabItem { Header = GlobalLanguage.Game, Content = new Game(new GamePreferences(_globalPreferences), GlobalLanguage) });
+			MainTabControl.Items.Add(new TabItem { Header = GlobalLanguage.Game, Content = new Game(new GamePreferences(_globalPreferences)) });
 		}
 
 		~MainWindow()
@@ -110,7 +110,7 @@ namespace PointsShell
 				preferences =>
 					{
 						MainTabControl.Items.Remove(preferencestab);
-						MainTabControl.Items.Add(new TabItem { Header = preferences.Header != "" ? preferences.Header : GlobalLanguage.Game, Content = new Game(preferences, GlobalLanguage) });
+						MainTabControl.Items.Add(new TabItem { Header = preferences.Header != "" ? preferences.Header : GlobalLanguage.Game, Content = new Game(preferences) });
 						MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
 					};
 			content.CancelClicked += () => MainTabControl.Items.Remove(preferencestab);
@@ -159,24 +159,21 @@ namespace PointsShell
 		{
 			if (!(MainTabControl.SelectedContent is Game))
 				return;
-
-			(MainTabControl.SelectedContent as Game).BackMove();
+			(MainTabControl.SelectedContent as Game).gUndoMove();
 		}
 
 		private void DoStepClick(object sender, RoutedEventArgs e)
 		{
 			if (!(MainTabControl.SelectedContent is Game))
 				return;
-
-			(new Thread((MainTabControl.SelectedContent as Game).DoBotStep)).Start();
+			(MainTabControl.SelectedContent as Game).gDoBotStep();
 		}
 
 		private void NextPlayerClick(object sender, RoutedEventArgs e)
 		{
 			if (!(MainTabControl.SelectedContent is Game))
 				return;
-
-			(MainTabControl.SelectedContent as Game).SetNextPlayer();
+			(MainTabControl.SelectedContent as Game).gSetNextPlayer();
 		}
 
 		private void LocalPreferencesClick(object sender, RoutedEventArgs e)

@@ -111,7 +111,7 @@ namespace PointsShell
 			{
 				preferences.Width = int.Parse(WidthBox.Text);
 				preferences.Height = int.Parse(HeightBox.Text);
-				preferences.AI = (bool)AICheckBox.IsChecked;
+				preferences.AI = AICheckBox.IsChecked.Value;
 				preferences.Depth = int.Parse(MinMaxDepthBox.Text);
 				preferences.Iterations = int.Parse(UCTIterationsBox.Text);
 				preferences.RedName = RedNameBox.Text;
@@ -120,8 +120,8 @@ namespace PointsShell
 				preferences.BlackColor = BlackColorPicker.SelectedColor;
 				preferences.FillingAlpha = byte.Parse(FillingAlphaBox.Text);
 				preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
-				preferences.FullFill = (bool) FullFillCheckBox.IsChecked;
-				preferences.Sounds = (bool)SoundsCheckBox.IsChecked;
+				preferences.FullFill = FullFillCheckBox.IsChecked.Value;
+				preferences.Sounds = SoundsCheckBox.IsChecked.Value;
 
 				if (StandartRadioButton.IsChecked == true)
 					preferences.SurCond = SurroundCond.Standart;

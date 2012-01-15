@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Windows;
 using PointsShell.Enums;
 
 namespace PointsShell.Bots
@@ -8,235 +10,166 @@ namespace PointsShell.Bots
 	{
 		private readonly IBot _bot;
 
-		public event Action InitSuccess;
-		public event Action FinalSuccess;
-		public event Action PutPointSuccess;
-		public event Action RemoveLastPointSuccess;
-		public event Action<Pos> GetMoveSuccess;
-		public event Action<Pos> GetMoveWithComplexitySuccess;
-		public event Action<Pos> GetMoveWithTimeSuccess;
-		public event Action<string> GetNameSuccess;
-		public event Action<string> GetVersionSuccess;
-		public event Action<string> InitError;
-		public event Action<string> FinalError;
-		public event Action<string> PutPointError;
-		public event Action<string> RemoveLastPointError;
-		public event Action<string> GetMoveError;
-		public event Action<string> GetMoveWithComplexityError;
-		public event Action<string> GetMoveWithTimeError;
-		public event Action<string> GetNameError;
-		public event Action<string> GetVersionError;
+		private bool _executing;
+
+		private bool _error;
+
+		private readonly Queue<Action> _actions;
+
+		private readonly object _syncObj;
 
 		public SafeBot(IBot bot)
 		{
 			_bot = bot;
+			_actions = new Queue<Action>();
+			_syncObj = new object();
 		}
 
-		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
-		{	
-			Init(width, height, surCond, beginPattern, InitSuccess, InitError);
-		}
-
-		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern, Action initSuccess, Action<string> initError = null)
+		private void ExecuteNext()
 		{
-			(new Thread(() =>
+			if (_actions.Count == 0)
+				return;
+			lock (_syncObj)
 			{
-				try
-				{
-					_bot.Init(width, height, surCond, beginPattern);
-					if (initSuccess != null)
-						initSuccess();
-				}
-				catch (Exception e)
-				{
-					if (initError != null)
-						initError(e.Message);
-				}
-			})).Start();
-		}
-
-		public void Final()
-		{
-			Final(FinalSuccess, FinalError);
-		}
-
-		public void Final(Action finalSuccess, Action<string> finalError = null)
-		{
+				if (_executing)
+					return;
+				_executing = true;
+			}
 			(new Thread(() =>
-			{
-				try
-				{
-					_bot.Final();
-					if (finalSuccess != null)
-						finalSuccess();
-				}
-				catch (Exception e)
-				{
-					if (finalError != null)
-						finalError(e.Message);
-				}
-			})).Start();
+							{
+								try
+								{
+									while (_actions.Count != 0)
+									{
+										var curAction = _actions.Dequeue();
+										curAction();
+									}
+								}
+								catch (Exception e)
+								{
+									_error = true;
+									MessageBox.Show(e.Message);
+								}
+								_executing = false;
+								ExecuteNext();
+							})).Start();
 		}
 
-		public void PutPoint(Pos pos, PlayerColor player)
+		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern, Action initSuccess = null)
 		{
-			PutPoint(pos, player, PutPointSuccess, PutPointError);
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+			                 	{
+			                 		_bot.Init(width, height, surCond, beginPattern);
+									if (initSuccess != null)
+										initSuccess();
+			                 	});
+			ExecuteNext();
 		}
 
-		public void PutPoint(Pos pos, PlayerColor player, Action putPointSuccess, Action<string> putPointError = null)
+		public void Final(Action finalSuccess = null)
 		{
-			(new Thread(() =>
-			{
-				try
-				{
-					_bot.PutPoint(pos, player);
-					if (putPointSuccess != null)
-						putPointSuccess();
-				}
-				catch (Exception e)
-				{
-					if (putPointError != null)
-						putPointError(e.Message);
-				}
-			})).Start();
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+			                 	{
+			                 		_bot.Final();
+									if (finalSuccess != null)
+										finalSuccess();
+			                 	});
+			ExecuteNext();
 		}
 
-		public void RemoveLastPoint()
+		public void PutPoint(Pos pos, PlayerColor player, Action putPointSuccess = null)
 		{
-			RemoveLastPoint(RemoveLastPointSuccess, RemoveLastPointError);
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+			                 	{
+			                 		_bot.PutPoint(pos, player);
+									if (putPointSuccess != null)
+										putPointSuccess();
+			                 	});
+			ExecuteNext();
 		}
 
-		public void RemoveLastPoint(Action removeLastPointSuccess, Action<string> removeLastPointError = null)
+		public void RemoveLastPoint(Action removeLastPointSuccess = null)
 		{
-			(new Thread(() =>
-			{
-				try
-				{
-					_bot.RemoveLastPoint();
-					if (removeLastPointSuccess != null)
-						removeLastPointSuccess();
-				}
-				catch (Exception e)
-				{
-					if (removeLastPointError != null)
-						removeLastPointError(e.Message);
-				}
-			})).Start();
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+			                 	{
+			                 		_bot.RemoveLastPoint();
+									if (removeLastPointSuccess != null)
+										removeLastPointSuccess();
+			                 	});
+			ExecuteNext();
 		}
 
-		public void GetMove(PlayerColor player)
+		public void GetMove(PlayerColor player, Action<Pos> getMoveSuccess)
 		{
-			GetMove(player, GetMoveSuccess, GetMoveError);
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+									var pos = _bot.GetMove(player);
+									if (getMoveSuccess != null)
+										getMoveSuccess(pos);
+								});
+			ExecuteNext();
 		}
 
-		public void GetMove(PlayerColor player, Action<Pos> getMoveSuccess, Action<string> getMoveError = null)
+		public void GetMoveWithComplexity(PlayerColor player, int complexity, Action<Pos> getMoveWithComplexitySuccess)
 		{
-			(new Thread(() =>
-			{
-				try
-				{
-					var pos = _bot.GetMove(player);
-					if (getMoveSuccess != null)
-						getMoveSuccess(pos);
-				}
-				catch (Exception e)
-				{
-					if (getMoveError != null)
-						getMoveError(e.Message);
-				}
-			})).Start();
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+			                 		var pos = _bot.GetMoveWithComplexity(player, complexity);
+									if (getMoveWithComplexitySuccess != null)
+										getMoveWithComplexitySuccess(pos);
+								});
+			ExecuteNext();
 		}
 
-		public void GetMoveWithComplexity(PlayerColor player, int complexity)
+		public void GetMoveWithTime(PlayerColor player, int time, Action<Pos> getMoveWithTimeSuccess)
 		{
-			GetMoveWithComplexity(player, complexity, GetMoveWithComplexitySuccess, GetMoveWithComplexityError);
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+									var pos = _bot.GetMoveWithTime(player, time);
+									if (getMoveWithTimeSuccess != null)
+										getMoveWithTimeSuccess(pos);
+								});
+			ExecuteNext();
 		}
 
-		public void GetMoveWithComplexity(PlayerColor player, int complexity, Action<Pos> getMoveWithComplexitySuccess, Action<string> getMoveWithComplexityError = null)
+		public void GetName(Action<string> getNameSuccess)
 		{
-			(new Thread(() =>
-			{
-				try
-				{
-					var pos = _bot.GetMoveWithComplexity(player, complexity);
-					if (getMoveWithComplexitySuccess != null)
-						getMoveWithComplexitySuccess(pos);
-				}
-				catch (Exception e)
-				{
-					if (getMoveWithComplexityError != null)
-						getMoveWithComplexityError(e.Message);
-				}
-			})).Start();
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+									var name = _bot.GetName();
+									if (getNameSuccess != null)
+										getNameSuccess(name);
+								});
+			ExecuteNext();
 		}
 
-		public void GetMoveWithTime(PlayerColor player, int time)
+		public void GetVersion(Action<string> getVersionSuccess)
 		{
-			GetMoveWithTime(player, time, GetMoveWithTimeSuccess, GetMoveWithTimeError);
-		}
-
-		public void GetMoveWithTime(PlayerColor player, int time, Action<Pos> getMoveWithTimeSuccess, Action<string> getMoveWithTimeError = null)
-		{
-			(new Thread(() =>
-			{
-				try
-				{
-					var pos = _bot.GetMoveWithTime(player, time);
-					if (getMoveWithTimeSuccess != null)
-						getMoveWithTimeSuccess(pos);
-				}
-				catch (Exception e)
-				{
-					if (getMoveWithTimeError != null)
-						getMoveWithTimeError(e.Message);
-				}
-			})).Start();
-		}
-
-		public void GetName()
-		{
-			GetName(GetNameSuccess, GetNameError);
-		}
-
-		public void GetName(Action<string> getNameSuccess, Action<string> getNameError = null)
-		{
-			(new Thread(() =>
-			{
-				try
-				{
-					var name = _bot.GetName();
-					if (getNameSuccess != null)
-						getNameSuccess(name);
-				}
-				catch (Exception e)
-				{
-					if (getNameError != null)
-						getNameError(e.Message);
-				}
-			})).Start();
-		}
-
-		public void GetVersion()
-		{
-			GetVersion(GetVersionSuccess, GetVersionError);
-		}
-
-		public void GetVersion(Action<string> getVersionSuccess, Action<string> getVersionError = null)
-		{
-			(new Thread(() =>
-			{
-				try
-				{
-					var version = _bot.GetVersion();
-					if (getVersionSuccess != null)
-						getVersionSuccess(version);
-				}
-				catch (Exception e)
-				{
-					if (getVersionError != null)
-						getVersionError(e.Message);
-				}
-			})).Start();
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+									var version = _bot.GetVersion();
+									if (getVersionSuccess != null)
+										getVersionSuccess(version);
+								});
+			ExecuteNext();
 		}
 	}
 }

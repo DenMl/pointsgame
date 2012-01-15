@@ -33,11 +33,6 @@ namespace PointsShell.Bots
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_verion")]
 		private static extern string DllGetVersion();
 
-		public DllBot(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
-		{
-			Init(width, height, surCond, beginPattern);
-		}
-
 		~DllBot()
 		{
 			Final();

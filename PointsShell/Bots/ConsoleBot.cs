@@ -15,11 +15,6 @@ namespace PointsShell.Bots
 
 		private HashSet<string> _commands;
 
-		public ConsoleBot(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
-		{
-			Init(width, height, surCond, beginPattern);
-		}
-
 		~ConsoleBot()
 		{
 			Final();
