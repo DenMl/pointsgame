@@ -88,6 +88,15 @@ namespace PointsShell.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на AI type.
+        /// </summary>
+        public static string AITypeGroupBox {
+            get {
+                return ResourceManager.GetString("AITypeGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Always enemy.
         /// </summary>
         public static string AlwaysEnemyRadioButton {
@@ -156,15 +165,6 @@ namespace PointsShell.Properties {
         public static string BlackTextBlock {
             get {
                 return ResourceManager.GetString("BlackTextBlock", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Bot type.
-        /// </summary>
-        public static string BotTypeGroupBox {
-            get {
-                return ResourceManager.GetString("BotTypeGroupBox", resourceCulture);
             }
         }
         
@@ -295,11 +295,11 @@ namespace PointsShell.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Get move type.
+        ///   Ищет локализованную строку, похожую на Get move method.
         /// </summary>
-        public static string GetMoveTypeGroupBox {
+        public static string GetMoveMethodGroupBox {
             get {
-                return ResourceManager.GetString("GetMoveTypeGroupBox", resourceCulture);
+                return ResourceManager.GetString("GetMoveMethodGroupBox", resourceCulture);
             }
         }
         
