@@ -37,21 +37,7 @@ namespace PointsShell
 		public int CellSize { get; set; }
 		public BotType BotType { get; set; }
 		public GetMoveType GetMoveType { get; set; }
-
-		public string Header
-		{
-			get
-			{
-				var header = string.Empty;
-				if (!string.IsNullOrEmpty(RedName))
-					header += RedName;
-				if (!string.IsNullOrEmpty(RedName) && !string.IsNullOrEmpty(BlackName))
-					header += " - ";
-				if (!string.IsNullOrEmpty(BlackName))
-					header += BlackName;
-				return header;
-			}
-		}
+		public string TabName { get; set; }
 
 		public GamePreferences()
 		{
@@ -73,6 +59,7 @@ namespace PointsShell
 			CellSize = 18;
 			BotType = BotType.Dll;
 			GetMoveType = GetMoveType.GetMove;
+			TabName = Properties.Resources.GameHeader;
 		}
 
 		public GamePreferences(GamePreferences preferences)
@@ -95,6 +82,7 @@ namespace PointsShell
 			CellSize = preferences.CellSize;
 			BotType = preferences.BotType;
 			GetMoveType = preferences.GetMoveType;
+			TabName = preferences.TabName;
 		}
 
 		public static GamePreferences Load(string file)

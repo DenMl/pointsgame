@@ -38,6 +38,7 @@ namespace PointsShell
 			BackgroundColorPicker.SelectedColor = preferences.BackgroundColor;
 			FullFillCheckBox.IsChecked = preferences.FullFill;
 			SoundsCheckBox.IsChecked = preferences.Sounds;
+			TabNameBox.Text = preferences.TabName;
 			switch (preferences.SurCond)
 			{
 				case (SurroundCond.Standart):
@@ -83,6 +84,7 @@ namespace PointsShell
 				preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
 				preferences.FullFill = FullFillCheckBox.IsChecked.Value;
 				preferences.Sounds = SoundsCheckBox.IsChecked.Value;
+				preferences.TabName = TabNameBox.Text;
 
 				if (StandartRadioButton.IsChecked == true)
 					preferences.SurCond = SurroundCond.Standart;
