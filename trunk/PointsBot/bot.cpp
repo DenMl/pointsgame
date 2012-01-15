@@ -19,7 +19,7 @@ using namespace std;
 {
 	_gen = new mt(seed);
 	_zobrist = new zobrist((width + 2) * (height + 2), _gen);
-	_field = new field(width, height, begin_pattern, _zobrist);
+	_field = new field(width, height, sur_cond, begin_pattern, _zobrist);
 	_position_estimate = new position_estimate(_field);
 	_uct = new uct(_field, _gen);
 	_minimax = new minimax(_field);
