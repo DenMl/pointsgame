@@ -33,7 +33,6 @@ namespace PointsShell
 		public byte FillingAlpha { get; set; }
 		public Color BackgroundColor { get; set; }
 		public bool Sounds { get; set; }
-		public string Language { get; set; }
 		public bool FullFill { get; set; }
 		public int CellSize { get; set; }
 		public BotType BotType { get; set; }
@@ -70,7 +69,6 @@ namespace PointsShell
 			FillingAlpha = 127;
 			BackgroundColor = Colors.White;
 			Sounds = true;
-			Language = "English.xml";
 			FullFill = true;
 			CellSize = 18;
 			BotType = BotType.Dll;
@@ -93,7 +91,6 @@ namespace PointsShell
 			FillingAlpha = preferences.FillingAlpha;
 			BackgroundColor = preferences.BackgroundColor;
 			Sounds = preferences.Sounds;
-			Language = preferences.Language;
 			FullFill = preferences.FullFill;
 			CellSize = preferences.CellSize;
 			BotType = preferences.BotType;
