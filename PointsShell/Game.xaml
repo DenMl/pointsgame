@@ -1,4 +1,7 @@
-﻿<UserControl x:Class="PointsShell.Game" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<UserControl x:Class="PointsShell.Game"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:res="clr-namespace:PointsShell.Properties">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
@@ -25,8 +28,8 @@
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
-			<TextBlock Name="RedTextBlock" Text="Red" Grid.Row="0" Grid.Column="0" />
-			<TextBlock Name="BlackTextBlock" Text="Black" Grid.Row="1" Grid.Column="0" />
+			<TextBlock Name="RedTextBlock" Text="{x:Static res:Resources.RedTextBlock}" Grid.Row="0" Grid.Column="0" />
+			<TextBlock Name="BlackTextBlock" Text="{x:Static res:Resources.BlackTextBlock}" Grid.Row="1" Grid.Column="0" />
 
 			<TextBlock Name="RedCount" Margin="5,0,0,0" Grid.Row="0" Grid.Column="1" />
 			<TextBlock Name="BlackCount" Margin="5,0,0,0" Grid.Row="1" Grid.Column="1" />

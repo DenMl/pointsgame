@@ -131,10 +131,14 @@
     <Compile Include="Enums\IntersectionState.cs" />
     <Compile Include="Enums\PlayerColor.cs" />
     <Compile Include="Enums\SurroundCond.cs" />
-    <Compile Include="GameLanguage.cs" />
     <Compile Include="Bots\IBot.cs" />
     <Compile Include="Bots\SafeBot.cs" />
     <Compile Include="GameSerialization.cs" />
+    <Compile Include="Properties\Resources.ru-RU.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.ru-RU.resx</DependentUpon>
+    </Compile>
     <Compile Include="State.cs" />
     <Compile Include="StateChange.cs" />
     <Page Include="ComboColorPicker.xaml">
@@ -189,8 +193,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.ru-RU.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.ru-RU.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
@@ -226,12 +234,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Step.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Languages\English.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Languages\Russian.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Logo.ico" />

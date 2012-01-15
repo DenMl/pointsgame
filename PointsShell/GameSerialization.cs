@@ -158,13 +158,5 @@ namespace PointsShell
 					return null;
 			}
 		}
-
-		public static Game Load(string fileName, GamePreferences preferences, GameLanguage language)
-		{
-			var result = Load(fileName, preferences);
-			if (result != null)
-				result.SetLanguage(language);
-			return result;
-		}
 	}
 }

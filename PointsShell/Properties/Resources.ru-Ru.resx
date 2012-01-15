@@ -118,49 +118,49 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AboutMenuItem" xml:space="preserve">
-    <value>_About</value>
+    <value>_О программе</value>
   </data>
   <data name="AICheckBox" xml:space="preserve">
-    <value>AI</value>
+    <value>ИИ</value>
   </data>
   <data name="AIPreferencesGroupBox" xml:space="preserve">
-    <value>AI preferences</value>
+    <value>Настройки ИИ</value>
   </data>
   <data name="AlwaysEnemyRadioButton" xml:space="preserve">
-    <value>Always enemy</value>
+    <value>Всегда враг</value>
   </data>
   <data name="AlwaysRadioButton" xml:space="preserve">
-    <value>Always</value>
+    <value>Всегда</value>
   </data>
   <data name="BackgroundColorTextBlock" xml:space="preserve">
-    <value>Background color</value>
+    <value>Цвет фона</value>
   </data>
   <data name="BackMenuItem" xml:space="preserve">
-    <value>_Back</value>
+    <value>_Назад</value>
   </data>
   <data name="BeginPatternGroupBox" xml:space="preserve">
-    <value>Begin pattern</value>
+    <value>Начало с</value>
   </data>
   <data name="BlackColorTextBlock" xml:space="preserve">
-    <value>Black color</value>
+    <value>Цвет черных</value>
   </data>
   <data name="BlackNameTextBlock" xml:space="preserve">
-    <value>Black name</value>
+    <value>Имя черных</value>
   </data>
   <data name="BlackTextBlock" xml:space="preserve">
-    <value>Black</value>
+    <value>Черные</value>
   </data>
   <data name="BotTypeGroupBox" xml:space="preserve">
     <value>Bot type</value>
   </data>
   <data name="CancelButton" xml:space="preserve">
-    <value>_Cancel</value>
+    <value>_Отмена</value>
   </data>
   <data name="CleanRadioButton" xml:space="preserve">
-    <value>Clean</value>
+    <value>Чистого поля</value>
   </data>
   <data name="CloseMenuItem" xml:space="preserve">
-    <value>_Close</value>
+    <value>_Закрыть</value>
   </data>
   <data name="ComplexityTextBlock" xml:space="preserve">
     <value>Complexity</value>
@@ -169,101 +169,101 @@
     <value>Console</value>
   </data>
   <data name="CrosswireRadioButton" xml:space="preserve">
-    <value>Crosswire</value>
+    <value>Скреста</value>
   </data>
   <data name="DLLRadioButton" xml:space="preserve">
     <value>DLL</value>
   </data>
   <data name="DoStepMenuItem" xml:space="preserve">
-    <value>_Do step</value>
+    <value>_Ходить</value>
   </data>
   <data name="FileMenuItem" xml:space="preserve">
-    <value>_File</value>
+    <value>_Файл</value>
   </data>
   <data name="FillingAlphaTextBlock" xml:space="preserve">
-    <value>Filling alpha</value>
+    <value>Альфа заливки</value>
   </data>
   <data name="FullFillCheckBox" xml:space="preserve">
-    <value>Full fill</value>
+    <value>Полная заливка</value>
   </data>
   <data name="GameMenuItem" xml:space="preserve">
-    <value>_Game</value>
+    <value>_Игра</value>
   </data>
   <data name="GamePreferencesGroupBox" xml:space="preserve">
-    <value>Game preferences</value>
+    <value>Настройки игры</value>
   </data>
   <data name="GetMoveTypeGroupBox" xml:space="preserve">
     <value>Get move type</value>
   </data>
   <data name="GlobalPreferencesMenuItem" xml:space="preserve">
-    <value>_Global preferences</value>
+    <value>_Глобальные настройки</value>
   </data>
   <data name="HeightTextBlock" xml:space="preserve">
-    <value>Height</value>
+    <value>Высота</value>
   </data>
   <data name="HelpMenuItem" xml:space="preserve">
-    <value>_Help</value>
+    <value>_Помощь</value>
   </data>
   <data name="LoadMenuItem" xml:space="preserve">
-    <value>_Load</value>
+    <value>_Загрузить</value>
   </data>
   <data name="LocalPreferencesMenuItem" xml:space="preserve">
-    <value>_Local preferences</value>
+    <value>_Локальные настройки</value>
   </data>
   <data name="NewMenuItem" xml:space="preserve">
-    <value>_New</value>
+    <value>_Новая</value>
   </data>
   <data name="NextPlayerMenuItem" xml:space="preserve">
-    <value>_Next player</value>
+    <value>_Следующий игрок</value>
   </data>
   <data name="OkButton" xml:space="preserve">
     <value>_OK</value>
   </data>
   <data name="OptionsMenuItem" xml:space="preserve">
-    <value>_Options</value>
+    <value>_Опции</value>
   </data>
   <data name="OtherPreferencesGroupBox" xml:space="preserve">
-    <value>Other preferences</value>
+    <value>Другие настройки</value>
   </data>
   <data name="PlayersPreferencesGroupBox" xml:space="preserve">
-    <value>Players preferences</value>
+    <value>Настройки игроков</value>
   </data>
   <data name="RedColorTextBlock" xml:space="preserve">
-    <value>Red color</value>
+    <value>Цвет красных</value>
   </data>
   <data name="RedNameTextBlock" xml:space="preserve">
-    <value>Red name</value>
+    <value>Имя красных</value>
   </data>
   <data name="RedTextBlock" xml:space="preserve">
-    <value>Red</value>
+    <value>Красные</value>
   </data>
   <data name="SaveMenuItem" xml:space="preserve">
-    <value>_Save</value>
+    <value>_Сохранить</value>
   </data>
   <data name="SimpleRadioButton" xml:space="preserve">
     <value>Simple</value>
   </data>
   <data name="SoundsCheckBox" xml:space="preserve">
-    <value>Sounds</value>
+    <value>Звуки</value>
   </data>
   <data name="SquareRadioButton" xml:space="preserve">
-    <value>Square</value>
+    <value>Квадрата</value>
   </data>
   <data name="StandartRadioButton" xml:space="preserve">
-    <value>Standart</value>
+    <value>Стандартное</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Step" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Step.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SurroundConditionGroupBox" xml:space="preserve">
-    <value>Surround condition</value>
+    <value>Условие захвата</value>
   </data>
   <data name="TimeTextBlock" xml:space="preserve">
     <value>Time</value>
   </data>
   <data name="WidthTextBlock" xml:space="preserve">
-    <value>Width</value>
+    <value>Ширина</value>
   </data>
   <data name="WithComplexityRadioButton" xml:space="preserve">
     <value>With complexity</value>

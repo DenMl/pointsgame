@@ -15,7 +15,7 @@ using namespace std;
 // Pos - последний выбранный, но не сделанный ход.
 // alpha, beta - интервал оценок, вне которого искать нет смысла.
 // На выходе оценка позиции для CurPlayer (до хода Pos).
-score minimax::negamax(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta, int* empty_board)
+score minimax::alphabeta(field &cur_field, uint depth, uint cur_pos, trajectories &last, int alpha, int beta, int* empty_board)
 {
 	trajectories cur_trajectories(cur_field, empty_board);
 
@@ -49,7 +49,7 @@ score minimax::negamax(field &cur_field, uint depth, uint cur_pos, trajectories 
 
 	for (auto i = moves.begin(); i < moves.end(); i++)
 	{
-		score cur_estimate = negamax(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha, empty_board);
+		score cur_estimate = alphabeta(cur_field, depth - 1, *i, cur_trajectories, -beta, -alpha, empty_board);
 		if (cur_estimate > alpha)
 		{
 			alpha = cur_estimate;
@@ -144,7 +144,7 @@ pos minimax::get(size_t depth, list<pos> &moves)
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(first_moves.size()); i++)
 		{
-			int cur_estimate = negamax(local_field, depth - 1, first_moves[i], cur_trajectories, -SCORE_INFINITY, -alpha, empty_board);
+			int cur_estimate = alphabeta(local_field, depth - 1, first_moves[i], cur_trajectories, -SCORE_INFINITY, -alpha, empty_board);
 			omp_set_lock(&lock);
 			if (cur_estimate > alpha) // Обновляем нижнюю границу.
 			{

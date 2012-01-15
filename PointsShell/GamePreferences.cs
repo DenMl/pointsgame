@@ -14,8 +14,8 @@ namespace PointsShell
 		public SurroundCond SurCond { get; set; }
 		public BeginPattern BeginPattern { get; set; }
 		public bool AI { get; set; }
-		public int Depth { get; set; }
-		public int Iterations { get; set; }
+		public int Complexity { get; set; }
+		public int Time { get; set; }
 		private string _redName;
 		private string _blackName;
 		public string RedName
@@ -61,8 +61,8 @@ namespace PointsShell
 			SurCond = SurroundCond.Standart;
 			BeginPattern = BeginPattern.CleanPattern;
 			AI = true;
-			Depth = 8;
-			Iterations = 100000;
+			Complexity = 100;
+			Time = 10000;
 			RedName = string.Empty;
 			BlackName = string.Empty;
 			RedColor = Colors.Red;
@@ -84,8 +84,8 @@ namespace PointsShell
 			SurCond = preferences.SurCond;
 			BeginPattern = preferences.BeginPattern;
 			AI = preferences.AI;
-			Depth = preferences.Depth;
-			Iterations = preferences.Iterations;
+			Complexity = preferences.Complexity;
+			Time = preferences.Time;
 			RedName = preferences.RedName;
 			BlackName = preferences.BlackName;
 			RedColor = preferences.RedColor;
