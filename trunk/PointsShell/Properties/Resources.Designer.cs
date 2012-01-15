@@ -268,6 +268,15 @@ namespace PointsShell.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Game.
+        /// </summary>
+        public static string GameHeader {
+            get {
+                return ResourceManager.GetString("GameHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на _Game.
         /// </summary>
         public static string GameMenuItem {
@@ -291,6 +300,15 @@ namespace PointsShell.Properties {
         public static string GetMoveTypeGroupBox {
             get {
                 return ResourceManager.GetString("GetMoveTypeGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Global preferences.
+        /// </summary>
+        public static string GlobalPreferencesHeader {
+            get {
+                return ResourceManager.GetString("GlobalPreferencesHeader", resourceCulture);
             }
         }
         
@@ -327,6 +345,15 @@ namespace PointsShell.Properties {
         public static string LoadMenuItem {
             get {
                 return ResourceManager.GetString("LoadMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Local preferences.
+        /// </summary>
+        public static string LocalPreferencesHeader {
+            get {
+                return ResourceManager.GetString("LocalPreferencesHeader", resourceCulture);
             }
         }
         
@@ -477,6 +504,15 @@ namespace PointsShell.Properties {
         public static string SurroundConditionGroupBox {
             get {
                 return ResourceManager.GetString("SurroundConditionGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tab name.
+        /// </summary>
+        public static string TabNameTextBlock {
+            get {
+                return ResourceManager.GetString("TabNameTextBlock", resourceCulture);
             }
         }
         

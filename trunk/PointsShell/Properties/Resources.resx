@@ -271,4 +271,16 @@
   <data name="WithTimeRadioButton" xml:space="preserve">
     <value>With time</value>
   </data>
+  <data name="GameHeader" xml:space="preserve">
+    <value>Game</value>
+  </data>
+  <data name="GlobalPreferencesHeader" xml:space="preserve">
+    <value>Global preferences</value>
+  </data>
+  <data name="LocalPreferencesHeader" xml:space="preserve">
+    <value>Local preferences</value>
+  </data>
+  <data name="TabNameTextBlock" xml:space="preserve">
+    <value>Tab name</value>
+  </data>
 </root>

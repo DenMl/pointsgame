@@ -17,7 +17,7 @@ namespace PointsShell
 
 			_globalPreferences = GamePreferences.Load("Preferences.xml");
 
-			MainTabControl.Items.Add(new TabItem { Header = "sfsdfsdfsdfsdf", Content = new Game(new GamePreferences(_globalPreferences)) });
+			MainTabControl.Items.Add(new TabItem { Header = _globalPreferences.TabName, Content = new Game(new GamePreferences(_globalPreferences)) });
 		}
 
 		~MainWindow()
@@ -30,13 +30,13 @@ namespace PointsShell
 		private void NewClick(object sender, RoutedEventArgs e)
 		{
 			var content = new GamePreferencesDialog(new GamePreferences(_globalPreferences));
-			var preferencestab = new TabItem {Header = "sadsjhvbdsjhf", Content = content};
+			var preferencestab = new TabItem {Header = Properties.Resources.LocalPreferencesHeader, Content = content};
 
 			content.OkClicked +=
 				preferences =>
 					{
 						MainTabControl.Items.Remove(preferencestab);
-						MainTabControl.Items.Add(new TabItem { Header = preferences.Header != "" ? preferences.Header : "hdsgvchjdc", Content = new Game(preferences) });
+						MainTabControl.Items.Add(new TabItem { Header = preferences.TabName, Content = new Game(preferences) });
 						MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
 					};
 			content.CancelClicked += () => MainTabControl.Items.Remove(preferencestab);
@@ -77,7 +77,7 @@ namespace PointsShell
 				return;
 			}
 
-			MainTabControl.Items.Add(new TabItem { Content = game, Header = _globalPreferences.Header != "" ? _globalPreferences.Header : "dsjfvjsdf" });
+			MainTabControl.Items.Add(new TabItem { Content = game, Header = _globalPreferences.TabName });
 			MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
 		}
 
@@ -110,7 +110,7 @@ namespace PointsShell
 			var game = MainTabControl.SelectedContent as Game;
 			var gametab = MainTabControl.SelectedItem as TabItem;
 			var content = new GamePreferencesDialog(game.Preferences);
-			var preferncestab = new TabItem {Header = "'" + gametab.Header + "' " + "kxjzckjzx", Content = content};
+			var preferncestab = new TabItem { Header = string.Format("{0} \"{1}\"", Properties.Resources.LocalPreferencesHeader, gametab.Header), Content = content };
 
 			content.LockGlobal();
 			content.OkClicked +=
@@ -118,7 +118,7 @@ namespace PointsShell
 					{
 						MainTabControl.Items.Remove(preferncestab);
 						game.Preferences = preferences;
-						gametab.Header = preferences.Header != "" ? preferences.Header : "jdhsbshf";
+						gametab.Header = preferences.TabName;
 					};
 			content.CancelClicked += () => MainTabControl.Items.Remove(preferncestab);
 
@@ -129,7 +129,7 @@ namespace PointsShell
 		private void GlobalPreferencesClick(object sender, RoutedEventArgs e)
 		{
 			var content = new GamePreferencesDialog(new GamePreferences(_globalPreferences));
-			var preferncestab = new TabItem { Header = "akjsdfksadf", Content = content };
+			var preferncestab = new TabItem { Header = Properties.Resources.GlobalPreferencesHeader, Content = content };
 
 			content.OkClicked +=
 				preferences =>
