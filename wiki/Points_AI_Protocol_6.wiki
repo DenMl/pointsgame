@@ -62,18 +62,6 @@ return arguments — x, y, color of the suggested move.
 
 return arguments — none.
 
-==Extended optional commands for generating an AI move (draft)==
-
-*`random color`*
-
-*`position_estimate color`*
-
-*`uct color iterations`*
-
-*`uct_with_time color time`*
-
-*`minimax color depth`*
-
 ==Explanations:==
 
   * x is a number from 0 to fieldSizeX - 1. For y it's the same, of course.
