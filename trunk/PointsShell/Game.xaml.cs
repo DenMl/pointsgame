@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -22,8 +21,8 @@ namespace PointsShell
 			set
 			{
 				_preferences.AI = value.AI;
-				_preferences.Depth = value.Depth;
-				_preferences.Iterations = value.Iterations;
+				_preferences.Complexity = value.Complexity;
+				_preferences.Time = value.Time;
 				_preferences.RedName = value.RedName;
 				_preferences.BlackName = value.BlackName;
 				_preferences.BackgroundColor = value.BackgroundColor;
@@ -70,12 +69,6 @@ namespace PointsShell
 			DrawField(_preferences.Width, _preferences.Height);
 			PlaceBeginPattern(preferences.BeginPattern);
 			UpdateTextInfo();
-		}
-
-		public void SetLanguage(GameLanguage language)
-		{
-			RedTextBlock.Text = language.Red;
-			BlackTextBlock.Text = language.Black;
 		}
 
 		// Конвертация из координаты на canvas в pos.
@@ -386,7 +379,7 @@ namespace PointsShell
 		private void CanvasMouseMove(object sender, MouseEventArgs e)
 		{
 			var pos = ConvertToPos(e.GetPosition(canvas));
-			MouseCoord.Text = pos.X + ":" + pos.Y;
+			MouseCoord.Text = string.Format("{0}:{1}", pos.X, pos.Y);
 		}
 
 		public void gDoBotStep()

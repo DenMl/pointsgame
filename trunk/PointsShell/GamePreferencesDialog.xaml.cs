@@ -23,21 +23,13 @@ namespace PointsShell
 			SetPreferences(preferences);
 		}
 
-		public GamePreferencesDialog(GamePreferences preferences, GameLanguage language)
-		{
-			InitializeComponent();
-
-			SetPreferences(preferences);
-			SetLanguage(language);
-		}
-
 		public void SetPreferences(GamePreferences preferences)
 		{
 			WidthBox.Text = preferences.Width.ToString();
 			HeightBox.Text = preferences.Height.ToString();
 			AICheckBox.IsChecked = preferences.AI;
-			MinMaxDepthBox.Text = preferences.Depth.ToString();
-			UCTIterationsBox.Text = preferences.Iterations.ToString();
+			ComplexityBox.Text = preferences.Complexity.ToString();
+			TimeBox.Text = preferences.Time.ToString();
 			RedNameBox.Text = preferences.RedName;
 			BlackNameBox.Text = preferences.BlackName;
 			RedColorPicker.SelectedColor = preferences.RedColor;
@@ -72,37 +64,6 @@ namespace PointsShell
 			}
 		}
 
-		public void SetLanguage(GameLanguage language)
-		{
-			OKButton.Content = language.OK;
-			CancelButton.Content = language.Cancel;
-			GamePreferencesGroupBox.Header = language.GamePreferences;
-			AIPreferencesGroupBox.Header = language.AIPreferences;
-			PlayersPreferencesGroupBox.Header = language.PlayersPreferences;
-			OtherPreferencesGroupBox.Header = language.OtherPrefernces;
-			WidthTextBlock.Text = language.Width;
-			HeightTextBlock.Text = language.Height;
-			SurroundConditionGroupBox.Header = language.SurroundCondition;
-			StandartRadioButton.Content = language.Standart;
-			AlwaysRadioButton.Content = language.Always;
-			AlwaysEnemyRadioButton.Content = language.AlwaysEnemy;
-			BeginPatternGroupBox.Header = language.BeginPattern;
-			CleanRadioButton.Content = language.Clean;
-			CrosswireRadioButton.Content = language.Crosswire;
-			SquareRadioButton.Content = language.Square;
-			AICheckBox.Content = language.AI;
-			MinMaxDepthTextBlock.Text = language.MinMaxDepth;
-			UCTIterationsTextBlock.Text = language.UCTIterations;
-			RedNameTextBlock.Text = language.RedName;
-			BlackNameTextBlock.Text = language.BlackName;
-			RedColorTextBlock.Text = language.RedColor;
-			BlackColorTextBlock.Text = language.BlackColor;
-			FillingAlphaTextBlock.Text = language.FillingAlpha;
-			BackgroundColorTextBlock.Text = language.BackgroundColor;
-			FullFillCheckBox.Content = language.FullFill;
-			SoundsCheckBox.Content = language.Sounds;
-		}
-
 		private void OKClick(object sender, RoutedEventArgs routedEventArgs)
 		{
 			var preferences = new GamePreferences();
@@ -112,8 +73,8 @@ namespace PointsShell
 				preferences.Width = int.Parse(WidthBox.Text);
 				preferences.Height = int.Parse(HeightBox.Text);
 				preferences.AI = AICheckBox.IsChecked.Value;
-				preferences.Depth = int.Parse(MinMaxDepthBox.Text);
-				preferences.Iterations = int.Parse(UCTIterationsBox.Text);
+				preferences.Complexity = int.Parse(ComplexityBox.Text);
+				preferences.Time = int.Parse(TimeBox.Text);
 				preferences.RedName = RedNameBox.Text;
 				preferences.BlackName = BlackNameBox.Text;
 				preferences.RedColor = RedColorPicker.SelectedColor;

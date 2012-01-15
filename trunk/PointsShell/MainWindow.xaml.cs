@@ -1,41 +1,15 @@
 ﻿using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Serialization;
 using Microsoft.Win32;
-using System.Linq;
 using PointsShell.Enums;
 
 namespace PointsShell
 {
 	public partial class MainWindow
 	{
-		#if DEBUG
-			private const string LanguagesDirectory = @"..\..\..\Languages\";
-		#else
-			private const string LanguagesDirectory = @"Languages\";
-		#endif
-
 		private GamePreferences _globalPreferences;
-
-		private GameLanguage _globalLanguage;
-		private GameLanguage GlobalLanguage
-		{
-			get { return _globalLanguage; }
-			set
-			{
-				_globalLanguage = value;
-				SetLanguage(value);
-				foreach (var item in MainTabControl.Items)
-				{
-					if (((TabItem)item).Content is Game)
-						(((TabItem)item).Content as Game).SetLanguage(value);
-					else if (((TabItem)item).Content is GamePreferencesDialog)
-						(((TabItem)item).Content as GamePreferencesDialog).SetLanguage(value);
-				}
-			}
-		}
 
 		public MainWindow()
 		{
@@ -43,36 +17,7 @@ namespace PointsShell
 
 			_globalPreferences = GamePreferences.Load("Preferences.xml");
 
-			var lDirectory = new DirectoryInfo(LanguagesDirectory);
-			if (lDirectory.Exists)
-				foreach (var fileInfo in lDirectory.GetFiles("*.xml", SearchOption.TopDirectoryOnly).Where(fileInfo => GameLanguage.IsFileValid(LanguagesDirectory + fileInfo.Name)))
-				{
-					var mi = new MenuItem
-								 {
-									 Header = fileInfo.Name.Substring(0, fileInfo.Name.Length - 4),
-									 Icon = new RadioButton
-												{
-													HorizontalAlignment = HorizontalAlignment.Center,
-													GroupName = "Languages",
-													IsHitTestVisible = false,
-													IsChecked = _globalPreferences.Language == fileInfo.Name
-												}
-								 };
-					mi.Click += (sender, e) =>
-									{
-										((RadioButton) ((MenuItem) sender).Icon).IsChecked = true;
-										_globalPreferences.Language = (string)((MenuItem)sender).Header + ".xml";
-										GlobalLanguage = GameLanguage.LoadLanguage(LanguagesDirectory + _globalPreferences.Language);
-									};
-					LanguageMenuItem.Items.Add(mi);
-				}
-
-			if (LanguageMenuItem.Items.Count == 0)
-				LanguageMenuItem.Visibility = Visibility.Collapsed;
-
-			GlobalLanguage = GameLanguage.LoadLanguage(LanguagesDirectory + _globalPreferences.Language);
-
-			MainTabControl.Items.Add(new TabItem { Header = GlobalLanguage.Game, Content = new Game(new GamePreferences(_globalPreferences)) });
+			MainTabControl.Items.Add(new TabItem { Header = "sfsdfsdfsdfsdf", Content = new Game(new GamePreferences(_globalPreferences)) });
 		}
 
 		~MainWindow()
@@ -82,35 +27,16 @@ namespace PointsShell
 				serializer.Serialize(stream, _globalPreferences);
 		}
 
-		public void SetLanguage(GameLanguage language)
-		{
-			FileMenuItem.Header = language.File;
-			GameMenuItem.Header = language.Game;
-			OptionsMenuItem.Header = language.Options;
-			HelpMenuItem.Header = language.Help;
-			NewMenuItem.Header = language.New;
-			CloseMenuItem.Header = language.Close;
-			SaveMenuItem.Header = language.Save;
-			LoadMenuItem.Header = language.Load;
-			BackMenuItem.Header = language.Back;
-			DoStepMenuItem.Header = language.DoStep;
-			NextPlayerMenuItem.Header = language.NextPlayer;
-			GlobalPreferencesMenuItem.Header = language.GlobalPreferences;
-			LocalPreferencesMenuItem.Header = language.LocalPreferences;
-			LanguageMenuItem.Header = language.Language;
-			AboutMenuItem.Header = language.About;
-		}
-
 		private void NewClick(object sender, RoutedEventArgs e)
 		{
-			var content = new GamePreferencesDialog(new GamePreferences(_globalPreferences), GlobalLanguage);
-			var preferencestab = new TabItem {Header = GlobalLanguage.NewGame, Content = content};
+			var content = new GamePreferencesDialog(new GamePreferences(_globalPreferences));
+			var preferencestab = new TabItem {Header = "sadsjhvbdsjhf", Content = content};
 
 			content.OkClicked +=
 				preferences =>
 					{
 						MainTabControl.Items.Remove(preferencestab);
-						MainTabControl.Items.Add(new TabItem { Header = preferences.Header != "" ? preferences.Header : GlobalLanguage.Game, Content = new Game(preferences) });
+						MainTabControl.Items.Add(new TabItem { Header = preferences.Header != "" ? preferences.Header : "hdsgvchjdc", Content = new Game(preferences) });
 						MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
 					};
 			content.CancelClicked += () => MainTabControl.Items.Remove(preferencestab);
@@ -143,15 +69,15 @@ namespace PointsShell
 			var dialog = new OpenFileDialog { Filter = "PointsXT|*.sav|All files|*" };
 			if (dialog.ShowDialog() != true)
 				return;
-			var game = Game.Load(dialog.FileName, new GamePreferences(_globalPreferences), GlobalLanguage);
+			var game = Game.Load(dialog.FileName, new GamePreferences(_globalPreferences));
 
 			if (game == null)
 			{
-				MessageBox.Show("Unknown format!", "Error!");
+				MessageBox.Show("Unknown format!");
 				return;
 			}
 
-			MainTabControl.Items.Add(new TabItem { Content = game, Header = _globalPreferences.Header != "" ? _globalPreferences.Header : GlobalLanguage.Game });
+			MainTabControl.Items.Add(new TabItem { Content = game, Header = _globalPreferences.Header != "" ? _globalPreferences.Header : "dsjfvjsdf" });
 			MainTabControl.SelectedIndex = MainTabControl.Items.Count - 1;
 		}
 
@@ -183,8 +109,8 @@ namespace PointsShell
 
 			var game = MainTabControl.SelectedContent as Game;
 			var gametab = MainTabControl.SelectedItem as TabItem;
-			var content = new GamePreferencesDialog(game.Preferences, GlobalLanguage);
-			var preferncestab = new TabItem {Header = "'" + gametab.Header + "' " + GlobalLanguage.preferences, Content = content};
+			var content = new GamePreferencesDialog(game.Preferences);
+			var preferncestab = new TabItem {Header = "'" + gametab.Header + "' " + "kxjzckjzx", Content = content};
 
 			content.LockGlobal();
 			content.OkClicked +=
@@ -192,7 +118,7 @@ namespace PointsShell
 					{
 						MainTabControl.Items.Remove(preferncestab);
 						game.Preferences = preferences;
-						gametab.Header = preferences.Header != "" ? preferences.Header : GlobalLanguage.Game;
+						gametab.Header = preferences.Header != "" ? preferences.Header : "jdhsbshf";
 					};
 			content.CancelClicked += () => MainTabControl.Items.Remove(preferncestab);
 
@@ -202,8 +128,8 @@ namespace PointsShell
 
 		private void GlobalPreferencesClick(object sender, RoutedEventArgs e)
 		{
-			var content = new GamePreferencesDialog(new GamePreferences(_globalPreferences), GlobalLanguage);
-			var preferncestab = new TabItem { Header = GlobalLanguage.GlobalPreferences, Content = content };
+			var content = new GamePreferencesDialog(new GamePreferences(_globalPreferences));
+			var preferncestab = new TabItem { Header = "akjsdfksadf", Content = content };
 
 			content.OkClicked +=
 				preferences =>

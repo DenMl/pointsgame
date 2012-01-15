@@ -22,7 +22,7 @@ namespace PointsShell.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace PointsShell.Properties {
         ///   Возвращает кэшированный экземпляр ResourceManager, использованный этим классом.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PointsShell.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace PointsShell.Properties {
         ///   обращений к ресурсу с помощью этого класса ресурса со строгой типизацией.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -60,9 +60,459 @@ namespace PointsShell.Properties {
             }
         }
         
-        internal static System.IO.UnmanagedMemoryStream Step {
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _About.
+        /// </summary>
+        public static string AboutMenuItem {
+            get {
+                return ResourceManager.GetString("AboutMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на AI.
+        /// </summary>
+        public static string AICheckBox {
+            get {
+                return ResourceManager.GetString("AICheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на AI preferences.
+        /// </summary>
+        public static string AIPreferencesGroupBox {
+            get {
+                return ResourceManager.GetString("AIPreferencesGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always enemy.
+        /// </summary>
+        public static string AlwaysEnemyRadioButton {
+            get {
+                return ResourceManager.GetString("AlwaysEnemyRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Always.
+        /// </summary>
+        public static string AlwaysRadioButton {
+            get {
+                return ResourceManager.GetString("AlwaysRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Background color.
+        /// </summary>
+        public static string BackgroundColorTextBlock {
+            get {
+                return ResourceManager.GetString("BackgroundColorTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Back.
+        /// </summary>
+        public static string BackMenuItem {
+            get {
+                return ResourceManager.GetString("BackMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Begin pattern.
+        /// </summary>
+        public static string BeginPatternGroupBox {
+            get {
+                return ResourceManager.GetString("BeginPatternGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Black color.
+        /// </summary>
+        public static string BlackColorTextBlock {
+            get {
+                return ResourceManager.GetString("BlackColorTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Black name.
+        /// </summary>
+        public static string BlackNameTextBlock {
+            get {
+                return ResourceManager.GetString("BlackNameTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Black.
+        /// </summary>
+        public static string BlackTextBlock {
+            get {
+                return ResourceManager.GetString("BlackTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Bot type.
+        /// </summary>
+        public static string BotTypeGroupBox {
+            get {
+                return ResourceManager.GetString("BotTypeGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Cancel.
+        /// </summary>
+        public static string CancelButton {
+            get {
+                return ResourceManager.GetString("CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Clean.
+        /// </summary>
+        public static string CleanRadioButton {
+            get {
+                return ResourceManager.GetString("CleanRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Close.
+        /// </summary>
+        public static string CloseMenuItem {
+            get {
+                return ResourceManager.GetString("CloseMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Complexity.
+        /// </summary>
+        public static string ComplexityTextBlock {
+            get {
+                return ResourceManager.GetString("ComplexityTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Console.
+        /// </summary>
+        public static string ConsoleRadioButton {
+            get {
+                return ResourceManager.GetString("ConsoleRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Crosswire.
+        /// </summary>
+        public static string CrosswireRadioButton {
+            get {
+                return ResourceManager.GetString("CrosswireRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на DLL.
+        /// </summary>
+        public static string DLLRadioButton {
+            get {
+                return ResourceManager.GetString("DLLRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Do step.
+        /// </summary>
+        public static string DoStepMenuItem {
+            get {
+                return ResourceManager.GetString("DoStepMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _File.
+        /// </summary>
+        public static string FileMenuItem {
+            get {
+                return ResourceManager.GetString("FileMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Filling alpha.
+        /// </summary>
+        public static string FillingAlphaTextBlock {
+            get {
+                return ResourceManager.GetString("FillingAlphaTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Full fill.
+        /// </summary>
+        public static string FullFillCheckBox {
+            get {
+                return ResourceManager.GetString("FullFillCheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Game.
+        /// </summary>
+        public static string GameMenuItem {
+            get {
+                return ResourceManager.GetString("GameMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Game preferences.
+        /// </summary>
+        public static string GamePreferencesGroupBox {
+            get {
+                return ResourceManager.GetString("GamePreferencesGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Get move type.
+        /// </summary>
+        public static string GetMoveTypeGroupBox {
+            get {
+                return ResourceManager.GetString("GetMoveTypeGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Global preferences.
+        /// </summary>
+        public static string GlobalPreferencesMenuItem {
+            get {
+                return ResourceManager.GetString("GlobalPreferencesMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Height.
+        /// </summary>
+        public static string HeightTextBlock {
+            get {
+                return ResourceManager.GetString("HeightTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Help.
+        /// </summary>
+        public static string HelpMenuItem {
+            get {
+                return ResourceManager.GetString("HelpMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Load.
+        /// </summary>
+        public static string LoadMenuItem {
+            get {
+                return ResourceManager.GetString("LoadMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Local preferences.
+        /// </summary>
+        public static string LocalPreferencesMenuItem {
+            get {
+                return ResourceManager.GetString("LocalPreferencesMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _New.
+        /// </summary>
+        public static string NewMenuItem {
+            get {
+                return ResourceManager.GetString("NewMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Next player.
+        /// </summary>
+        public static string NextPlayerMenuItem {
+            get {
+                return ResourceManager.GetString("NextPlayerMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _OK.
+        /// </summary>
+        public static string OkButton {
+            get {
+                return ResourceManager.GetString("OkButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Options.
+        /// </summary>
+        public static string OptionsMenuItem {
+            get {
+                return ResourceManager.GetString("OptionsMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Other preferences.
+        /// </summary>
+        public static string OtherPreferencesGroupBox {
+            get {
+                return ResourceManager.GetString("OtherPreferencesGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Players preferences.
+        /// </summary>
+        public static string PlayersPreferencesGroupBox {
+            get {
+                return ResourceManager.GetString("PlayersPreferencesGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Red color.
+        /// </summary>
+        public static string RedColorTextBlock {
+            get {
+                return ResourceManager.GetString("RedColorTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Red name.
+        /// </summary>
+        public static string RedNameTextBlock {
+            get {
+                return ResourceManager.GetString("RedNameTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Red.
+        /// </summary>
+        public static string RedTextBlock {
+            get {
+                return ResourceManager.GetString("RedTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на _Save.
+        /// </summary>
+        public static string SaveMenuItem {
+            get {
+                return ResourceManager.GetString("SaveMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Simple.
+        /// </summary>
+        public static string SimpleRadioButton {
+            get {
+                return ResourceManager.GetString("SimpleRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Sounds.
+        /// </summary>
+        public static string SoundsCheckBox {
+            get {
+                return ResourceManager.GetString("SoundsCheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Square.
+        /// </summary>
+        public static string SquareRadioButton {
+            get {
+                return ResourceManager.GetString("SquareRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Standart.
+        /// </summary>
+        public static string StandartRadioButton {
+            get {
+                return ResourceManager.GetString("StandartRadioButton", resourceCulture);
+            }
+        }
+        
+        public static System.IO.UnmanagedMemoryStream Step {
             get {
                 return ResourceManager.GetStream("Step", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Surround condition.
+        /// </summary>
+        public static string SurroundConditionGroupBox {
+            get {
+                return ResourceManager.GetString("SurroundConditionGroupBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Time.
+        /// </summary>
+        public static string TimeTextBlock {
+            get {
+                return ResourceManager.GetString("TimeTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Width.
+        /// </summary>
+        public static string WidthTextBlock {
+            get {
+                return ResourceManager.GetString("WidthTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на With complexity.
+        /// </summary>
+        public static string WithComplexityRadioButton {
+            get {
+                return ResourceManager.GetString("WithComplexityRadioButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на With time.
+        /// </summary>
+        public static string WithTimeRadioButton {
+            get {
+                return ResourceManager.GetString("WithTimeRadioButton", resourceCulture);
             }
         }
     }
