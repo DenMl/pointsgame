@@ -52,29 +52,21 @@ namespace PointsShell
 
 		private void OKClick(object sender, RoutedEventArgs routedEventArgs)
 		{
-			try
-			{
-				_preferences.RedColor = RedColorPicker.SelectedColor;
-				_preferences.BlackColor = BlackColorPicker.SelectedColor;
-				_preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
-
-				if (StandartRadioButton.IsChecked == true)
-					_preferences.SurCond = SurroundCond.Standart;
-				else if (AlwaysRadioButton.IsChecked == true)
-					_preferences.SurCond = SurroundCond.Always;
-				else if (AlwaysEnemyRadioButton.IsChecked == true)
-					_preferences.SurCond = SurroundCond.AlwaysEnemy;
-				if (CleanRadioButton.IsChecked == true)
-					_preferences.BeginPattern = BeginPattern.CleanPattern;
-				else if (CrosswireRadioButton.IsChecked == true)
-					_preferences.BeginPattern = BeginPattern.CrosswisePattern;
-				else if (SquareRadioButton.IsChecked == true)
-					_preferences.BeginPattern = BeginPattern.SquarePattern;
-			}
-			catch
-			{
-				return;
-			}
+			_preferences.RedColor = RedColorPicker.SelectedColor;
+			_preferences.BlackColor = BlackColorPicker.SelectedColor;
+			_preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
+			if (StandartRadioButton.IsChecked == true)
+				_preferences.SurCond = SurroundCond.Standart;
+			else if (AlwaysRadioButton.IsChecked == true)
+				_preferences.SurCond = SurroundCond.Always;
+			else if (AlwaysEnemyRadioButton.IsChecked == true)
+				_preferences.SurCond = SurroundCond.AlwaysEnemy;
+			if (CleanRadioButton.IsChecked == true)
+				_preferences.BeginPattern = BeginPattern.CleanPattern;
+			else if (CrosswireRadioButton.IsChecked == true)
+				_preferences.BeginPattern = BeginPattern.CrosswisePattern;
+			else if (SquareRadioButton.IsChecked == true)
+				_preferences.BeginPattern = BeginPattern.SquarePattern;
 
 			if (OkClicked != null)
 				OkClicked(_preferences);
