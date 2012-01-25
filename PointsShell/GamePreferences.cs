@@ -9,15 +9,56 @@ namespace PointsShell
 	[Serializable]
 	public class GamePreferences
 	{
-		public int Width { get; set; }
-		public int Height { get; set; }
+		private int _width;
+		private int _height;
+		private int _complexity;
+		private int _time;
+		private string _redName;
+		private string _blackName;
+
+		public int Width
+		{
+			get { return _width; }
+			set
+			{
+				if (value <= 0)
+					throw new ApplicationException("Width must be over 0");
+				_width = value;
+			}
+		}
+		public int Height
+		{
+			get { return _height; }
+			set
+			{
+				if (value <= 0)
+					throw new ApplicationException("Height must be over 0");
+				_height = value;
+			}
+		}
 		public SurroundCond SurCond { get; set; }
 		public BeginPattern BeginPattern { get; set; }
 		public bool AI { get; set; }
-		public int Complexity { get; set; }
-		public int Time { get; set; }
-		private string _redName;
-		private string _blackName;
+		public int Complexity
+		{
+			get { return _complexity; }
+			set
+			{
+				if (value < 0 || value > 100)
+					throw new ApplicationException("Complexity must be in [0..100]");
+				_complexity = value;
+			}
+		}
+		public int Time
+		{
+			get { return _time; }
+			set
+			{
+				if (value <= 0)
+					throw new ApplicationException("Time must be over 0");
+				_time = value;
+			}
+		}
 		public string RedName
 		{
 			get { return _redName; }

@@ -52,40 +52,31 @@ private:
 			if (*i != cur_pos)
 				_trajectories[cur_player].back().push_back(*i);
 	}
-	void build_trajectories_recursive(size_t depth, player cur_player)
+	score build_trajectories_recursive(size_t depth, player cur_player)
 	{
+		score max_score = _field->get_score(cur_player), cur_score;
 		for (pos cur_pos = _field->min_pos(); cur_pos <= _field->max_pos(); cur_pos++)
 		{
 			if (_field->putting_allow(cur_pos) && _field->is_near_points(cur_pos, cur_player))
 			{
-				if (_field->is_in_empty_base(cur_pos)) // Если поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
-				{
-					_field->do_unsafe_step(cur_pos, cur_player);
-					if (_field->get_d_score(cur_player) > 0)
-						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
-					_field->undo_step();
-				}
+				_field->do_unsafe_step(cur_pos, cur_player);
+
+				if (_field->is_in_empty_base(cur_pos) && _field->get_d_score(cur_player) <= 0)
+					continue;
+
+				if (_field->get_d_score(cur_player) > 0)
+					add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
+				if (depth > 0)
+					cur_score = build_trajectories_recursive(depth - 1, cur_player);
 				else
-				{
-					_field->do_unsafe_step(cur_pos, cur_player);
+					cur_score = _field->get_score(cur_player);
+				if (cur_score > max_score)
+					max_score = cur_score;
 
-#if SURROUND_CONDITIONS
-					if (_field->is_base_bound(cur_pos) && _field->get_d_score(cur_player) == 0)
-					{
-						_field->undo_step();
-						continue;
-					}
-#endif
-
-					if (_field->get_d_score(cur_player) > 0)
-						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
-					else if (depth > 0)
-						build_trajectories_recursive(depth - 1, cur_player);
-
-					_field->undo_step();
-				}
+				_field->undo_step();
 			}
 		}
+		return max_score;
 	}
 	inline void project(trajectory &cur_trajectory)
 	{

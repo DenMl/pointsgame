@@ -6,39 +6,24 @@ namespace PointsShell
 {
 	public partial class GamePreferencesDialog
 	{
+		private readonly GamePreferences _preferences;
+
 		public event Action<GamePreferences> OkClicked;
 		public event Action CancelClicked;
 
-		public GamePreferencesDialog()
+		public GamePreferencesDialog(GamePreferences preferences = null)
 		{
 			InitializeComponent();
-
-			SetPreferences(new GamePreferences());
-		}
-
-		public GamePreferencesDialog(GamePreferences preferences)
-		{
-			InitializeComponent();
-
-			SetPreferences(preferences);
+			_preferences = preferences ?? new GamePreferences();
+			DataContext = _preferences;
+			SetPreferences(_preferences);
 		}
 
 		public void SetPreferences(GamePreferences preferences)
 		{
-			WidthBox.Text = preferences.Width.ToString();
-			HeightBox.Text = preferences.Height.ToString();
-			AICheckBox.IsChecked = preferences.AI;
-			ComplexityBox.Text = preferences.Complexity.ToString();
-			TimeBox.Text = preferences.Time.ToString();
-			RedNameBox.Text = preferences.RedName;
-			BlackNameBox.Text = preferences.BlackName;
 			RedColorPicker.SelectedColor = preferences.RedColor;
 			BlackColorPicker.SelectedColor = preferences.BlackColor;
-			FillingAlphaBox.Text = preferences.FillingAlpha.ToString();
 			BackgroundColorPicker.SelectedColor = preferences.BackgroundColor;
-			FullFillCheckBox.IsChecked = preferences.FullFill;
-			SoundsCheckBox.IsChecked = preferences.Sounds;
-			TabNameBox.Text = preferences.TabName;
 			switch (preferences.SurCond)
 			{
 				case (SurroundCond.Standart):
@@ -67,37 +52,24 @@ namespace PointsShell
 
 		private void OKClick(object sender, RoutedEventArgs routedEventArgs)
 		{
-			var preferences = new GamePreferences();
-
 			try
 			{
-				preferences.Width = int.Parse(WidthBox.Text);
-				preferences.Height = int.Parse(HeightBox.Text);
-				preferences.AI = AICheckBox.IsChecked.Value;
-				preferences.Complexity = int.Parse(ComplexityBox.Text);
-				preferences.Time = int.Parse(TimeBox.Text);
-				preferences.RedName = RedNameBox.Text;
-				preferences.BlackName = BlackNameBox.Text;
-				preferences.RedColor = RedColorPicker.SelectedColor;
-				preferences.BlackColor = BlackColorPicker.SelectedColor;
-				preferences.FillingAlpha = byte.Parse(FillingAlphaBox.Text);
-				preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
-				preferences.FullFill = FullFillCheckBox.IsChecked.Value;
-				preferences.Sounds = SoundsCheckBox.IsChecked.Value;
-				preferences.TabName = TabNameBox.Text;
+				_preferences.RedColor = RedColorPicker.SelectedColor;
+				_preferences.BlackColor = BlackColorPicker.SelectedColor;
+				_preferences.BackgroundColor = BackgroundColorPicker.SelectedColor;
 
 				if (StandartRadioButton.IsChecked == true)
-					preferences.SurCond = SurroundCond.Standart;
+					_preferences.SurCond = SurroundCond.Standart;
 				else if (AlwaysRadioButton.IsChecked == true)
-					preferences.SurCond = SurroundCond.Always;
+					_preferences.SurCond = SurroundCond.Always;
 				else if (AlwaysEnemyRadioButton.IsChecked == true)
-					preferences.SurCond = SurroundCond.AlwaysEnemy;
+					_preferences.SurCond = SurroundCond.AlwaysEnemy;
 				if (CleanRadioButton.IsChecked == true)
-					preferences.BeginPattern = BeginPattern.CleanPattern;
+					_preferences.BeginPattern = BeginPattern.CleanPattern;
 				else if (CrosswireRadioButton.IsChecked == true)
-					preferences.BeginPattern = BeginPattern.CrosswisePattern;
+					_preferences.BeginPattern = BeginPattern.CrosswisePattern;
 				else if (SquareRadioButton.IsChecked == true)
-					preferences.BeginPattern = BeginPattern.SquarePattern;
+					_preferences.BeginPattern = BeginPattern.SquarePattern;
 			}
 			catch
 			{
@@ -105,7 +77,7 @@ namespace PointsShell
 			}
 
 			if (OkClicked != null)
-				OkClicked(preferences);
+				OkClicked(_preferences);
 		}
 
 		private void CancelClick(object sender, RoutedEventArgs routedEventArgs)
