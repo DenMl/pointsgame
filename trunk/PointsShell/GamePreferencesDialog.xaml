@@ -27,8 +27,24 @@
 					<TextBlock Text="{x:Static res:Resources.WidthTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
 					<TextBlock Text="{x:Static res:Resources.HeightTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
 
-					<TextBox Name="WidthBox" MaxLength="2" Grid.Column="1" Grid.Row="0"/>
-					<TextBox Name="HeightBox" MaxLength="2" Grid.Column="1" Grid.Row="1"/>
+					<TextBox Name="WidthBox" MaxLength="2" Grid.Column="1" Grid.Row="0">
+						<TextBox.Text>
+							<Binding Path="Width">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
+					<TextBox Name="HeightBox" MaxLength="2" Grid.Column="1" Grid.Row="1">
+						<TextBox.Text>
+							<Binding Path="Height">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 
 					<GroupBox Header="{x:Static res:Resources.SurroundConditionGroupBox}" Padding="2" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
 						<StackPanel>
@@ -62,7 +78,7 @@
 						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
 
-					<CheckBox Name="AICheckBox" Content="{x:Static res:Resources.AICheckBox}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" />
+					<CheckBox IsChecked="{Binding AI}" Content="{x:Static res:Resources.AICheckBox}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" />
 
 					<GroupBox Header="{x:Static res:Resources.AITypeGroupBox}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
 						<StackPanel>
@@ -80,10 +96,26 @@
 					</GroupBox>
 
 					<TextBlock Text="{x:Static res:Resources.ComplexityTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="3" />
-					<TextBox Name="ComplexityBox" MaxLength="2" Grid.Column="1" Grid.Row="3" />
+					<TextBox MaxLength="3" Grid.Column="1" Grid.Row="3">
+						<TextBox.Text>
+							<Binding Path="Complexity">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 
 					<TextBlock Text="{x:Static res:Resources.TimeTextBlock}" Grid.Column="0" Margin="0,0,5,0" Grid.Row="4" />
-					<TextBox Name="TimeBox" MaxLength="8" Grid.Column="1" Grid.Row="4" />
+					<TextBox MaxLength="8" Grid.Column="1" Grid.Row="4">
+						<TextBox.Text>
+							<Binding Path="Time">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 				</Grid>
 			</GroupBox>
 
@@ -102,10 +134,26 @@
 					</Grid.ColumnDefinitions>
 
 					<TextBlock Text="{x:Static res:Resources.RedNameTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
-					<TextBox Name="RedNameBox" MinWidth="40" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
+					<TextBox MinWidth="40" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
+						<TextBox.Text>
+							<Binding Path="RedName">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 
 					<TextBlock Text="{x:Static res:Resources.BlackNameTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
-					<TextBox Name="BlackNameBox" MinWidth="40" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" />
+					<TextBox MinWidth="40" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+						<TextBox.Text>
+							<Binding Path="BlackName">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 
 					<TextBlock Text="{x:Static res:Resources.RedColorTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="2" />
 					<TextBox MaxLength="9" Text="{Binding ElementName=RedColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="2"/>
@@ -133,17 +181,33 @@
 					</Grid.ColumnDefinitions>
 
 					<TextBlock Text="{x:Static res:Resources.TabNameTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="0" />
-					<TextBox Name="TabNameBox" MaxLength="3" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" />
+					<TextBox MaxLength="3" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
+						<TextBox.Text>
+							<Binding Path="TabName">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 
 					<TextBlock Text="{x:Static res:Resources.FillingAlphaTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="1" />
-					<TextBox Name="FillingAlphaBox" MaxLength="3" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" />
+					<TextBox MaxLength="3" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+						<TextBox.Text>
+							<Binding Path="FillingAlpha">
+								<Binding.ValidationRules>
+									<ExceptionValidationRule />
+								</Binding.ValidationRules>
+							</Binding>
+						</TextBox.Text>
+					</TextBox>
 
 					<TextBlock Text="{x:Static res:Resources.BackgroundColorTextBlock}" Margin="0,0,5,0" Grid.Column="0" Grid.Row="2" />
 					<TextBox MaxLength="9" Text="{Binding ElementName=BackgroundColorPicker, Path=SelectedColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Grid.Column="1" Grid.Row="2"/>
 					<osc:ComboColorPicker x:Name="BackgroundColorPicker" Grid.Column="2" Grid.Row="2" />
 
-					<CheckBox Name="FullFillCheckBox" Content="{x:Static res:Resources.FullFillCheckBox}" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" />
-					<CheckBox Name="SoundsCheckBox" Content="{x:Static res:Resources.SoundsCheckBox}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
+					<CheckBox IsChecked="{Binding FullFill}" Content="{x:Static res:Resources.FullFillCheckBox}" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" />
+					<CheckBox IsChecked="{Binding Sounds}" Content="{x:Static res:Resources.SoundsCheckBox}" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" />
 				</Grid>
 			</GroupBox>
 		</WrapPanel>
