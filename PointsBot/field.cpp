@@ -177,9 +177,7 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 	// Изменение счета игроков.
 	add_sub_captured_freed(cur_player, cur_capture_count, cur_freed_count);
 
-#if SURROUND_CONDITIONS
-	if ((cur_capture_count != 0) || (_sur_cond == SUR_COND_ALWAYS)) // Если захватили точки, или стоит опция захватывать всегда.
-#else
+#if SUR_COND != 1
 	if (cur_capture_count != 0) // Если захватили точки.
 #endif
 	{
@@ -214,17 +212,10 @@ void field::find_surround(list<pos> &chain, pos inside_point, player cur_player)
 	}
 }
 
-#if SURROUND_CONDITIONS
-	field::field(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, zobrist* zobr)
-#else
-	field::field(const coord width, const coord height, const begin_pattern begin_pattern, zobrist* zobr)
-#endif
+field::field(const coord width, const coord height, const begin_pattern begin_pattern, zobrist* zobr)
 {
 	_width = width;
 	_height = height;
-#if SURROUND_CONDITIONS
-	_sur_cond = sur_cond;
-#endif
 	_player = player_red;
 	_capture_count[player_red] = 0;
 	_capture_count[player_black] = 0;
@@ -256,9 +247,6 @@ field::field(const field &orig)
 {
 	_width = orig._width;
 	_height = orig._height;
-#if SURROUND_CONDITIONS
-	_sur_cond = orig._sur_cond;
-#endif
 	_player = orig._player;
 	_capture_count[player_red] = orig._capture_count[player_red];
 	_capture_count[player_black] = orig._capture_count[player_black];
@@ -382,29 +370,26 @@ void field::check_closure(const pos start_pos, player cur_player)
 			return;
 		}
 
-#if SURROUND_CONDITIONS
-		if (_sur_cond != SUR_COND_ALWAYS_ENEMY) // Если приоритет не всегда у врага.
-#endif
+#if SUR_COND != 2 // Если приоритет не всегда у врага.
+		inp_points_count = get_input_points(start_pos, cur_player | put_bit, inp_chain_points, inp_sur_points);
+		if (inp_points_count > 1)
 		{
-			inp_points_count = get_input_points(start_pos, cur_player | put_bit, inp_chain_points, inp_sur_points);
-			if (inp_points_count > 1)
-			{
-				short chains_count = 0;
-				for (short i = 0; i < inp_points_count; i++)
-					if (build_chain(start_pos, get_player(start_pos) | put_bit, inp_chain_points[i], chain))
-					{
-						find_surround(chain, inp_sur_points[i], cur_player);
-						chains_count++;
-						if (chains_count == inp_points_count - 1)
-							break;
-					}
-					if (is_base_bound(start_pos))
-					{
-						remove_empty_base(start_pos);
-						return;
-					}
-			}
+			short chains_count = 0;
+			for (short i = 0; i < inp_points_count; i++)
+				if (build_chain(start_pos, get_player(start_pos) | put_bit, inp_chain_points[i], chain))
+				{
+					find_surround(chain, inp_sur_points[i], cur_player);
+					chains_count++;
+					if (chains_count == inp_points_count - 1)
+						break;
+				}
+				if (is_base_bound(start_pos))
+				{
+					remove_empty_base(start_pos);
+					return;
+				}
 		}
+#endif
 
 		Pos++;
 		do

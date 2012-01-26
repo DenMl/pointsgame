@@ -11,15 +11,11 @@
 
 using namespace std;
 
-#if SURROUND_CONDITIONS
-	bot::bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, ptrdiff_t seed)
-#else
-	bot::bot(const coord width, const coord height, const begin_pattern begin_pattern, ptrdiff_t seed)
-#endif
+bot::bot(const coord width, const coord height, const begin_pattern begin_pattern, ptrdiff_t seed)
 {
 	_gen = new mt(seed);
 	_zobrist = new zobrist((width + 2) * (height + 2), _gen);
-	_field = new field(width, height, sur_cond, begin_pattern, _zobrist);
+	_field = new field(width, height, begin_pattern, _zobrist);
 	_position_estimate = new position_estimate(_field);
 	_uct = new uct(_field, _gen);
 	_minimax = new minimax(_field);

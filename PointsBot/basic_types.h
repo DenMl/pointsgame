@@ -28,17 +28,6 @@ struct point
 	coord x, y;
 };
 
-// Правила обработки пустых баз.
-// SC_STANDART = 0 - если PlayerRed ставит в пустую базу и ничего не обводит, то PlayerBlack обводит эту территорию.
-// SC_ALWAYS = 1 - обводить базу, даже если нет вражеских точек внутри.
-// SC_ALWAYS_ENEMY = 2 - обводит всегда PlayerBlack, если PlayerRed поставил точку в пустую базу.
-enum sur_cond
-{
-	SUR_COND_STANDART,
-	SUR_COND_ALWAYS,
-	SUR_COND_ALWAYS_ENEMY
-};
-
 // Используемый шаблон в начале игры.
 // BP_CLEAN - начало с чистого поля.
 // BP_CROSSWIRE - начало со скреста.

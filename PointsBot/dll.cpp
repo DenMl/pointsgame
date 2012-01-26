@@ -40,7 +40,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 bot* init(coord width, coord height, ptrdiff_t seed)
 {
-	return new bot(width, height, SUR_COND_STANDART, BEGIN_PATTERN_CLEAN, seed);
+	return new bot(width, height, BEGIN_PATTERN_CLEAN, seed);
 }
 
 void final(bot* cur_bot)
