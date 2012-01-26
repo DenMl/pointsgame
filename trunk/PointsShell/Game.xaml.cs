@@ -26,8 +26,9 @@ namespace PointsShell
 				_preferences.RedName = value.RedName;
 				_preferences.BlackName = value.BlackName;
 				_preferences.BackgroundColor = value.BackgroundColor;
-				canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 				_preferences.TabName = value.TabName;
+				_preferences.GetMoveType = value.GetMoveType;
+				canvas.Background = new SolidColorBrush(Preferences.BackgroundColor);
 
 				if (_preferences.RedColor != value.RedColor || _preferences.BlackColor != value.BlackColor || _preferences.FillingAlpha != value.FillingAlpha || _preferences.CellSize != value.CellSize || _preferences.FullFill != value.FullFill)
 				{

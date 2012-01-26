@@ -48,6 +48,27 @@ namespace PointsShell
 					SquareRadioButton.IsChecked = true;
 					break;
 			}
+			switch (preferences.BotType)
+			{
+				case (BotType.Dll):
+					DLLRadioButton.IsChecked = true;
+					break;
+				case (BotType.Console):
+					ConsoleRadioButton.IsChecked = true;
+					break;
+			}
+			switch (preferences.GetMoveType)
+			{
+				case (GetMoveType.GetMove):
+					SimpleRadioButton.IsChecked = true;
+					break;
+				case (GetMoveType.GetMoveWithComplexity):
+					WithComplexityRadioButton.IsChecked = true;
+					break;
+				case (GetMoveType.GetMoveWithTime):
+					WithTimeRadioButton.IsChecked = true;
+					break;
+			}
 		}
 
 		private void OKClick(object sender, RoutedEventArgs routedEventArgs)
@@ -67,6 +88,16 @@ namespace PointsShell
 				_preferences.BeginPattern = BeginPattern.CrosswisePattern;
 			else if (SquareRadioButton.IsChecked == true)
 				_preferences.BeginPattern = BeginPattern.SquarePattern;
+			if (DLLRadioButton.IsChecked == true)
+				_preferences.BotType = BotType.Dll;
+			else if (ConsoleRadioButton.IsChecked == true)
+				_preferences.BotType = BotType.Console;
+			if (SimpleRadioButton.IsChecked == true)
+				_preferences.GetMoveType = GetMoveType.GetMove;
+			else if (WithComplexityRadioButton.IsChecked == true)
+				_preferences.GetMoveType = GetMoveType.GetMoveWithComplexity;
+			else if (WithTimeRadioButton.IsChecked == true)
+				_preferences.GetMoveType = GetMoveType.GetMoveWithTime;
 
 			if (OkClicked != null)
 				OkClicked(_preferences);
@@ -88,6 +119,8 @@ namespace PointsShell
 			CleanRadioButton.IsEnabled = false;
 			CrosswireRadioButton.IsEnabled = false;
 			SquareRadioButton.IsEnabled = false;
+			DLLRadioButton.IsEnabled = false;
+			ConsoleRadioButton.IsEnabled = false;
 		}
 	}
 }

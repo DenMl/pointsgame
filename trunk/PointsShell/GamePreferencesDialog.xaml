@@ -82,16 +82,16 @@
 
 					<GroupBox Header="{x:Static res:Resources.AITypeGroupBox}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
 						<StackPanel>
-							<RadioButton Content="{x:Static res:Resources.DLLRadioButton}" />
-							<RadioButton Content="{x:Static res:Resources.ConsoleRadioButton}" />
+							<RadioButton Name="DLLRadioButton" Content="{x:Static res:Resources.DLLRadioButton}" />
+							<RadioButton Name="ConsoleRadioButton" Content="{x:Static res:Resources.ConsoleRadioButton}" />
 						</StackPanel>
 					</GroupBox>
 
 					<GroupBox Header="{x:Static res:Resources.GetMoveMethodGroupBox}" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
 						<StackPanel>
-							<RadioButton Content="{x:Static res:Resources.SimpleRadioButton}" />
-							<RadioButton Content="{x:Static res:Resources.WithComplexityRadioButton}" />
-							<RadioButton Content="{x:Static res:Resources.WithTimeRadioButton}" />
+							<RadioButton Name="SimpleRadioButton" Content="{x:Static res:Resources.SimpleRadioButton}" />
+							<RadioButton Name="WithComplexityRadioButton" Content="{x:Static res:Resources.WithComplexityRadioButton}" />
+							<RadioButton Name="WithTimeRadioButton" Content="{x:Static res:Resources.WithTimeRadioButton}" />
 						</StackPanel>
 					</GroupBox>
 
