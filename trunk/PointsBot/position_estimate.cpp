@@ -3,7 +3,7 @@
 #include "player.h"
 #include "position_estimate.h"
 #include <list>
-#include <climits>
+#include <limits>
 
 using namespace std;
 
@@ -27,7 +27,7 @@ short position_estimate(field& cur_field, uint cur_pos, short cur_player)
 
 pos position_estimate(field& cur_field, list<pos> &moves)
 {
-	short best_estimate = SHRT_MIN;
+	short best_estimate = numeric_limits<short>::min();
 	pos result = -1;
 	for (auto i = moves.begin(); i != moves.end(); i++)
 	{
