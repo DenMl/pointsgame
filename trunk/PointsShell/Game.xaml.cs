@@ -14,7 +14,7 @@ namespace PointsShell
 {
 	public partial class Game
 	{
-		private GamePreferences _preferences;
+		private readonly GamePreferences _preferences;
 		public GamePreferences Preferences
 		{
 			get { return new GamePreferences(_preferences); }
@@ -49,24 +49,29 @@ namespace PointsShell
 		}
 
 		public Field Field { get; private set; }
-		private SafeBot _bot;
+		private readonly SafeBot _bot;
 
 		// Переменная, показывающая, выполняются ли в данный момент вычисления для хода ИИ.
 		private bool _thinking;
 		// Вспомогательный список, нужный для отката ходов.
 		private readonly List<int> _canvasChildrenCount = new List<int>();
 
-		private Game()
-		{
-			InitializeComponent();
-		}
-
 		public Game(GamePreferences preferences)
 		{
 			InitializeComponent();
 			_preferences = preferences;
 			Field = new Field(preferences.Width, preferences.Height, preferences.SurCond);
-			_bot = new SafeBot(new DllBot());
+			switch (preferences.BotType)
+			{
+				case BotType.Dll:
+					_bot = new SafeBot(new DllBot());
+					break;
+				case BotType.Console:
+					_bot = new SafeBot(new ConsoleBot());
+					break;
+				default:
+					throw new Exception(string.Format("Unknown BotType: {0}", preferences.BotType));
+			}
 			_bot.Init(preferences.Width, preferences.Height, preferences.SurCond, preferences.BeginPattern);
 			DrawField(_preferences.Width, _preferences.Height);
 			PlaceBeginPattern(preferences.BeginPattern);
@@ -389,12 +394,24 @@ namespace PointsShell
 			if (_thinking)
 				return;
 			_thinking = true;
-			_bot.GetMove(Field.CurPlayer, pos =>
-											{
-												_bot.PutPoint(pos, Field.CurPlayer);
-												Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() => PutPoint(pos)));
-												_thinking = false;
-											});
+			Action<Pos> action = pos =>
+			             	{
+			             		_bot.PutPoint(pos, Field.CurPlayer);
+			             		Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action) (() => PutPoint(pos)));
+			             		_thinking = false;
+			             	};
+			switch (_preferences.GetMoveType)
+			{
+				case (GetMoveType.GetMove):
+					_bot.GetMove(Field.CurPlayer, action);
+					break;
+				case (GetMoveType.GetMoveWithComplexity):
+					_bot.GetMoveWithComplexity(Field.CurPlayer, _preferences.Complexity, action);
+					break;
+				case (GetMoveType.GetMoveWithTime):
+					_bot.GetMoveWithTime(Field.CurPlayer, _preferences.Time, action);
+					break;
+			}
 		}
 
 		public void gPutPoint(Pos pos)
