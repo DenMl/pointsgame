@@ -17,16 +17,11 @@ private:
 	mt* _gen;
 	zobrist* _zobrist;
 	field* _field;
-	position_estimate* _position_estimate;
 	uct* _uct;
 	minimax* _minimax;
 	void build_all_moves(list<pos>& moves) const;
 public:
-#if SURROUND_CONDITIONS
-	bot(const coord width, const coord height, const sur_cond sur_cond, const begin_pattern begin_pattern, ptrdiff_t seed);
-#else
 	bot(const coord width, const coord height, const begin_pattern begin_pattern, ptrdiff_t seed);
-#endif
 	~bot();
 	bool do_step(coord x, coord y, player cur_player);
 	bool undo_step();
