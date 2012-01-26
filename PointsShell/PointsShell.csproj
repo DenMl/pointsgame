@@ -169,6 +169,7 @@
     <Compile Include="Enums\SurroundCond.cs" />
     <Compile Include="Bots\IBot.cs" />
     <Compile Include="Bots\SafeBot.cs" />
+    <Compile Include="Game1.cs" />
     <Compile Include="GameSerialization.cs" />
     <Compile Include="Properties\Resources.ru-RU.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -177,6 +178,7 @@
     </Compile>
     <Compile Include="State.cs" />
     <Compile Include="StateChange.cs" />
+    <Compile Include="Tree.cs" />
     <Page Include="ComboColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
