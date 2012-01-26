@@ -16,14 +16,10 @@ bot::bot(const coord width, const coord height, const begin_pattern begin_patter
 	_gen = new mt(seed);
 	_zobrist = new zobrist((width + 2) * (height + 2), _gen);
 	_field = new field(width, height, begin_pattern, _zobrist);
-	_uct = new uct(_field, _gen);
-	_minimax = new minimax(_field);
 }
 
 bot::~bot()
 {
-	delete _minimax;
-	delete _uct;
 	delete _field;
 	delete _zobrist;
 	delete _gen;
@@ -95,7 +91,7 @@ void bot::minimax_best_move(coord& x, coord& y, size_t depth)
 		y = -1;
 		return;
 	}
-	pos result =  _minimax->get(depth, moves);
+	pos result =  minimax(*_field, depth, moves);
 	if (result == -1)
 		result = position_estimate(*_field, moves);
 	x = _field->to_x(result);
@@ -114,7 +110,7 @@ void bot::uct_best_move(coord& x, coord& y, size_t max_simulations)
 		y = -1;
 		return;
 	}
-	pos result = _uct->get(max_simulations, moves);
+	pos result = uct(*_field, *_gen, max_simulations, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 }
@@ -131,7 +127,7 @@ void bot::uct_with_time_best_move(coord& x, coord& y, size_t time)
 		y = -1;
 		return;
 	}
-	pos result = _uct->get_with_time(time, moves);
+	pos result = uct_with_time(*_field, *_gen, time, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 }
@@ -148,9 +144,9 @@ void bot::minimax_uct_best_move(coord& x, coord& y, size_t depth, size_t max_sim
 		y = -1;
 		return;
 	}
-	pos result =  _minimax->get(depth, moves);
+	pos result =  minimax(*_field, depth, moves);
 	if (result == -1)
-		result = _uct->get(max_simulations, moves);
+		result = uct(*_field, *_gen, max_simulations, moves);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 }
@@ -168,10 +164,10 @@ void bot::minimax_uct_with_time_best_move(coord& x, coord& y, size_t depth, size
 		y = -1;
 		return;
 	}
-	pos result =  _minimax->get(depth, moves);
+	pos result =  minimax(*_field, depth, moves);
 	ulong minmax_time = t.get();
 	if (result == -1 && minmax_time < time)
-		result = _uct->get_with_time(time - minmax_time, moves);
+		result = uct_with_time(*_field, *_gen, time - minmax_time, moves);
 	if (result == -1)
 		result = position_estimate(*_field, moves);
 	x = _field->to_x(result);

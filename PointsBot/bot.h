@@ -17,8 +17,6 @@ private:
 	mt* _gen;
 	zobrist* _zobrist;
 	field* _field;
-	uct* _uct;
-	minimax* _minimax;
 	void build_all_moves(list<pos>& moves) const;
 public:
 	bot(const coord width, const coord height, const begin_pattern begin_pattern, ptrdiff_t seed);
