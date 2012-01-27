@@ -1,8 +1,9 @@
-﻿using PointsShell.Enums;
+﻿using System;
+using PointsShell.Enums;
 
 namespace PointsShell.Bots
 {
-	public interface IBot
+	public interface IBot : IDisposable
 	{
 		void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern);
 		void Final();

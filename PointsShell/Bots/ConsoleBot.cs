@@ -15,11 +15,6 @@ namespace PointsShell.Bots
 
 		private HashSet<string> _commands;
 
-		~ConsoleBot()
-		{
-			Final();
-		}
-
 		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
 			if (_bot != null)
@@ -74,14 +69,20 @@ namespace PointsShell.Bots
 		{
 			if (_bot == null)
 				return;
-			if (_commands.Contains("quit"))
+			try
 			{
-				_bot.StandardInput.WriteLine("{0} quit", _random.Next());
-				_bot.WaitForExit(50);
+				if (!_bot.HasExited && _commands.Contains("quit"))
+				{
+					_bot.StandardInput.WriteLine("{0} quit", _random.Next());
+					_bot.WaitForExit(100);
+				}
+				if (!_bot.HasExited)
+					_bot.Kill();
 			}
-			if (!_bot.HasExited)
-				_bot.Kill();
-			_bot = null;
+			finally
+			{
+				_bot = null;
+			}
 		}
 
 		public void PutPoint(Pos pos, PlayerColor player)
@@ -216,6 +217,11 @@ namespace PointsShell.Bots
 			if (splittedAnswer.Length != 4 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "version")
 				throw new Exception("version: Invalid answer.");
 			return splittedAnswer[3];
+		}
+
+		public void Dispose()
+		{
+			Final();
 		}
 	}
 }
