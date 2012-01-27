@@ -25,5 +25,5 @@ struct uct_node
 	}
 };
 
-pos uct(field& cur_field, mt& gen, size_t max_simulations, list<pos> &moves);
-pos uct_with_time(field& cur_field, mt& gen, size_t time, list<pos> &moves);
+pos uct(field* cur_field, mt* gen, size_t max_simulations);
+pos uct_with_time(field* cur_field, mt* gen, size_t time);
