@@ -7,4 +7,4 @@
 
 using namespace std;
 
-pos minimax(field& cur_field, size_t depth, list<pos> &moves);
+pos minimax(field* cur_field, size_t depth);

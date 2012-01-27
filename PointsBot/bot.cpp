@@ -85,13 +85,13 @@ void bot::get(coord& x, coord& y)
 		return;
 	}
 #if SEARCH_TYPE == 0 // position estimate
-	pos result = position_estimate(*_field, moves);
+	pos result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 1 // minimax
-	pos result =  minimax(*_field, DEFAULT_MINIMAX_DEPTH, moves);
+	pos result =  minimax(_field, DEFAULT_MINIMAX_DEPTH);
 	if (result == -1)
-		result = position_estimate(*_field, moves);
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 2 // uct
@@ -99,7 +99,7 @@ void bot::get(coord& x, coord& y)
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 3 // minimax with uct
-	pos result =  minimax(*_field, DEFAULT_MINIMAX_DEPTH, moves);
+	pos result =  minimax(_field, DEFAULT_MINIMAX_DEPTH);
 	if (result == -1)
 		result = uct(*_field, *_gen, DEFAULT_UCT_ITERATIONS, moves);
 	x = _field->to_x(result);
@@ -122,13 +122,13 @@ void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 		return;
 	}
 #if SEARCH_WITH_COMPLEXITY_TYPE == 0 // positon estimate
-	pos result = position_estimate(*_field, moves);
+	pos result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 1 // minimax
-	pos result =  minimax(*_field, get_minimax_depth(complexity), moves);
+	pos result =  minimax(_field, get_minimax_depth(complexity));
 	if (result == -1)
-		result = position_estimate(*_field, moves);
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 2 // uct
@@ -136,7 +136,7 @@ void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 3 // minimax with uct
-	pos result =  minimax(*_field, get_minimax_depth(complexity), moves);
+	pos result =  minimax(_field, get_minimax_depth(complexity));
 	if (result == -1)
 		result = uct(*_field, *_gen, get_uct_iterations(complexity), moves);
 	x = _field->to_x(result);
@@ -159,7 +159,7 @@ void bot::get_with_time(coord& x, coord& y, size_t time)
 		return;
 	}
 #if SEARCH_WITH_TIME_TYPE == 0 // position estimate
-	pos result = position_estimate(*_field, moves);
+	pos result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_TIME_TYPE == 1 // minimax

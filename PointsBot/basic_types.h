@@ -3,7 +3,6 @@
 #include "config.h"
 #include <utility>
 #include <stack>
-#include <climits>
 #include <boost/random.hpp>
 
 using namespace std;
@@ -20,7 +19,7 @@ typedef int score;
 typedef short coord;
 typedef size_t hash_t;
 
-#define SCORE_INFINITY INT_MAX
+#define SCORE_INFINITY numeric_limits<score>::max()
 
 // Структура координат точки.
 struct point
