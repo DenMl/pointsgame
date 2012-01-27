@@ -47,6 +47,8 @@ namespace PointsShell.Bots
 												curAction();
 											}
 										}
+										catch (ThreadAbortException)
+										{ }
 										catch (Exception e)
 										{
 											_error = true;
