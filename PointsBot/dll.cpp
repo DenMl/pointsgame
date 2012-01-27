@@ -61,17 +61,19 @@ void remove_last_point(bot* cur_bot)
 void get_move(bot* cur_bot, coord& x, coord& y, player cur_player)
 {
 	cur_bot->set_player(cur_player);
-	cur_bot->minimax_uct_best_move(x, y, 8, 100000);
+	cur_bot->get(x, y);
 }
 
-void get_move_with_complexity(field* cur_field, coord& x, coord& y, player cur_player, int complexity)
+void get_move_with_complexity(bot* cur_bot, coord& x, coord& y, player cur_player, int complexity)
 {
-
+	cur_bot->set_player(cur_player);
+	cur_bot->get_with_complexity(x, y, complexity);
 }
 
-void get_move_with_time(field* cur_field, coord& x, coord& y, player cur_player, int time)
+void get_move_with_time(bot* cur_bot, coord& x, coord& y, player cur_player, int time)
 {
-
+	cur_bot->set_player(cur_player);
+	cur_bot->get_with_time(x, y, time);
 }
 
 wchar_t* get_name()

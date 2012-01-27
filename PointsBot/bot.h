@@ -18,6 +18,8 @@ private:
 	zobrist* _zobrist;
 	field* _field;
 	void build_all_moves(list<pos>& moves) const;
+	size_t get_minimax_depth(size_t complexity);
+	size_t get_uct_iterations(size_t complexity);
 public:
 	bot(const coord width, const coord height, const begin_pattern begin_pattern, ptrdiff_t seed);
 	~bot();
@@ -26,11 +28,7 @@ public:
 	void set_player(player cur_player);
 	bool boundary_check(coord& x, coord& y);
 	// Возвращает лучший найденный ход.
-	// Если не найдено - -1.
-	void position_estimate_best_move(coord& x, coord& y);
-	void minimax_best_move(coord& x, coord& y, size_t depth);
-	void uct_best_move(coord& x, coord& y, size_t max_simulations);
-	void uct_with_time_best_move(coord& x, coord& y, size_t time);
-	void minimax_uct_best_move(coord& x, coord& y, size_t depth, size_t max_simulations);
-	void minimax_uct_with_time_best_move(coord& x, coord& y, size_t depth, size_t time);
+	void get(coord& x, coord& y);
+	void get_with_complexity(coord& x, coord& y, size_t complexity);
+	void get_with_time(coord& x, coord& y, size_t time);
 };
