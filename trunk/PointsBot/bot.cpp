@@ -25,14 +25,6 @@ bot::~bot()
 	delete _gen;
 }
 
-void bot::build_all_moves(list<pos> &moves) const
-{
-	moves.clear();
-	for (pos i = _field->min_pos(); i <= _field->max_pos(); i++)
-		if (_field->putting_allow(i))
-			moves.push_back(i);
-}
-
 size_t bot::get_minimax_depth(size_t complexity)
 {
 	return (complexity - MIN_COMPLEXITY) * (MAX_MINIMAX_DEPTH - MIN_MINIMAX_DEPTH) / (MAX_COMPLEXITY - MIN_COMPLEXITY) + MIN_MINIMAX_DEPTH;
@@ -61,7 +53,15 @@ void bot::set_player(player cur_player)
 	_field->set_player(cur_player);
 }
 
-bool bot::boundary_check(coord& x, coord& y)
+bool bot::is_field_occupied() const
+{
+	for (pos i = _field->min_pos(); i <= _field->max_pos(); i++)
+		if (_field->putting_allow(i))
+			return false;
+	return true;
+}
+
+bool bot::boundary_check(coord& x, coord& y) const
 {
 	if (_field->points_seq.size() == 0)
 	{
@@ -69,21 +69,19 @@ bool bot::boundary_check(coord& x, coord& y)
 		y = _field->height() / 2;
 		return true;
 	}
+	if (is_field_occupied())
+	{
+		x = -1;
+		y = -1;
+		return true;
+	}
 	return false;
 }
 
 void bot::get(coord& x, coord& y)
 {
-	list<pos> moves;
 	if (boundary_check(x, y))
 		return;
-	build_all_moves(moves);
-	if (moves.size() == 0)
-	{
-		x = -1;
-		y = -1;
-		return;
-	}
 #if SEARCH_TYPE == 0 // position estimate
 	pos result = position_estimate(_field);
 	x = _field->to_x(result);
@@ -95,13 +93,13 @@ void bot::get(coord& x, coord& y)
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 2 // uct
-	pos result = uct(*_field, *_gen, DEFAULT_UCT_ITERATIONS, moves);
+	pos result = uct(_field, _gen, DEFAULT_UCT_ITERATIONS);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 3 // minimax with uct
 	pos result =  minimax(_field, DEFAULT_MINIMAX_DEPTH);
 	if (result == -1)
-		result = uct(*_field, *_gen, DEFAULT_UCT_ITERATIONS, moves);
+		result = uct(_field, _gen, DEFAULT_UCT_ITERATIONS);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #else
@@ -111,16 +109,8 @@ void bot::get(coord& x, coord& y)
 
 void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 {
-	list<pos> moves;
 	if (boundary_check(x, y))
 		return;
-	build_all_moves(moves);
-	if (moves.size() == 0)
-	{
-		x = -1;
-		y = -1;
-		return;
-	}
 #if SEARCH_WITH_COMPLEXITY_TYPE == 0 // positon estimate
 	pos result = position_estimate(_field);
 	x = _field->to_x(result);
@@ -132,13 +122,13 @@ void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 2 // uct
-	pos result = uct(*_field, *_gen, get_uct_iterations(complexity), moves);
+	pos result = uct(_field, _gen, get_uct_iterations(complexity));
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 3 // minimax with uct
 	pos result =  minimax(_field, get_minimax_depth(complexity));
 	if (result == -1)
-		result = uct(*_field, *_gen, get_uct_iterations(complexity), moves);
+		result = uct(_field, _gen, get_uct_iterations(complexity));
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #else
@@ -148,16 +138,8 @@ void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 
 void bot::get_with_time(coord& x, coord& y, size_t time)
 {
-	list<pos> moves;
 	if (boundary_check(x, y))
 		return;
-	build_all_moves(moves);
-	if (moves.size() == 0)
-	{
-		x = -1;
-		y = -1;
-		return;
-	}
 #if SEARCH_WITH_TIME_TYPE == 0 // position estimate
 	pos result = position_estimate(_field);
 	x = _field->to_x(result);
@@ -165,7 +147,7 @@ void bot::get_with_time(coord& x, coord& y, size_t time)
 #elif SEARCH_WITH_TIME_TYPE == 1 // minimax
 #error Invalid SEARCH_WITH_TIME_TYPE.
 #elif SEARCH_WITH_TIME_TYPE == 2 // uct
-	pos result = uct_with_time(*_field, *_gen, time, moves);
+	pos result = uct_with_time(_field, _gen, time);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_TIME_TYPE == 3 // minimax with uct

@@ -17,16 +17,16 @@ private:
 	mt* _gen;
 	zobrist* _zobrist;
 	field* _field;
-	void build_all_moves(list<pos>& moves) const;
 	size_t get_minimax_depth(size_t complexity);
 	size_t get_uct_iterations(size_t complexity);
+	bool is_field_occupied() const;
+	bool boundary_check(coord& x, coord& y) const;
 public:
 	bot(const coord width, const coord height, const begin_pattern begin_pattern, ptrdiff_t seed);
 	~bot();
 	bool do_step(coord x, coord y, player cur_player);
 	bool undo_step();
 	void set_player(player cur_player);
-	bool boundary_check(coord& x, coord& y);
 	// Возвращает лучший найденный ход.
 	void get(coord& x, coord& y);
 	void get_with_complexity(coord& x, coord& y, size_t complexity);
