@@ -19,6 +19,24 @@
 // Количество итераций uct перед проверкой времени.
 #define UCT_ITERATIONS_BEFORE_CHECK_TIME 100
 
+// Способ поиска лучшего хода.
+// 0 - position estimate
+// 1 - minimax
+// 2 - uct
+// 3 - minimax with uct
+#define SEARCH_TYPE 3
+#define SEARCH_WITH_COMPLEXITY_TYPE 3
+#define SEARCH_WITH_TIME_TYPE 2
+
+#define MIN_MINIMAX_DEPTH 0
+#define MAX_MINIMAX_DEPTH 8
+#define DEFAULT_MINIMAX_DEPTH 8
+#define MIN_UCT_ITERATIONS 0
+#define MAX_UCT_ITERATIONS 100000
+#define DEFAULT_UCT_ITERATIONS 100000
+#define MIN_COMPLEXITY 0
+#define MAX_COMPLEXITY 100
+
 // 1, если компиляция происходит для Windows.
 #define WINDOWS 1
 
