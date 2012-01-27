@@ -216,7 +216,7 @@ pos uct(field& cur_field, mt& gen, size_t max_simulations, list<pos> &moves)
 		mt* local_gen;
 		#pragma omp critical
 		{
-			local_gen = new mt(gen);
+			local_gen = new mt(local_dist(gen));
 		}
 
 		uct_node **cur_child = &n.child;
@@ -277,7 +277,7 @@ pos uct_with_time(field& cur_field, mt& gen, size_t time, list<pos> &moves)
 		mt* local_gen;
 		#pragma omp critical
 		{
-			local_gen = new mt(gen);
+			local_gen = new mt(local_dist(gen));
 		}
 
 		uct_node **cur_child = &n.child;
