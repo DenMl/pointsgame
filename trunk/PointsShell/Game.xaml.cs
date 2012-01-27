@@ -12,7 +12,7 @@ using PointsShell.Enums;
 
 namespace PointsShell
 {
-	public partial class Game
+	public partial class Game : IDisposable
 	{
 		private readonly GamePreferences _preferences;
 		public GamePreferences Preferences
@@ -445,6 +445,11 @@ namespace PointsShell
 			if (_thinking)
 				return;
 			SetNextPlayer();
+		}
+
+		public void Dispose()
+		{
+			_bot.Dispose();
 		}
 	}
 }

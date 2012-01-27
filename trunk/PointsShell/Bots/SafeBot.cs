@@ -6,7 +6,7 @@ using PointsShell.Enums;
 
 namespace PointsShell.Bots
 {
-	class SafeBot
+	class SafeBot : IDisposable
 	{
 		private readonly IBot _bot;
 
@@ -17,6 +17,8 @@ namespace PointsShell.Bots
 		private readonly Queue<Action> _actions;
 
 		private readonly object _syncObj;
+
+		private Thread _thread;
 
 		public SafeBot(IBot bot)
 		{
@@ -35,24 +37,25 @@ namespace PointsShell.Bots
 					return;
 				_executing = true;
 			}
-			(new Thread(() =>
-							{
-								try
-								{
-									while (_actions.Count != 0)
+			_thread = new Thread(() =>
 									{
-										var curAction = _actions.Dequeue();
-										curAction();
-									}
-								}
-								catch (Exception e)
-								{
-									_error = true;
-									MessageBox.Show(e.Message, "PointsShell", MessageBoxButton.OK, MessageBoxImage.Error);
-								}
-								_executing = false;
-								ExecuteNext();
-							})).Start();
+										try
+										{
+											while (_actions.Count != 0)
+											{
+												var curAction = _actions.Dequeue();
+												curAction();
+											}
+										}
+										catch (Exception e)
+										{
+											_error = true;
+											MessageBox.Show(e.Message, "PointsShell", MessageBoxButton.OK, MessageBoxImage.Error);
+										}
+										_executing = false;
+										ExecuteNext();
+									});
+			_thread.Start();
 		}
 
 		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern, Action initSuccess = null)
@@ -170,6 +173,13 @@ namespace PointsShell.Bots
 										getVersionSuccess(version);
 								});
 			ExecuteNext();
+		}
+
+		public void Dispose()
+		{
+			if (_thread != null && _thread.IsAlive)
+				_thread.Abort();
+			_bot.Dispose();
 		}
 	}
 }

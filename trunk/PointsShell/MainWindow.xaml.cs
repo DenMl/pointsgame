@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using PointsShell.Enums;
+using System.Linq;
 
 namespace PointsShell
 {
@@ -18,13 +19,14 @@ namespace PointsShell
 			_globalPreferences = GamePreferences.Load("Preferences.xml");
 
 			MainTabControl.Items.Add(new TabItem { Header = _globalPreferences.TabName, Content = new Game(new GamePreferences(_globalPreferences)) });
-		}
-
-		~MainWindow()
-		{
-			var serializer = new XmlSerializer(typeof(GamePreferences));
-			using (Stream stream = File.Create("Preferences.xml"))
-				serializer.Serialize(stream, _globalPreferences);
+			Closed += (sender, e) =>
+						{
+							foreach (var item in MainTabControl.Items.OfType<TabItem>().Select(o => o.Content).OfType<Game>())
+								item.Dispose();
+							var serializer = new XmlSerializer(typeof(GamePreferences));
+							using (Stream stream = File.Create("Preferences.xml"))
+								serializer.Serialize(stream, _globalPreferences);
+						};
 		}
 
 		private void NewClick(object sender, RoutedEventArgs e)
@@ -47,8 +49,11 @@ namespace PointsShell
 
 		private void CloseClick(object sender, RoutedEventArgs e)
 		{
-			if (MainTabControl.Items.Count > 0)
-				MainTabControl.Items.RemoveAt(MainTabControl.SelectedIndex);
+			if (MainTabControl.Items.Count <= 0)
+				return;
+			if (MainTabControl.SelectedContent is Game)
+				(MainTabControl.SelectedContent as Game).Dispose();
+			MainTabControl.Items.Remove(MainTabControl.SelectedItem);
 		}
 
 		private void SaveClick(object sender, RoutedEventArgs e)

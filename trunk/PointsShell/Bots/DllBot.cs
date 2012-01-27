@@ -33,11 +33,6 @@ namespace PointsShell.Bots
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_verion")]
 		private static extern string DllGetVersion();
 
-		~DllBot()
-		{
-			Final();
-		}
-
 		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
 		{
 			if (_handle != IntPtr.Zero)
@@ -47,9 +42,16 @@ namespace PointsShell.Bots
 
 		public void Final()
 		{
-			if (_handle != IntPtr.Zero)
+			if (_handle == IntPtr.Zero)
+				return;
+			try
+			{
 				DllFinal(_handle);
-			_handle = IntPtr.Zero;
+			}
+			finally
+			{
+				_handle = IntPtr.Zero;
+			}
 		}
 
 		public void PutPoint(Pos pos, PlayerColor player)
@@ -108,6 +110,11 @@ namespace PointsShell.Bots
 			if (_handle == IntPtr.Zero)
 				throw new Exception("get_version: Not initialized.");
 			return DllGetVersion();
+		}
+
+		public void Dispose()
+		{
+			Final();
 		}
 	}
 }
