@@ -48,7 +48,7 @@ namespace PointsShell.Bots
 								catch (Exception e)
 								{
 									_error = true;
-									MessageBox.Show(e.Message);
+									MessageBox.Show(e.Message, "PointsShell", MessageBoxButton.OK, MessageBoxImage.Error);
 								}
 								_executing = false;
 								ExecuteNext();
