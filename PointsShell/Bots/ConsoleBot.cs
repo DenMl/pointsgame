@@ -29,7 +29,6 @@ namespace PointsShell.Bots
 			_bot = new Process
 			      	{
 			      		EnableRaisingEvents = false,
-						PriorityClass = ProcessPriorityClass.Idle,
 			      		StartInfo =
 			      			{
 			      				UseShellExecute = false,
@@ -42,6 +41,7 @@ namespace PointsShell.Bots
 			      	};
 			if (!_bot.Start())
 				throw new Exception("Error while starting.");
+			_bot.PriorityClass = ProcessPriorityClass.Idle;
 			// list_commands
 			var id = _random.Next();
 			_bot.StandardInput.WriteLine("{0} list_commands", id);
@@ -91,14 +91,14 @@ namespace PointsShell.Bots
 			if (!_commands.Contains("play"))
 				throw new Exception("play: Not supported.");
 			var id = _random.Next();
-			_bot.StandardInput.WriteLine("{0} play {1} {2} {3}", id, pos.X, pos.Y, player);
+			_bot.StandardInput.WriteLine("{0} play {1} {2} {3}", id, pos.X, pos.Y, (int)player);
 			var answer = _bot.StandardOutput.ReadLine();
 			if (answer == null)
 				throw new Exception("play: Answer is null.");
 			var splittedAnswer = answer.Split();
 			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "play")
 				throw new Exception("play: Error while executing.");
-			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "play" || splittedAnswer[3] != pos.X.ToString() || splittedAnswer[4] != pos.Y.ToString() || splittedAnswer[5] != player.ToString())
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "play" || splittedAnswer[3] != pos.X.ToString() || splittedAnswer[4] != pos.Y.ToString() || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("play: Invalid answer.");
 		}
 
@@ -128,14 +128,14 @@ namespace PointsShell.Bots
 			if (!_commands.Contains("gen_move"))
 				throw new Exception("gen_move: Not supported.");
 			var id = _random.Next();
-			_bot.StandardInput.WriteLine("{0} gen_move {1}", id, player);
+			_bot.StandardInput.WriteLine("{0} gen_move {1}", id, (int)player);
 			var answer = _bot.StandardOutput.ReadLine();
 			if (answer == null)
 				throw new Exception("gen_move: Answer is null.");
 			var splittedAnswer = answer.Split();
 			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "gen_move")
 				throw new Exception("gen_move: Error while executing.");
-			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != player.ToString())
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("gen_move: Error while executing.");
 			return new Pos(x, y);
 		}
@@ -148,14 +148,14 @@ namespace PointsShell.Bots
 			if (!_commands.Contains("gen_move_with_complexity"))
 				throw new Exception("gen_move_with_complexity: Not supported.");
 			var id = _random.Next();
-			_bot.StandardInput.WriteLine("{0} gen_move_with_complexity {1} {2}", id, player, complexity);
+			_bot.StandardInput.WriteLine("{0} gen_move_with_complexity {1} {2}", id, (int)player, complexity);
 			var answer = _bot.StandardOutput.ReadLine();
 			if (answer == null)
 				throw new Exception("gen_move_with_complexity: Answer is null.");
 			var splittedAnswer = answer.Split();
 			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "gen_move_with_complexity")
 				throw new Exception("gen_move_with_complexity: Error while executing.");
-			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_complexity" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != player.ToString())
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_complexity" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("gen_move_with_complexity: Error while executing.");
 			return new Pos(x, y);
 		}
@@ -168,14 +168,14 @@ namespace PointsShell.Bots
 			if (!_commands.Contains("gen_move_with_time"))
 				throw new Exception("gen_move_with_time: Not supported.");
 			var id = _random.Next();
-			_bot.StandardInput.WriteLine("{0} gen_move_with_time {1} {2}", id, player, time);
+			_bot.StandardInput.WriteLine("{0} gen_move_with_time {1} {2}", id, (int)player, time);
 			var answer = _bot.StandardOutput.ReadLine();
 			if (answer == null)
 				throw new Exception("gen_move_with_time: Answer is null.");
 			var splittedAnswer = answer.Split();
 			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "gen_move_with_time")
 				throw new Exception("gen_move_with_time: Error while executing.");
-			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_time" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != player.ToString())
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_time" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("gen_move_with_time: Error while executing.");
 			return new Pos(x, y);
 		}
