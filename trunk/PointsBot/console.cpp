@@ -8,23 +8,6 @@
 
 bot *main_bot;
 
-const uint min_minimax_depth = 0;
-const uint max_minimax_depth = 8;
-const ulong min_uct_iterations = 0;
-const ulong max_uct_iterations = 100000;
-const ulong min_p = 0;
-const ulong max_p = 100;
-
-inline uint get_minimax_depth(ulong p)
-{
-	return (p - min_p) * (max_minimax_depth - min_minimax_depth) / (max_p - min_p) + min_minimax_depth;
-}
-
-inline ulong get_uct_iterations(ulong p)
-{
-	return (p - min_p) * (max_uct_iterations - min_uct_iterations) / (max_p - min_p) + min_uct_iterations;
-}
-
 void gen_move(size_t id)
 {
 	player cur_player;
@@ -38,7 +21,7 @@ void gen_move(size_t id)
 	else
 	{
 		main_bot->set_player(cur_player);
-		main_bot->minimax_uct_best_move(x, y, 8, 100000);
+		main_bot->get(x, y);
 		if (x == -1 || y == -1)
 			cout << "?" << " " << id << " " << "gen_move" << endl;
 		else
@@ -60,7 +43,7 @@ void gen_move_with_complexity(size_t id)
 	else
 	{
 		main_bot->set_player(cur_player);
-		main_bot->minimax_uct_best_move(x, y, get_minimax_depth(p), get_uct_iterations(p));
+		main_bot->get_with_complexity(x, y, p);
 		if (x == -1 || y == -1)
 			cout << "?" << " " << id << " " << "gen_move_with_complexity" << endl;
 		else
@@ -82,7 +65,7 @@ void gen_move_with_time(size_t id)
 	else
 	{
 		main_bot->set_player(cur_player);
-		main_bot->uct_with_time_best_move(x, y, time);
+		main_bot->get_with_time(x, y, time);
 		if (x == -1 || y == -1)
 			cout << "?" << " " << id << " " << "gen_move_with_time" << endl;
 		else
