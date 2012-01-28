@@ -17,7 +17,7 @@ using namespace std;
 // На выходе оценка позиции для CurPlayer (до хода Pos).
 score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last, score alpha, score beta, int* empty_board)
 {
-	trajectories cur_trajectories(*cur_field, empty_board);
+	trajectories cur_trajectories(cur_field, empty_board);
 
 	// Делаем ход, выбранный на предыдущем уровне рекурсии, после чего этот ход становится вражеским.
 	cur_field->do_unsafe_step(cur_pos);
@@ -35,10 +35,10 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 		return -SCORE_INFINITY; // Для CurPlayer это хорошо, то есть оценка Infinity.
 	}
 
-	cur_trajectories.build_trajectories(*last, cur_pos);
+	cur_trajectories.build_trajectories(last, cur_pos);
 	
-	vector<pos> moves;
-	cur_trajectories.get_points(moves);
+	list<pos> moves;
+	cur_trajectories.get_points(&moves);
 
 	if (moves.size() == 0)
 	{
@@ -47,7 +47,7 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 		return -best_estimate;
 	}
 
-	for (auto i = moves.begin(); i < moves.end(); i++)
+	for (auto i = moves.begin(); i != moves.end(); i++)
 	{
 		score cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -beta, -alpha, empty_board);
 		if (cur_estimate > alpha)
@@ -68,7 +68,7 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 pos minimax(field* cur_field, size_t depth)
 {
 	// Главные траектории - свои и вражеские.
-	trajectories cur_trajectories(*cur_field, NULL, depth);
+	trajectories cur_trajectories(cur_field, NULL, depth);
 	vector<pos> moves;
 	pos result;
 
@@ -78,7 +78,7 @@ pos minimax(field* cur_field, size_t depth)
 
 	// Получаем ходы из траекторий (которые имеет смысл рассматривать), и находим пересечение со входными возможными точками.
 	cur_trajectories.build_trajectories();
-	cur_trajectories.get_points(moves);
+	cur_trajectories.get_points(&moves);
 	// Если нет возможных ходов, входящих в траектории - выходим.
 	if (moves.size() == 0)
 		return -1;

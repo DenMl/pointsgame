@@ -18,19 +18,19 @@ namespace PointsShell.Bots
 		private static extern IntPtr DllInit(int width, int height, IntPtr seed);
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "final")]
 		private static extern void DllFinal(IntPtr field);
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "put_point")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "play")]
 		private static extern void DllPutPoint(IntPtr field, int x, int y, PlayerColor player);
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "remove_last_point")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "undo")]
 		private static extern void DllRemoveLastPoint(IntPtr field);
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_move")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gen_move")]
 		private static extern void DllGetMove(IntPtr field, ref int x, ref int y, PlayerColor player);
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_move_with_complexity")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gen_move_with_complexity")]
 		private static extern void DllGetMoveWithComplexity(IntPtr field, ref int x, ref int y, PlayerColor player, int complexity);
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_move_with_time")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "gen_move_with_time")]
 		private static extern void DllGetMoveWithTime(IntPtr field, ref int x, ref int y, PlayerColor player, int time);
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_name")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "name")]
 		private static extern string DllGetName();
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "get_verion")]
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "verion")]
 		private static extern string DllGetVersion();
 
 		public void Init(int width, int height, SurroundCond surCond, BeginPattern beginPattern)
@@ -58,7 +58,7 @@ namespace PointsShell.Bots
 		{
 			if (_handle == IntPtr.Zero)
 				throw new Exception("put_point: Not initialized.");
-			DllPutPoint(_handle, pos.X, pos.Y, player);
+			DllPutPoint(_handle, pos.X - 1, pos.Y - 1, player);
 		}
 
 		public void RemoveLastPoint()
@@ -75,7 +75,7 @@ namespace PointsShell.Bots
 			var x = 0;
 			var y = 0;
 			DllGetMove(_handle, ref x, ref y, player);
-			return new Pos(x, y);
+			return new Pos(x + 1, y + 1);
 		}
 
 		public Pos GetMoveWithComplexity(PlayerColor player, int complexity)
@@ -85,7 +85,7 @@ namespace PointsShell.Bots
 			var x = 0;
 			var y = 0;
 			DllGetMoveWithComplexity(_handle, ref x, ref y, player, complexity);
-			return new Pos(x, y);
+			return new Pos(x + 1, y + 1);
 		}
 
 		public Pos GetMoveWithTime(PlayerColor player, int time)
@@ -95,7 +95,7 @@ namespace PointsShell.Bots
 			var x = 0;
 			var y = 0;
 			DllGetMoveWithTime(_handle, ref x, ref y, player, time);
-			return new Pos(x, y);
+			return new Pos(x + 1, y + 1);
 		}
 
 		public string GetName()

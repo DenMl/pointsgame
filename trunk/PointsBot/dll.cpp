@@ -5,23 +5,6 @@
 #include "bot.h"
 #include <Windows.h>
 
-const uint min_minimax_depth = 0;
-const uint max_minimax_depth = 8;
-const ulong min_uct_iterations = 0;
-const ulong max_uct_iterations = 100000;
-const ulong min_p = 0;
-const ulong max_p = 100;
-
-inline uint get_minimax_depth(ulong p)
-{
-	return (p - min_p) * (max_minimax_depth - min_minimax_depth) / (max_p - min_p) + min_minimax_depth;
-}
-
-inline ulong get_uct_iterations(ulong p)
-{
-	return (p - min_p) * (max_uct_iterations - min_uct_iterations) / (max_p - min_p) + min_uct_iterations;
-}
-
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
 	switch (ul_reason_for_call)
@@ -48,40 +31,40 @@ void final(bot* cur_bot)
 	delete cur_bot;
 }
 
-void put_point(bot* cur_bot, coord x, coord y, player cur_player)
+void play(bot* cur_bot, coord x, coord y, player cur_player)
 {
 	cur_bot->do_step(x, y, cur_player);
 }
 
-void remove_last_point(bot* cur_bot)
+void undo(bot* cur_bot)
 {
 	cur_bot->undo_step();
 }
 
-void get_move(bot* cur_bot, coord& x, coord& y, player cur_player)
+void gen_move(bot* cur_bot, coord& x, coord& y, player cur_player)
 {
 	cur_bot->set_player(cur_player);
 	cur_bot->get(x, y);
 }
 
-void get_move_with_complexity(bot* cur_bot, coord& x, coord& y, player cur_player, int complexity)
+void gen_move_with_complexity(bot* cur_bot, coord& x, coord& y, player cur_player, int complexity)
 {
 	cur_bot->set_player(cur_player);
 	cur_bot->get_with_complexity(x, y, complexity);
 }
 
-void get_move_with_time(bot* cur_bot, coord& x, coord& y, player cur_player, int time)
+void gen_move_with_time(bot* cur_bot, coord& x, coord& y, player cur_player, int time)
 {
 	cur_bot->set_player(cur_player);
 	cur_bot->get_with_time(x, y, time);
 }
 
-wchar_t* get_name()
+wchar_t* name()
 {
 	return L"kkai";
 }
 
-wchar_t* get_version()
+wchar_t* version()
 {
 	return L"2.0.0.0";
 }

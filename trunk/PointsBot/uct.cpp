@@ -20,10 +20,10 @@ short play_random_game(field* cur_field, mt* gen, vector<pos>* possible_moves)
 	player result;
 
 	moves[0] = (*possible_moves)[0];
-	for (uint i = 1; i < possible_moves->size(); i++)
+	for (size_t i = 1; i < possible_moves->size(); i++)
 	{
-		random::uniform_int_distribution<uint> dist(0, i);
-		uint j = dist(*gen);
+		random::uniform_int_distribution<size_t> dist(0, i);
+		size_t j = dist(*gen);
 		moves[i] = moves[j];
 		moves[j] = (*possible_moves)[i];
 	}
@@ -42,7 +42,7 @@ short play_random_game(field* cur_field, mt* gen, vector<pos>* possible_moves)
 	else
 		result = -1;
 
-	for (uint i = 0; i < putted; i++)
+	for (size_t i = 0; i < putted; i++)
 		cur_field->undo_step();
 
 	return result;
@@ -70,8 +70,8 @@ uct_node* uct_select(mt* gen, uct_node* n)
 	{
 		if (next->visits > 0)
 		{
-			winrate = ((double)next->wins)/next->visits;
-			uct = UCTK * sqrt(log((double)n->visits) / (5 * next->visits));
+			winrate = static_cast<double>(next->wins)/next->visits;
+			uct = UCTK * sqrt(log(static_cast<double>(n->visits)) / (5 * next->visits));
 			uctvalue = winrate + uct;
 		}
 		else
@@ -105,7 +105,7 @@ short play_simulation(field* cur_field, mt* gen, vector<pos>* possible_moves, uc
 		if (n->child == NULL)
 			create_children(cur_field, possible_moves, n);
 
-		uct_node *next = uct_select(gen, n);
+		uct_node* next = uct_select(gen, n);
 
 		if (next == NULL)
 		{
@@ -197,7 +197,7 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 {
 	// Список всех возможных ходов для UCT.
 	vector<pos> moves;
-	double best_estimate = -1;
+	double best_estimate = 0;
 	pos result = -1;
 
 	generate_possible_moves(cur_field, &moves);
@@ -215,7 +215,7 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 			local_gen = new mt(local_dist(*gen));
 		}
 
-		uct_node **cur_child = &n.child;
+		uct_node** cur_child = &n.child;
 		for (auto i = moves.begin() + omp_get_thread_num(); i < moves.end(); i += omp_get_num_threads())
 		{
 			*cur_child = new uct_node();
@@ -223,12 +223,12 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 			cur_child = &(*cur_child)->sibling;
 		}
 
-		for (ulong i = 0; i < max_simulations; i++)
+		for (size_t i = 0; i < max_simulations; i++)
 			play_simulation(local_field, local_gen, &moves, &n);
 
 		#pragma omp critical
 		{
-			uct_node *next = n.child; 
+			uct_node* next = n.child; 
 			while (next != NULL)
 			{
 				double cur_estimate = static_cast<double>(next->wins) / next->visits;
@@ -253,7 +253,7 @@ pos uct_with_time(field* cur_field, mt* gen, size_t time)
 {
 	// Список всех возможных ходов для UCT.
 	vector<pos> moves;
-	double best_estimate = -1;
+	double best_estimate = 0;
 	pos result = -1;
 	timer t;
 
@@ -272,7 +272,7 @@ pos uct_with_time(field* cur_field, mt* gen, size_t time)
 			local_gen = new mt(local_dist(*gen));
 		}
 
-		uct_node **cur_child = &n.child;
+		uct_node** cur_child = &n.child;
 		for (auto i = moves.begin() + omp_get_thread_num(); i < moves.end(); i += omp_get_num_threads())
 		{
 			*cur_child = new uct_node();
@@ -281,12 +281,12 @@ pos uct_with_time(field* cur_field, mt* gen, size_t time)
 		}
 
 		while (t.get() < time)
-			for (uint i = 0; i < UCT_ITERATIONS_BEFORE_CHECK_TIME; i++)
+			for (size_t i = 0; i < UCT_ITERATIONS_BEFORE_CHECK_TIME; i++)
 				play_simulation(local_field, local_gen, &moves, &n);
 
 		#pragma omp critical
 		{
-			uct_node *next = n.child;
+			uct_node* next = n.child;
 			while (next != NULL)
 			{
 				double cur_estimate = static_cast<double>(next->wins) / next->visits;

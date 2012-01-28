@@ -36,51 +36,60 @@ private:
 			if (cur_hash == i->hash())
 				return; // В теории возможны коллизии. Неплохо было бы сделать точную проверку.
 
-		_trajectories[cur_player].push_back(trajectory(begin, end, *_zobrist, cur_hash));
+		_trajectories[cur_player].push_back(trajectory(begin, end, _zobrist, cur_hash));
 	}
-	inline void add_trajectory(trajectory &cur_trajectory, player cur_player)
+	inline void add_trajectory(trajectory* cur_trajectory, player cur_player)
 	{
-		_trajectories[cur_player].push_back(trajectory(cur_trajectory));
+		_trajectories[cur_player].push_back(trajectory(*cur_trajectory));
 	}
-	inline void add_trajectory(trajectory &cur_trajectory, pos cur_pos, player cur_player)
+	inline void add_trajectory(trajectory* cur_trajectory, pos cur_pos, player cur_player)
 	{
-		if (cur_trajectory.size() == 1)
+		if (cur_trajectory->size() == 1)
 			return;
 
-		_trajectories[cur_player].push_back(trajectory(*_zobrist));
-		for (auto i = cur_trajectory.begin(); i != cur_trajectory.end(); i++)
+		_trajectories[cur_player].push_back(trajectory(_zobrist));
+		for (auto i = cur_trajectory->begin(); i != cur_trajectory->end(); i++)
 			if (*i != cur_pos)
 				_trajectories[cur_player].back().push_back(*i);
 	}
-	score build_trajectories_recursive(size_t depth, player cur_player)
+	void build_trajectories_recursive(size_t depth, player cur_player)
 	{
-		score max_score = _field->get_score(cur_player), cur_score;
 		for (pos cur_pos = _field->min_pos(); cur_pos <= _field->max_pos(); cur_pos++)
 		{
 			if (_field->putting_allow(cur_pos) && _field->is_near_points(cur_pos, cur_player))
 			{
-				_field->do_unsafe_step(cur_pos, cur_player);
-
-				if (_field->is_in_empty_base(cur_pos) && _field->get_d_score(cur_player) <= 0)
-					continue;
-
-				if (_field->get_d_score(cur_player) > 0)
-					add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
-				if (depth > 0)
-					cur_score = build_trajectories_recursive(depth - 1, cur_player);
+				if (_field->is_in_empty_base(cur_pos)) // Если поставили в пустую базу (свою или нет), то дальше строить траекторию нет нужды.
+				{
+					_field->do_unsafe_step(cur_pos, cur_player);
+					if (_field->get_d_score(cur_player) > 0)
+						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
+					_field->undo_step();
+				}
 				else
-					cur_score = _field->get_score(cur_player);
-				if (cur_score > max_score)
-					max_score = cur_score;
+				{
+					_field->do_unsafe_step(cur_pos, cur_player);
 
-				_field->undo_step();
+#if SUR_COND == 1
+					if (_field->is_base_bound(cur_pos) && _field->get_d_score(cur_player) == 0)
+					{
+						_field->undo_step();
+						continue;
+					}
+#endif
+
+					if (_field->get_d_score(cur_player) > 0)
+						add_trajectory(_field->points_seq.end() - (_depth[cur_player] - depth), _field->points_seq.end(), cur_player);
+					else if (depth > 0)
+						build_trajectories_recursive(depth - 1, cur_player);
+
+					_field->undo_step();
+				}
 			}
 		}
-		return max_score;
 	}
-	inline void project(trajectory &cur_trajectory)
+	inline void project(trajectory* cur_trajectory)
 	{
-		for (auto j = cur_trajectory.begin(); j != cur_trajectory.end(); j++)
+		for (auto j = cur_trajectory->begin(); j != cur_trajectory->end(); j++)
 			_trajectories_board[*j]++;
 	}
 	// Проецирует траектории на доску TrajectoriesBoard (для каждой точки Pos очередной траектории инкрементирует TrajectoriesBoard[Pos]).
@@ -89,16 +98,16 @@ private:
 	{
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (!i->excluded())
-				project(*i);
+				project(&(*i));
 	}
 	inline void project()
 	{
 		project(player_red);
 		project(player_black);
 	}
-	inline void unproject(trajectory &cur_trajectory)
+	inline void unproject(trajectory* cur_trajectory)
 	{
-		for (auto j = cur_trajectory.begin(); j != cur_trajectory.end(); j++)
+		for (auto j = cur_trajectory->begin(); j != cur_trajectory->end(); j++)
 			_trajectories_board[*j]--;
 	}
 	// Удаляет проекцию траекторий с доски TrajectoriesBoard.
@@ -106,7 +115,7 @@ private:
 	{
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (!i->excluded())
-				unproject(*i);
+				unproject(&(*i));
 	}
 	inline void unproject()
 	{
@@ -124,11 +133,11 @@ private:
 		include_all_trajectories(player_black);
 	}
 	// Возвращает хеш Зобриста пересечения двух траекторий.
-	inline ulong get_intersect_hash(trajectory &t1, trajectory &t2)
+	inline ulong get_intersect_hash(trajectory* t1, trajectory* t2)
 	{
-		ulong result_hash = t1.hash();
-		for (auto i = t2.begin(); i != t2.end(); i++)
-			if (find(t1.begin(), t1.end(), *i) == t1.end())
+		ulong result_hash = t1->hash();
+		for (auto i = t2->begin(); i != t2->end(); i++)
+			if (find(t1->begin(), t1->end(), *i) == t1->end())
 				result_hash ^= _zobrist->get_hash(*i);
 		return result_hash;
 	}
@@ -151,7 +160,7 @@ private:
 			{
 				need_exclude = true;
 				i->exclude();
-				unproject(*i);
+				unproject(&(*i));
 			}
 		}
 
@@ -170,7 +179,7 @@ private:
 			for (i = _trajectories[cur_player].begin(); i != --_trajectories[cur_player].end(); i++)
 				if (k->size() > i->size())
 					for (j = i, j++; j != _trajectories[cur_player].end(); j++)
-						if (k->size() > j->size() && k->hash() == get_intersect_hash(*i, *j))
+						if (k->size() > j->size() && k->hash() == get_intersect_hash(&(*i), &(*j)))
 							k->exclude();
 	}
 	inline void exclude_composite_trajectories()
@@ -179,24 +188,24 @@ private:
 		exclude_composite_trajectories(player_black);
 	}
 	template<typename _Cont>
-	inline void get_points(_Cont &moves, player cur_player)
+	inline void get_points(_Cont* moves, player cur_player)
 	{
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (!i->excluded())
 				for (auto j = i->begin(); j != i->end(); j++)
-					if (find(moves.begin(), moves.end(), *j) == moves.end())
-						moves.push_back(*j);
+					if (find(moves->begin(), moves->end(), *j) == moves->end())
+						moves->push_back(*j);
 	}
 
 public:
-	inline trajectories(field &cur_field, int* empty_board = NULL, size_t depth = 0)
+	inline trajectories(field* cur_field, int* empty_board = NULL, size_t depth = 0)
 	{
-		_field = &cur_field;
+		_field = cur_field;
 		_depth[get_cur_player()] = (depth + 1) / 2;
 		_depth[get_enemy_player()] = depth / 2;
 		if (empty_board == NULL)
 		{
-			_trajectories_board = new int[cur_field.length()];
+			_trajectories_board = new int[cur_field->length()];
 			fill_n(_trajectories_board, _field->length(), 0);
 			_trajectories_board_owner = true;
 		}
@@ -205,7 +214,7 @@ public:
 			_trajectories_board = empty_board;
 			_trajectories_board_owner = false;
 		}
-		_zobrist = &cur_field.get_zobrist();
+		_zobrist = &cur_field->get_zobrist();
 	}
 	~trajectories()
 	{
@@ -239,21 +248,31 @@ public:
 		build_trajectories(get_cur_player());
 		build_trajectories(get_enemy_player());
 	}
-	void build_trajectories(trajectories &last, pos cur_pos)
+	void build_trajectories(trajectories* last, pos cur_pos)
 	{
-		_depth[get_cur_player()] = last._depth[get_cur_player()];
-		_depth[get_enemy_player()] = last._depth[get_enemy_player()] - 1;
+		_depth[get_cur_player()] = last->_depth[get_cur_player()];
+		_depth[get_enemy_player()] = last->_depth[get_enemy_player()] - 1;
 
 		if (_depth[get_cur_player()] > 0)
 			build_trajectories_recursive(_depth[get_cur_player()] - 1, get_cur_player());
 
 		if (_depth[get_enemy_player()] > 0)
-			for (auto i = last._trajectories[get_enemy_player()].begin(); i != last._trajectories[get_enemy_player()].end(); i++)
-				if ((i->size() <= _depth[get_enemy_player()] || (i->size() == _depth[get_enemy_player()] + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(*_field, cur_pos))
-					add_trajectory(*i, cur_pos, get_enemy_player());
+			for (auto i = last->_trajectories[get_enemy_player()].begin(); i != last->_trajectories[get_enemy_player()].end(); i++)
+				if ((i->size() <= _depth[get_enemy_player()] || (i->size() == _depth[get_enemy_player()] + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(_field, cur_pos))
+					add_trajectory(&(*i), cur_pos, get_enemy_player());
+	}
+	inline void sort_moves(vector<pos>* moves) const
+	{
+		// Сортируем точки по убыванию количества траекторий, в которые они входят.
+		sort(moves->begin(), moves->end(), [&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
+	}
+	inline void sort_moves(list<pos>* moves) const
+	{
+		// Сортируем точки по убыванию количества траекторий, в которые они входят.
+		moves->sort([&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
 	}
 	template<typename _Cont>
-	void get_points(_Cont &moves)
+	void get_points(_Cont* moves)
 	{
 		exclude_composite_trajectories();
 		// Проецируем неисключенные траектории на доску.
@@ -261,12 +280,11 @@ public:
 		// Исключаем те траектории, у которых имеется более одной точки, принадлежащей только ей.
 		exclude_unnecessary_trajectories();
 		// Получаем список точек, входящих в оставшиеся неисключенные траектории.
-		moves.clear();
+		moves->clear();
 		get_points(moves, player_red);
 		get_points(moves, player_black);
 #if ALPHABETA_SORT
-		// Сортируем точки по убыванию количества траекторий, в которые они входят.
-		sort(moves.begin(), moves.end(), [&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
+		sort_moves(moves);
 #endif
 		// Очищаем доску от проекций.
 		unproject();
