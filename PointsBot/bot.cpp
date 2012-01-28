@@ -94,12 +94,16 @@ void bot::get(coord& x, coord& y)
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 2 // uct
 	pos result = uct(_field, _gen, DEFAULT_UCT_ITERATIONS);
+	if (result == -1)
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_TYPE == 3 // minimax with uct
 	pos result =  minimax(_field, DEFAULT_MINIMAX_DEPTH);
 	if (result == -1)
 		result = uct(_field, _gen, DEFAULT_UCT_ITERATIONS);
+	if (result == -1)
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #else
@@ -123,12 +127,16 @@ void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 2 // uct
 	pos result = uct(_field, _gen, get_uct_iterations(complexity));
+	if (result == -1)
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_COMPLEXITY_TYPE == 3 // minimax with uct
 	pos result =  minimax(_field, get_minimax_depth(complexity));
 	if (result == -1)
 		result = uct(_field, _gen, get_uct_iterations(complexity));
+	if (result == -1)
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #else
@@ -148,6 +156,8 @@ void bot::get_with_time(coord& x, coord& y, size_t time)
 #error Invalid SEARCH_WITH_TIME_TYPE.
 #elif SEARCH_WITH_TIME_TYPE == 2 // uct
 	pos result = uct_with_time(_field, _gen, time);
+	if (result == -1)
+		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_TIME_TYPE == 3 // minimax with uct

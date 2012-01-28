@@ -92,7 +92,7 @@ namespace PointsShell.Bots
 			if (!_commands.Contains("play"))
 				throw new Exception("play: Not supported.");
 			var id = _random.Next();
-			_bot.StandardInput.WriteLine("{0} play {1} {2} {3}", id, pos.X, pos.Y, (int)player);
+			_bot.StandardInput.WriteLine("{0} play {1} {2} {3}", id, pos.X - 1, pos.Y - 1, (int)player);
 			var answer = _bot.StandardOutput.ReadLine();
 			if (answer == null)
 				throw new Exception("play: Answer is null.");
@@ -138,7 +138,7 @@ namespace PointsShell.Bots
 				throw new Exception("gen_move: Error while executing.");
 			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("gen_move: Error while executing.");
-			return new Pos(x, y);
+			return new Pos(x + 1, y + 1);
 		}
 
 		public Pos GetMoveWithComplexity(PlayerColor player, int complexity)
@@ -158,7 +158,7 @@ namespace PointsShell.Bots
 				throw new Exception("gen_move_with_complexity: Error while executing.");
 			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_complexity" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("gen_move_with_complexity: Error while executing.");
-			return new Pos(x, y);
+			return new Pos(x + 1, y + 1);
 		}
 
 		public Pos GetMoveWithTime(PlayerColor player, int time)
@@ -178,7 +178,7 @@ namespace PointsShell.Bots
 				throw new Exception("gen_move_with_time: Error while executing.");
 			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "gen_move_with_time" || !int.TryParse(splittedAnswer[3], out x) || !int.TryParse(splittedAnswer[4], out y) || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("gen_move_with_time: Error while executing.");
-			return new Pos(x, y);
+			return new Pos(x + 1, y + 1);
 		}
 
 		public string GetName()

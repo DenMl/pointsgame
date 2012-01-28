@@ -14,9 +14,9 @@ private:
 	bool _excluded;
 
 public:
-	inline trajectory(zobrist &cur_zobrist) { _hash = 0; _excluded = false; _zobrist = &cur_zobrist; }
-	template<typename _InIt> inline trajectory(_InIt first, _InIt last, zobrist &cur_zobrist) { _hash = 0; _excluded = false; _zobrist = &cur_zobrist; assign(first, last); }
-	template<typename _InIt> inline trajectory(_InIt first, _InIt last, zobrist &cur_zobrist, size_t hash) { _hash = 0; _excluded = false; _zobrist = &cur_zobrist; assign(first, last, hash); }
+	inline trajectory(zobrist* cur_zobrist) { _hash = 0; _excluded = false; _zobrist = cur_zobrist; }
+	template<typename _InIt> inline trajectory(_InIt first, _InIt last, zobrist* cur_zobrist) { _hash = 0; _excluded = false; _zobrist = cur_zobrist; assign(first, last); }
+	template<typename _InIt> inline trajectory(_InIt first, _InIt last, zobrist* cur_zobrist, size_t hash) { _hash = 0; _excluded = false; _zobrist = cur_zobrist; assign(first, last, hash); }
 	inline trajectory(const trajectory &other) { _points = other._points; _hash = other._hash; _excluded = other._excluded; _zobrist = other._zobrist; }
 	inline size_t size() const { return _points.size(); }
 	inline bool empty() const { return _points.empty(); }
@@ -52,18 +52,18 @@ public:
 	inline bool excluded() const { return _excluded; }
 
 	// Проверяет, во все ли точки траектории можно сделать ход.
-	inline bool is_valid(field &cur_field) const
+	inline bool is_valid(field* cur_field) const
 	{
 		for (auto i = _points.begin(); i != _points.end(); i++)
-			if (!cur_field.putting_allow(*i))
+			if (!cur_field->putting_allow(*i))
 				return false;
 		return true;
 	}
 	// Проверяет, во все ли точки траектории можно сделать ход, кроме, возможно, точки cur_pos.
-	inline bool is_valid(field &cur_field, pos cur_pos) const
+	inline bool is_valid(field* cur_field, pos cur_pos) const
 	{
 		for (auto i = _points.begin(); i != _points.end(); i++)
-			if (*i != cur_pos && !cur_field.putting_allow(*i))
+			if (*i != cur_pos && !cur_field->putting_allow(*i))
 				return false;
 		return true;
 	}

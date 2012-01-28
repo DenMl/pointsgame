@@ -13,11 +13,6 @@ bool field_serializer::to_xt(field &cur_field, string file_name)
 	if (cur_field.width() != 39 || cur_field.height() != 32 || cur_field.points_seq.size() == 0)
 		return false;
 
-#if SURROUND_CONDITIONS
-	if (cur_field.get_sur_cond() != SUR_COND_STANDART)
-		return false;
-#endif
-
 	ofstream stream(file_name, ios::binary | ios::out | ios::trunc);
 
 	if (!stream)
