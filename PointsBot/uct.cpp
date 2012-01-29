@@ -178,19 +178,13 @@ template<typename _Cont> void generate_possible_moves(field* cur_field, _Cont* p
 	delete r_field;
 }
 
-void recursive_final_uct(uct_node* n)
-{
-	if (n->child != NULL)
-		recursive_final_uct(n->child);
-	if (n->sibling != NULL)
-		recursive_final_uct(n->sibling);
-	delete n;
-}
-
 void final_uct(uct_node* n)
 {
 	if (n->child != NULL)
-		recursive_final_uct(n->child);
+		final_uct(n->child);
+	if (n->sibling != NULL)
+		final_uct(n->sibling);
+	delete n;
 }
 
 pos uct(field* cur_field, mt* gen, size_t max_simulations)
@@ -223,6 +217,7 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 			cur_child = &(*cur_child)->sibling;
 		}
 
+		#pragma omp for
 		for (size_t i = 0; i < max_simulations; i++)
 			play_simulation(local_field, local_gen, &moves, &n);
 
@@ -241,7 +236,8 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 			}
 		}
 
-		final_uct(&n);
+		if (n.child != NULL)
+			final_uct(n.child);
 		delete local_gen;
 		delete local_field;
 	}
