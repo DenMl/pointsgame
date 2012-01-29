@@ -218,7 +218,7 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 		}
 
 		#pragma omp for
-		for (size_t i = 0; i < max_simulations; i++)
+		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(max_simulations); i++)
 			play_simulation(local_field, local_gen, &moves, &n);
 
 		#pragma omp critical
