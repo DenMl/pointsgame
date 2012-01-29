@@ -99,7 +99,7 @@ namespace PointsShell.Bots
 			var splittedAnswer = answer.Split();
 			if (splittedAnswer.Length == 3 && splittedAnswer[0] == "?" && splittedAnswer[1] == id.ToString() && splittedAnswer[2] == "play")
 				throw new Exception("play: Error while executing.");
-			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "play" || splittedAnswer[3] != pos.X.ToString() || splittedAnswer[4] != pos.Y.ToString() || splittedAnswer[5] != ((int)player).ToString())
+			if (splittedAnswer.Length != 6 || splittedAnswer[0] != "=" || splittedAnswer[1] != id.ToString() || splittedAnswer[2] != "play" || splittedAnswer[3] != (pos.X - 1).ToString() || splittedAnswer[4] != (pos.Y - 1).ToString() || splittedAnswer[5] != ((int)player).ToString())
 				throw new Exception("play: Invalid answer.");
 		}
 
