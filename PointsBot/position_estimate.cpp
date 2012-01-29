@@ -8,11 +8,11 @@
 using namespace std;
 
 // Учет позиционных эвристик.
-short position_estimate(field* cur_field, pos cur_pos, player cur_player)
+int position_estimate(field* cur_field, pos cur_pos, player cur_player)
 {
-	short g1, g2;
-	short c1, c2;
-	short result;
+	int g1, g2;
+	int c1, c2;
+	int result;
 
 	g1 = cur_field->number_near_groups(cur_pos, cur_player);
 	g2 = cur_field->number_near_groups(cur_pos, next_player(cur_player));
@@ -27,12 +27,12 @@ short position_estimate(field* cur_field, pos cur_pos, player cur_player)
 
 pos position_estimate(field* cur_field)
 {
-	short best_estimate = numeric_limits<short>::min();
+	int best_estimate = numeric_limits<int>::min();
 	pos result = -1;
 	for (pos i = cur_field->min_pos(); i <= cur_field->max_pos(); i++)
 		if (cur_field->putting_allow(i))
 		{
-			short cur_estimate = position_estimate(cur_field, i, cur_field->get_player());
+			int cur_estimate = position_estimate(cur_field, i, cur_field->get_player());
 			if (cur_estimate > best_estimate)
 			{
 				best_estimate = cur_estimate;

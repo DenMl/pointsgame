@@ -14,7 +14,7 @@ typedef unsigned long ulong;
 
 typedef size_t pos;
 typedef char value;
-typedef short player;
+typedef char player;
 typedef int score;
 typedef short coord;
 typedef size_t hash_t;
