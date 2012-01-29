@@ -28,8 +28,8 @@ Game preferences:
 AI preferences:
 	AI - включить искусственный интеллект.
 	AI type:
-		DLL - использовать динамическую библиотеку dll.
-		Console - использовать исполняемый файл по ротоколу Points AI Protocol 6.
+		DLL - использовать динамическую библиотеку (dll).
+		Console - использовать исполняемый файл (exe) по протоколу Points AI Protocol 6.
 	Get move method:
 		Simple - простой способ получения хода.
 		With complexity - для получения хода будет использоваться указанная сила.
