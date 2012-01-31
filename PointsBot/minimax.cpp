@@ -55,8 +55,8 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 #if CALCULATE_BOUNDARIES
 	alpha = max(alpha, -cur_trajectories.get_max_score(next_player(cur_field->get_player())));
 	beta = min(beta, cur_trajectories.get_max_score(cur_field->get_player()));
-#endif
 	if (alpha < beta)
+#endif
 		for (auto i = moves.begin(); i != moves.end(); i++)
 		{
 			score cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -beta, -alpha, empty_board);
