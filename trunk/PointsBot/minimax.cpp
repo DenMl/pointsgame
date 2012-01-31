@@ -5,6 +5,7 @@
 #include <omp.h>
 #include <algorithm>
 #include <limits>
+#include <math.h>
 
 using namespace std;
 
@@ -38,7 +39,11 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 	cur_trajectories.build_trajectories(last, cur_pos);
 	
 	list<pos> moves;
+#if DEFINE_BOUNDARIES
 	cur_trajectories.get_points(&moves);
+#else
+	cur_trajectories.get_points_fast(&moves);
+#endif
 
 	if (moves.size() == 0)
 	{
@@ -47,16 +52,21 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 		return -best_estimate;
 	}
 
-	for (auto i = moves.begin(); i != moves.end(); i++)
-	{
-		score cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -beta, -alpha, empty_board);
-		if (cur_estimate > alpha)
+#if DEFINE_BOUNDARIES
+	alpha = max(alpha, -cur_trajectories.get_max_score(next_player(cur_field->get_player())));
+	beta = min(beta, cur_trajectories.get_max_score(cur_field->get_player()));
+#endif
+	if (alpha < beta)
+		for (auto i = moves.begin(); i != moves.end(); i++)
 		{
-			alpha = cur_estimate;
-			if (alpha >= beta)
-				break;
+			score cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -beta, -alpha, empty_board);
+			if (cur_estimate > alpha)
+			{
+				alpha = cur_estimate;
+				if (alpha >= beta)
+					break;
+			}
 		}
-	}
 
 	cur_field->undo_step();
 	return -alpha;
@@ -85,7 +95,8 @@ pos minimax(field* cur_field, size_t depth)
 	// Для почти всех возможных точек, не входящих в траектории оценка будет такая же, как если бы игрок CurPlayer пропустил ход. Записываем оценку для всех ходов, так как потом для ходов, которые входят в траектории она перезапишется.
 	//int enemy_estimate = get_enemy_estimate(cur_field, Trajectories[cur_field.get_player()], Trajectories[next_player(cur_field.get_player())], depth);
 
-	score alpha = -SCORE_INFINITY;
+	score alpha = -cur_trajectories.get_max_score(next_player(cur_field->get_player()));
+	score beta = cur_trajectories.get_max_score(cur_field->get_player());
 	#pragma omp parallel
 	{
 		field* local_field = new field(*cur_field);
@@ -94,7 +105,7 @@ pos minimax(field* cur_field, size_t depth)
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(moves.size()); i++)
 		{
-			int cur_estimate = alphabeta(local_field, depth - 1, moves[i], &cur_trajectories, -SCORE_INFINITY, -alpha, empty_board);
+			int cur_estimate = alphabeta(local_field, depth - 1, moves[i], &cur_trajectories, -beta, -alpha, empty_board);
 			#pragma omp critical
 			{
 				if (cur_estimate > alpha) // Обновляем нижнюю границу.

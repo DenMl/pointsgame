@@ -9,6 +9,9 @@
 // Включает сортировку по вероятностям для улучшения альфабета-отсечения.
 #define ALPHABETA_SORT 1
 
+// Определять ли границы в рекурсивном alphabeta для уточнения alpha и beta.
+#define DEFINE_BOUNDARIES 1
+
 // Larger values give uniform search.
 // Smaller values give very selective search.
 #define UCTK 1
