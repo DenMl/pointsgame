@@ -15,6 +15,7 @@ private:
 	int* _trajectories_board;
 	bool _trajectories_board_owner;
 	zobrist* _zobrist;
+	score _max_score[2];
 
 private:
 	template<typename _InIt>
@@ -196,6 +197,20 @@ private:
 					if (find(moves->begin(), moves->end(), *j) == moves->end())
 						moves->push_back(*j);
 	}
+	void calculate_max_score(player cur_player, list<pos>* moves, size_t depth)
+	{
+		if (_field->get_score(cur_player) > _max_score[cur_player])
+			_max_score[cur_player] = _field->get_score(cur_player);
+		if (depth > 0)
+			for (auto i = moves->begin(); i != moves->end(); i++)
+				if (_field->putting_allow(*i))
+				{
+					_field->do_unsafe_step(*i, cur_player);
+					if (_field->get_d_score(cur_player) >= 0)
+						calculate_max_score(cur_player, moves, depth - 1);
+					_field->undo_step();
+				}
+	}
 
 public:
 	inline trajectories(field* cur_field, int* empty_board = NULL, size_t depth = 0)
@@ -215,6 +230,8 @@ public:
 			_trajectories_board_owner = false;
 		}
 		_zobrist = &cur_field->get_zobrist();
+		_max_score[0] = numeric_limits<score>::min();
+		_max_score[1] = numeric_limits<score>::min();
 	}
 	~trajectories()
 	{
@@ -271,8 +288,36 @@ public:
 		// Сортируем точки по убыванию количества траекторий, в которые они входят.
 		moves->sort([&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
 	}
+	// Получить список ходов и вычислить max_score.
 	template<typename _Cont>
 	void get_points(_Cont* moves)
+	{
+		exclude_composite_trajectories();
+		// Проецируем неисключенные траектории на доску.
+		project();
+		// Исключаем те траектории, у которых имеется более одной точки, принадлежащей только ей.
+		exclude_unnecessary_trajectories();
+		// Получаем список точек, входящих в оставшиеся неисключенные траектории.
+		list<pos> moves1, moves2;
+		get_points(&moves1, player_red);
+		get_points(&moves2, player_black);
+		calculate_max_score(player_red, &moves1, _depth[player_red]);
+		calculate_max_score(player_black, &moves2, _depth[player_black]);
+		moves->assign(moves1.begin(), moves1.end());
+		for (auto i = moves2.begin(); i != moves2.end(); i++)
+			if (find(moves->begin(), moves->end(), *i) == moves->end())
+				moves->push_back(*i);
+#if ALPHABETA_SORT
+		sort_moves(moves);
+#endif
+		// Очищаем доску от проекций.
+		unproject();
+		// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).
+		include_all_trajectories();
+	}
+	// Получить список ходов без вычисления max_score.
+	template<typename _Cont>
+	void get_points_fast(_Cont* moves)
 	{
 		exclude_composite_trajectories();
 		// Проецируем неисключенные траектории на доску.
@@ -290,5 +335,9 @@ public:
 		unproject();
 		// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).
 		include_all_trajectories();
+	}
+	inline score get_max_score(player cur_player)
+	{
+		return _max_score[cur_player];
 	}
 };
