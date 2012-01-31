@@ -10,7 +10,7 @@
 #define ALPHABETA_SORT 1
 
 // ќпредел€ть ли границы в рекурсивном alphabeta дл€ уточнени€ alpha и beta.
-#define DEFINE_BOUNDARIES 1
+#define CALCULATE_BOUNDARIES 1
 
 // Larger values give uniform search.
 // Smaller values give very selective search.

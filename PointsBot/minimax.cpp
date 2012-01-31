@@ -39,7 +39,7 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 	cur_trajectories.build_trajectories(last, cur_pos);
 	
 	list<pos> moves;
-#if DEFINE_BOUNDARIES
+#if CALCULATE_BOUNDARIES
 	cur_trajectories.get_points(&moves);
 #else
 	cur_trajectories.get_points_fast(&moves);
@@ -52,7 +52,7 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 		return -best_estimate;
 	}
 
-#if DEFINE_BOUNDARIES
+#if CALCULATE_BOUNDARIES
 	alpha = max(alpha, -cur_trajectories.get_max_score(next_player(cur_field->get_player())));
 	beta = min(beta, cur_trajectories.get_max_score(cur_field->get_player()));
 #endif
