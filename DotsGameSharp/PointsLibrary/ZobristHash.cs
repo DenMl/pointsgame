@@ -16,7 +16,6 @@ namespace PointsLibrary
 		private Field Field_;
 		private ulong[] HashTable_;
 		private ulong Key_;
-		private List<int> KeyPositions_;
 
 		#endregion
 
@@ -32,7 +31,6 @@ namespace PointsLibrary
 			HashTable_ = new ulong[field.RealDotsCount * 2];
 			FillWithRandomValues();
 			Key_ = 0;
-			KeyPositions_ = new List<int>();
 		}
 
 		#endregion
@@ -47,7 +45,6 @@ namespace PointsLibrary
 				if (Field_.CurrentPlayer == Dot.Red)
 					pos *= 2;
 				Key_ ^= HashTable_[pos];
-				KeyPositions_.Add(pos);
 				
 				if (Field_.LastMoveCaptureCount != 0)
 					UpdateLastBaseHash();
@@ -61,7 +58,6 @@ namespace PointsLibrary
 				if (Field_.CurrentPlayer == Dot.Blue)
 					pos *= 2;
 				Key_ ^= HashTable_[pos];
-				KeyPositions_.Add(pos);
 			}
 		}
 
@@ -117,21 +113,15 @@ namespace PointsLibrary
 							if ((Field[surroundPos] & Dot.Player) != Dot.Red)
 							{
 								Key_ ^= HashTable_[surroundPos * 2];
-								KeyPositions_.Add(surroundPos * 2);
 								Key_ ^= HashTable_[surroundPos];
-								KeyPositions_.Add(surroundPos);
 							}
 						}
 						else
 						{
 							if (Field_.LastMoveCaptureCount < 0 && Field_.LastMoveState == enmMoveState.Removed &&
 								Field_.LastPosition == surroundPos)
-							{
-								Key_ ^= HashTable_[surroundPos * 2];
-								KeyPositions_.Add(surroundPos * 2);
-							}
+									Key_ ^= HashTable_[surroundPos * 2];
 							Key_ ^= HashTable_[surroundPos];
-							KeyPositions_.Add(surroundPos);
 						}
 					}
 					else
@@ -139,9 +129,7 @@ namespace PointsLibrary
 							(((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x100) && Field_.LastMoveState == enmMoveState.Removed))
 						{
 							Key_ ^= HashTable_[surroundPos * 2];
-							KeyPositions_.Add(surroundPos * 2);
 							Key_ ^= HashTable_[surroundPos];
-							KeyPositions_.Add(surroundPos);
 						}
 				}
 			else
@@ -155,9 +143,7 @@ namespace PointsLibrary
 							if ((Field[surroundPos] & Dot.Player) != Dot.Blue)
 							{
 								Key_ ^= HashTable_[surroundPos];
-								KeyPositions_.Add(surroundPos);
 								Key_ ^= HashTable_[surroundPos * 2];
-								KeyPositions_.Add(surroundPos * 2);
 							}
 						}
 						else
@@ -166,10 +152,8 @@ namespace PointsLibrary
 								   Field_.LastPosition == surroundPos)
 							{
 								Key_ ^= HashTable_[surroundPos];
-								KeyPositions_.Add(surroundPos);
 							}
 							Key_ ^= HashTable_[surroundPos * 2];
-							KeyPositions_.Add(surroundPos * 2);
 						}
 					}
 					else
@@ -177,9 +161,7 @@ namespace PointsLibrary
 							(((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x100) && Field_.LastMoveState == enmMoveState.Removed))
 						{
 							Key_ ^= HashTable_[surroundPos];
-							KeyPositions_.Add(surroundPos);
 							Key_ ^= HashTable_[surroundPos * 2];
-							KeyPositions_.Add(surroundPos * 2);
 						}
 				}
 		}
@@ -213,14 +195,6 @@ namespace PointsLibrary
 			get
 			{
 				return Key_;
-			}
-		}
-
-		public IEnumerable<int> KeyPositions
-		{
-			get
-			{
-				return KeyPositions_;
 			}
 		}
 

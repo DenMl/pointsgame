@@ -37,6 +37,10 @@ namespace PointsShell
 
 		public List<List<Pos>> LastChains;
 
+		public Field() : this(39, 32, SurroundCond.Standart)
+		{
+		}
+
 		public Field(int width, int height, SurroundCond surCond)
 		{
 			Width = width;
@@ -636,6 +640,17 @@ namespace PointsShell
 			PointsSeq.RemoveAt(PointsCount - 1);
 		}
 
+		public void BackAllMoves()
+		{
+			while (PointsSeq.Count > 0)
+				BackMove();
+		}
+
+		public bool PutPoint(int X, int Y)
+		{
+			return PutPoint(new Pos(X, Y));
+		}
+
 		public bool PutPoint(Pos point)
 		{
 			if (PutPoint(point, CurPlayer))
@@ -670,6 +685,15 @@ namespace PointsShell
 			CheckClosure(point);
 
 			return true;
+		}
+
+		public bool IsEmpty
+		{
+			get
+			{
+				//dummy
+				return true;
+			}
 		}
 	}
 }

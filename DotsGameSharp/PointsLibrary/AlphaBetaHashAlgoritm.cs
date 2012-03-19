@@ -47,6 +47,8 @@ namespace PointsLibrary
 		{
 			int bestMove = 0;
 
+
+
 			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
 			Dot nextPlayer = player.NextPlayer();
 
@@ -56,7 +58,7 @@ namespace PointsLibrary
 				{
 					Field_.MakeMove(move);
 					HashField_.UpdateHash();
-					float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, 1, HashField_.Key);
+					float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
 					Field_.UnmakeMove();
 					HashField_.UpdateHash();
 					if (tmp > alpha)
@@ -74,7 +76,7 @@ namespace PointsLibrary
 
 		#region Helpers
 
-		private unsafe float EvaluatePosition(byte depth, Dot player, float alpha, float beta, int ply, ulong key)
+		private unsafe float EvaluatePosition(byte depth, Dot player, float alpha, float beta, ulong key)
 		{
 			float oldAlpha = alpha;
 			Dot nextPlayer = player.NextPlayer();
@@ -83,13 +85,9 @@ namespace PointsLibrary
 			{
 				if (hashEntry->HashKey == key)
 				{
-					if (/*ply > 0 && */hashEntry->Depth >= depth)
+					if (hashEntry->Depth >= depth)
 					{
 						float score = hashEntry->Score;
-						/*if (score > AiSettings.InfinityScore - AiSettings.MaxPly)
-							score -= ply;
-						else if (score < -AiSettings.InfinityScore + AiSettings.MaxPly)
-							score += ply;*/
 
 						if (hashEntry->Type == enmHashEntryType.Alpha)
 						{
@@ -108,14 +106,14 @@ namespace PointsLibrary
 					{
 						Field_.MakeMove(hashEntry->BestMove);
 						HashField_.UpdateHash();
-						float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, ply + 1, HashField_.Key);
+						float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
 						Field_.UnmakeMove();
 						HashField_.UpdateHash();
 
 						if (tmp > alpha)
 						{
 							transpositionTable_.RecordHash(depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta,
-								key, hashEntry->BestMove, ply);
+								key, hashEntry->BestMove);
 							alpha = tmp;
 							if (alpha >= beta)
 								return beta;
@@ -125,22 +123,25 @@ namespace PointsLibrary
 			}
 
 			if (depth == 0)
+			{
 				return player == Dot.Red ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
 					Field_.BlueCaptureCount - Field_.RedCaptureCount;
+
+			}
 
 			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
 			foreach (var move in moves)
 			{
 				Field_.MakeMove(move);
 				HashField_.UpdateHash();
-				float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, ply + 1, HashField_.Key);
+				float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
 				Field_.UnmakeMove();
 				HashField_.UpdateHash();
 
 				if (tmp > alpha)
 				{
 					transpositionTable_.RecordHash(
-						(byte)depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta, HashField_.Key, (ushort)move, ply);
+						(byte)depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta, HashField_.Key, (ushort)move);
 					alpha = tmp;
 					if (alpha >= beta)
 						return beta;
@@ -148,7 +149,7 @@ namespace PointsLibrary
 			}
 
 			if (alpha == oldAlpha)
-				transpositionTable_.RecordHash((byte)depth, alpha, enmHashEntryType.Alpha, HashField_.Key, 0, ply);
+				transpositionTable_.RecordHash((byte)depth, alpha, enmHashEntryType.Alpha, HashField_.Key, 0);
 
 			return alpha;
 		}

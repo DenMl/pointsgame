@@ -79,7 +79,7 @@ namespace DotsTests
 			int realBestMove = Field.GetPosition(startX + 2, startY);
 
 			var stopwatch = new Stopwatch();
-			int depth = 7;
+			int depth = 5;
 
 			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
 			stopwatch.Start();
@@ -99,9 +99,16 @@ namespace DotsTests
 			Assert.AreEqual(alphaBetaBestMove, alphaBetaHashBestMove);
 			if (depth > 2)
 				Assert.IsTrue(alphaBetaHashElapsed < alphaBetaElapsed);
-			Debug.WriteLine("Usual AlphaBeta time elapsed: {0}", alphaBetaElapsed);
-			Debug.WriteLine("Hash AlphaBeta time elapsed: {0}", alphaBetaHashElapsed);
-			Debug.WriteLine("Ratio: {0}", (double)alphaBetaHashElapsed.Ticks / (double)alphaBetaElapsed.Ticks);
+
+			#if DEBUG
+				Console.WriteLine("Configuration: Debug");
+			#else
+				Console.WriteLine("Configuration: Release");
+			#endif
+			Console.WriteLine("Depth: {0}", depth);
+			Console.WriteLine("Usual AlphaBeta time elapsed: {0}", alphaBetaElapsed);
+			Console.WriteLine("Hash AlphaBeta time elapsed: {0}", alphaBetaHashElapsed);
+			Console.WriteLine("Ratio: {0}", (double)alphaBetaHashElapsed.Ticks / (double)alphaBetaElapsed.Ticks);
 		}
 	}
 }
