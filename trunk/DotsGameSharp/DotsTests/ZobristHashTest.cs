@@ -257,9 +257,6 @@ namespace DotsTests
 
 			ulong firstHash = hash.Key;
 
-			var firstKeyPositions = hash.KeyPositions;
-			var uniqueFirstKeyPositions = new SortedSet<int>(firstKeyPositions);
-
 			while (field.DotsSequanceStates.Count() != 0)
 			{
 				field.UnmakeMove();
@@ -297,11 +294,6 @@ namespace DotsTests
 			PutBigBase(field, hash);
 
 			ulong secondHash = hash.Key;
-
-			var secondKeyPositions = hash.KeyPositions;
-			var uniqueSecondKeyPositions = new SortedSet<int>(secondKeyPositions);
-
-			uniqueFirstKeyPositions.SymmetricExceptWith(uniqueSecondKeyPositions);
 
 			Assert.AreEqual(firstHash, secondHash);
 
@@ -362,9 +354,6 @@ namespace DotsTests
 			PutBigBase(field, hash);
 
 			ulong firstHash = hash.Key;
-
-			var firstKeyPositions = hash.KeyPositions;
-			var uniqueFirstKeyPositions = new SortedSet<int>(firstKeyPositions);
 
 			while (field.DotsSequanceStates.Count() != 0)
 			{

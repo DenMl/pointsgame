@@ -31,7 +31,7 @@ namespace PointsLibrary
 
 		#region Public Methods
 
-		public unsafe void RecordHash(byte depth, float score, enmHashEntryType type, ulong key, ushort move, int ply)
+		public unsafe void RecordHash(byte depth, float score, enmHashEntryType type, ulong key, ushort move)
 		{
 			fixed (HashEntry* entry = &HashEntries_[key % TableSize])
 			{
@@ -40,11 +40,6 @@ namespace PointsLibrary
 
 				if (entry->Depth <= depth)
 				{
-					/*if (score > AiSettings.InfinityScore - AiSettings.MaxPly)
-						score += ply;
-					else if (score < AiSettings.InfinityScore + AiSettings.MaxPly)
-						score -= ply;*/
-
 					entry->Depth = depth;
 					entry->Score = score;
 					entry->Type = type;
