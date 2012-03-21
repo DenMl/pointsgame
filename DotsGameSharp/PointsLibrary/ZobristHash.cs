@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using Dots.Library;
 
-namespace PointsLibrary
+namespace Dots.AI
 {
 	/// <summary>
 	/// TODO: take in calculation Current Red and Blue Capture Count.
@@ -42,7 +43,7 @@ namespace PointsLibrary
 			if (Field_.LastMoveState == enmMoveState.Add)
 			{
 				int pos = Field_.LastPosition;
-				if (Field_.CurrentPlayer == Dot.Red)
+				if (Field_.CurrentPlayer == Dot.RedPlayer)
 					pos *= 2;
 				Key_ ^= HashTable_[pos];
 				
@@ -55,7 +56,7 @@ namespace PointsLibrary
 					UpdateLastBaseHash();
 
 				int pos = Field_.LastPosition;
-				if (Field_.CurrentPlayer == Dot.Blue)
+				if (Field_.CurrentPlayer == Dot.BluePlayer)
 					pos *= 2;
 				Key_ ^= HashTable_[pos];
 			}
@@ -98,19 +99,19 @@ namespace PointsLibrary
 		/// </summary>
 		private void UpdateLastBaseHash()
 		{
-			bool isRed = !((Field_.CurrentPlayer == Dot.Red && Field_.LastMoveState == enmMoveState.Add)
-				|| (Field_.CurrentPlayer == Dot.Blue && Field_.LastMoveState == enmMoveState.Removed)) ? true : false;
+			bool isRed = !((Field_.CurrentPlayer == Dot.RedPlayer && Field_.LastMoveState == enmMoveState.Add)
+				|| (Field_.CurrentPlayer == Dot.BluePlayer && Field_.LastMoveState == enmMoveState.Remove)) ? true : false;
 			if (Field_.LastMoveCaptureCount < 0)
 				isRed = !isRed;
 			if (isRed)
 				foreach (var surroundPos in Field.SurroundPositions)
 				{
-					if ((((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x100) && Field_.LastMoveState == enmMoveState.Add) ||
-						(((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x000) && Field_.LastMoveState == enmMoveState.Removed))
+					if ((Field[surroundPos].IsOneSurroundLevel() && Field_.LastMoveState == enmMoveState.Add) ||
+						 Field[surroundPos].IsZeroSurroundLevel() && Field_.LastMoveState == enmMoveState.Remove)
 					{
-						if ((Field[surroundPos] & Dot.Putted) == Dot.Putted)
+						if (Field[surroundPos].IsRealPutted())
 						{
-							if ((Field[surroundPos] & Dot.Player) != Dot.Red)
+							if (Field[surroundPos].IsRealBluePlayer())
 							{
 								Key_ ^= HashTable_[surroundPos * 2];
 								Key_ ^= HashTable_[surroundPos];
@@ -118,15 +119,15 @@ namespace PointsLibrary
 						}
 						else
 						{
-							if (Field_.LastMoveCaptureCount < 0 && Field_.LastMoveState == enmMoveState.Removed &&
+							if (Field_.LastMoveCaptureCount < 0 && Field_.LastMoveState == enmMoveState.Remove &&
 								Field_.LastPosition == surroundPos)
 									Key_ ^= HashTable_[surroundPos * 2];
 							Key_ ^= HashTable_[surroundPos];
 						}
 					}
 					else
-						if ((((Field[surroundPos] & Field.SurroundCountMask) > (Dot)0x100) && Field_.LastMoveState == enmMoveState.Add) ||
-							(((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x100) && Field_.LastMoveState == enmMoveState.Removed))
+						if ((Field[surroundPos].IsMoreThanOneSurroundLevel() && Field_.LastMoveState == enmMoveState.Add) ||
+							(Field[surroundPos].IsOneSurroundLevel() && Field_.LastMoveState == enmMoveState.Remove))
 						{
 							Key_ ^= HashTable_[surroundPos * 2];
 							Key_ ^= HashTable_[surroundPos];
@@ -135,12 +136,12 @@ namespace PointsLibrary
 			else
 				foreach (var surroundPos in Field.SurroundPositions)
 				{
-					if ((((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x100) && Field_.LastMoveState == enmMoveState.Add) ||
-						(((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x000) && Field_.LastMoveState == enmMoveState.Removed))
+					if ((Field[surroundPos].IsOneSurroundLevel() && Field_.LastMoveState == enmMoveState.Add) ||
+						(Field[surroundPos].IsZeroSurroundLevel() && Field_.LastMoveState == enmMoveState.Remove))
 					{
-						if ((Field[surroundPos] & Dot.Putted) == Dot.Putted)
+						if (Field[surroundPos].IsRealPutted())
 						{
-							if ((Field[surroundPos] & Dot.Player) != Dot.Blue)
+							if (Field[surroundPos].IsRealRedPlayer())
 							{
 								Key_ ^= HashTable_[surroundPos];
 								Key_ ^= HashTable_[surroundPos * 2];
@@ -148,7 +149,7 @@ namespace PointsLibrary
 						}
 						else
 						{
-							if (Field_.LastMoveCaptureCount < 0 && Field_.LastMoveState == enmMoveState.Removed &&
+							if (Field_.LastMoveCaptureCount < 0 && Field_.LastMoveState == enmMoveState.Remove &&
 								   Field_.LastPosition == surroundPos)
 							{
 								Key_ ^= HashTable_[surroundPos];
@@ -157,8 +158,8 @@ namespace PointsLibrary
 						}
 					}
 					else
-						if ((((Field[surroundPos] & Field.SurroundCountMask) > (Dot)0x100) && Field_.LastMoveState == enmMoveState.Add) ||
-							(((Field[surroundPos] & Field.SurroundCountMask) == (Dot)0x100) && Field_.LastMoveState == enmMoveState.Removed))
+						if ((Field[surroundPos].IsMoreThanOneSurroundLevel() && Field_.LastMoveState == enmMoveState.Add) ||
+							(Field[surroundPos].IsOneSurroundLevel() && Field_.LastMoveState == enmMoveState.Remove))
 						{
 							Key_ ^= HashTable_[surroundPos];
 							Key_ ^= HashTable_[surroundPos * 2];

@@ -60,6 +60,13 @@ namespace DotsTests.Properties {
             }
         }
         
+        internal static byte[] DotFunctionsTest {
+            get {
+                object obj = ResourceManager.GetObject("DotFunctionsTest", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static byte[] VeryLongGame {
             get {
                 object obj = ResourceManager.GetObject("VeryLongGame", resourceCulture);

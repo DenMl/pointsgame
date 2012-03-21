@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Dots.Library;
 
-namespace PointsLibrary
+namespace Dots.AI
 {
 	class AlphaBetaAlgoritm
 	{
@@ -63,7 +64,7 @@ namespace PointsLibrary
 		private float EvaluatePosition(int depth, Dot player, float alpha, float beta)
 		{
 			if (depth == 0)
-				return player == Dot.Red ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
+				return player == Dot.RedPlayer ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
 					Field_.BlueCaptureCount - Field_.RedCaptureCount;
 
 			var moves = MoveGenerator_.GenerateMovesForPlayer(player);

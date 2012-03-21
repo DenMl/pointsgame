@@ -65,6 +65,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="BigEmptyBase.sgftochki" />
     <None Include="VeryLongGame.sav" />
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dots.Library;
 
-namespace PointsLibrary
+namespace Dots.AI
 {
 	internal class MoveGenerator
 	{
