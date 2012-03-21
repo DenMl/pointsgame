@@ -1,8 +1,9 @@
-﻿using PointsLibrary;
+﻿using Dots.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Dots.AI;
 
 namespace DotsTests
 {

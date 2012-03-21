@@ -225,7 +225,7 @@ namespace PointsTests
 		public void BigEmptyBaseTest()
 		{
 			StartX_ = 10;
-			StartY_ = 0;
+			StartY_ = 2;
 			Field field = new Field();
 
 			// top chain.
@@ -321,7 +321,7 @@ namespace PointsTests
 			var buffer = PointsTests.Properties.Resources.VeryLongGame;
 
 			for (var i = 58; i < buffer.Length; i += 13)
-				Assert.AreEqual(field.PutPoint(buffer[i], buffer[i + 1]), true);
+				Assert.AreEqual(field.PutPoint(buffer[i] - 1, buffer[i + 1] - 1), true);
 
 			Assert.AreEqual(field.CaptureCountRed, 179);
 			Assert.AreEqual(field.CaptureCountBlack, 20);

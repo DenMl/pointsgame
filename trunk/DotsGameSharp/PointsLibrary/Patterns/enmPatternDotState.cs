@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PointsLibrary
+namespace Dots.Library
 {
 	public enum enmPatternDotState
 	{

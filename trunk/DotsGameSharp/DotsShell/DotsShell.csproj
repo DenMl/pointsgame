@@ -71,12 +71,16 @@
     <Compile Include="DotsGameControl.xaml.cs">
       <DependentUpon>DotsGameControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameField.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MoveEventArgs.cs" />
+    <Compile Include="MoveEventHandler.cs" />
+    <Compile Include="MovesTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -101,9 +105,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PointsLibrary\DotsLibrary.csproj">
+    <ProjectReference Include="..\DotsField\DotsField.csproj">
+      <Project>{07FD35E2-6ABD-41D2-A032-D0FC9040DA67}</Project>
+      <Name>DotsField</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PointsLibrary\DotsAI.csproj">
       <Project>{F290A8F9-369C-4651-B00F-707E50359F4E}</Project>
-      <Name>DotsLibrary</Name>
+      <Name>DotsAI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

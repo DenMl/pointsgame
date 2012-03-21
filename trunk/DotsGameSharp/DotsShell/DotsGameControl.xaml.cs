@@ -11,8 +11,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PointsLibrary;
 using System.IO;
+using Dots.AI;
+using Dots.Library;
 
 namespace DotsShell
 {
@@ -36,8 +37,8 @@ namespace DotsShell
 		double LineCellRatio = 0.14;
 
 		int FieldWidth, FieldHeight;
-		GameField GameField;
-		Field Field;
+		GameField GameField_;
+		Field Field_;
 		GameBot Bot;
 
 		private void DrawState(State State)
@@ -47,7 +48,7 @@ namespace DotsShell
 
 			Ellipse E = new Ellipse
 			{
-				Fill = (Field[State.Move.Position] & Dot.Player) == Dot.Red ? Player1Stroke : Player2Stroke,
+				Fill = (Field_[State.Move.Position] & Dot.Player) == Dot.RedPlayer ? Player1Stroke : Player2Stroke,
 				Width = Radius * 2,
 				Height = Radius * 2,
 				Stretch = Stretch.Uniform
@@ -56,7 +57,7 @@ namespace DotsShell
 			Canvas.SetTop(E, y * CellSize + CellSizeDiv2 - Radius);
 			canvasField.Children.Add(E);
 
-			if (State.Base != null && Field.LastMoveCaptureCount != 0)
+			if (State.Base != null && Field_.LastMoveCaptureCount != 0)
 			{
 				var chainPositions = State.Base.ChainDotPositions;
 				PointCollection GraphicsPoints = new PointCollection(chainPositions.Count);
@@ -68,7 +69,7 @@ namespace DotsShell
 				}
 
 				Polygon Poly = new Polygon { Points = GraphicsPoints, Stretch = Stretch.None };
-				if ((Field[chainPositions.Peek().Position] & Dot.Player) == Dot.Red)
+				if ((Field_[chainPositions.Peek().Position] & Dot.Player) == Dot.RedPlayer)
 				{
 					Poly.Fill = Player1Fill;
 					Poly.Stroke = Player1Stroke;
@@ -90,39 +91,38 @@ namespace DotsShell
 			this.FieldWidth = FieldWidth;
 			this.FieldHeight = FieldHeight;
 
-			Field = new Field(FieldWidth, FieldHeight, enmSurroundCondition.Standart);
-			Bot = new GameBot(Field);
-			GameField = new GameField(Field, enmBeginPattern.Clean, Bot);
+			Field_ = new Field(FieldWidth, FieldHeight, enmSurroundCondition.Standart);
+			Bot = new GameBot(Field_);
+			Bot = null;
+			GameField_ = new GameField(Field_, enmBeginPattern.Clean, Bot);
 
-			GameField.Move += OnMakeMove;
+			GameField_.Move += OnMakeMove;
 
-			CellSize = 647 / Field.Width; // временно
+			CellSize = 647 / Field_.Width; // временно
 			CellSizeDiv2 = CellSize / 2;
 
 			Player1Fill = new SolidColorBrush(Color.FromArgb(127, 255, 0, 0));
 			Player2Fill = new SolidColorBrush(Color.FromArgb(127, 0, 0, 255));
-
-			//RedrawField();
 		}
 
 		private void OnMakeMove(object sender, MoveEventArgs e)
 		{
-			if (e.Action == MoveAction.Add)
+			if (e.Action == enmMoveState.Add)
 			{
-				DrawState(Field.DotsSequanceStates.Last());
+				DrawState(Field_.DotsSequanceStates.Last());
 
 				//sliderMain.Maximum = GameField.DotsSequanceStates.Count;
 			}
 			else
-				if (e.Action == MoveAction.Remove)
+				if (e.Action == enmMoveState.Remove)
 				{
 					// removing base polygon if exists
-					if (Field.IsBaseAddedAtLastMove)
+					if (Field_.IsBaseAddedAtLastMove)
 						canvasField.Children.RemoveAt(canvasField.Children.Count - 1);
 					canvasField.Children.RemoveAt(canvasField.Children.Count - 1);
 				}
-			tbRedCaptureCount.Text = Field.RedCaptureCount.ToString();
-			tbBlueCaptureCount.Text = Field.BlueCaptureCount.ToString();
+			tbRedCaptureCount.Text = Field_.RedCaptureCount.ToString();
+			tbBlueCaptureCount.Text = Field_.BlueCaptureCount.ToString();
 		}
 
 		private void canvasField_MouseMove(object sender, MouseEventArgs e)
@@ -135,7 +135,7 @@ namespace DotsShell
 			Point Pos = e.GetPosition(canvasField);
 			int X = (int)Math.Round((Pos.X - CellSizeDiv2) / CellSize);
 			int Y = (int)Math.Round((Pos.Y - CellSizeDiv2) / CellSize);
-			GameField.MakeMove(X, Y);
+			GameField_.MakeMove(X, Y);
 		}
 
 		public void RedrawField()
@@ -143,18 +143,18 @@ namespace DotsShell
 			if (canvasField.RenderSize.Width == 0)
 				return;
 
-			CellSize = canvasField.RenderSize.Width / Field.Width;
+			CellSize = canvasField.RenderSize.Width / Field_.Width;
 			CellSizeDiv2 = CellSize / 2.0;
 			Radius = CellSize * PointCellRatio;
 
-			canvasField.Height = CellSize * Field.Height;
+			canvasField.Height = CellSize * Field_.Height;
 
 			double a = CellSizeDiv2;
 			canvasField.Background = Background;
 			canvasField.Children.Clear();
 
-			double LineLength = CellSize * (Field.Height + 1);
-			for (int i = 0; i < Field.Width; i++)
+			double LineLength = CellSize * (Field_.Height + 1);
+			for (int i = 0; i < Field_.Width; i++)
 			{
 				Line L = new Line();
 				L.X1 = L.X2 = a;
@@ -166,9 +166,9 @@ namespace DotsShell
 				a += CellSize;
 			}
 
-			LineLength = CellSize * (Field.Width + 1);
+			LineLength = CellSize * (Field_.Width + 1);
 			a = CellSizeDiv2;
-			for (int i = 0; i < Field.Height; i++)
+			for (int i = 0; i < Field_.Height; i++)
 			{
 				Line L = new Line();
 				L.Y1 = L.Y2 = a;
@@ -180,19 +180,19 @@ namespace DotsShell
 				a += CellSize;
 			}
 
-			foreach (var P in Field.DotsSequanceStates)
+			foreach (var P in Field_.DotsSequanceStates)
 				DrawState(P);
 		}
 
 		private void sliderMain_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
-			if (GameField != null)
-				GameField.SetMoveNumber((int)Math.Round(e.NewValue));
+			if (GameField_ != null)
+				GameField_.SetMoveNumber((int)Math.Round(e.NewValue));
 		}
 
 		private void button1_Click(object sender, RoutedEventArgs e)
 		{
-			GameField.SetMoveNumber(Field.DotsSequanceStates.Count() - 1);
+			GameField_.SetMoveNumber(Field_.DotsSequanceStates.Count() - 1);
 			//sliderMain.Value--;
 		}
 
@@ -233,7 +233,7 @@ namespace DotsShell
 
 		private void btnUnmakeMove_Click(object sender, RoutedEventArgs e)
 		{
-			GameField.UnmakeMove();
+			GameField_.UnmakeMove();
 		}
 
 		private void btnLoadGame_Click(object sender, RoutedEventArgs e)
@@ -242,12 +242,12 @@ namespace DotsShell
 			{
 				if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 				{
-					Field = new Field(39, 32, enmSurroundCondition.Standart);
-					Bot = new GameBot(Field);
-					GameField = new GameField(Field, enmBeginPattern.Crosswise, Bot);
+					Field_ = new Field(39, 32, enmSurroundCondition.Standart);
+					Bot = new GameBot(Field_);
+					GameField_ = new GameField(Field_, enmBeginPattern.Crosswise, Bot);
 
 					RedrawField();
-					GameField.Move += OnMakeMove;
+					GameField_.Move += OnMakeMove;
 					using (var Stream = new StreamReader(ofd.FileName))
 					{
 						var buffer = new byte[Stream.BaseStream.Length];
@@ -256,16 +256,16 @@ namespace DotsShell
 						Stream.Close();
 						//GameField.PlayerNameRed = Encoding.GetEncoding(1251).GetString(buffer, 11, 9);
 						//GameField.PlayerNameBlack = Encoding.GetEncoding(1251).GetString(buffer, 20, 9);
-						GameField.PointSeq2 = new List<int>();
+						GameField_.PointSeq2 = new List<int>();
 						for (var i = 58; i < Count; i += 13)
 						{
-							GameField.MakeMove(buffer[i], buffer[i + 1]);
-							GameField.PointSeq2.Add((buffer[i + 1] + 1) * Field.RealWidth + (buffer[i] + 1));
+							GameField_.MakeMove(buffer[i], buffer[i + 1]);
+							GameField_.PointSeq2.Add((buffer[i + 1] + 1) * Field.RealWidth + (buffer[i] + 1));
 						}
 						sliderMain.ValueChanged -= sliderMain_ValueChanged;
 						sliderMain.SmallChange = 1;
 						sliderMain.Minimum = 1;
-						sliderMain.Maximum = Field.DotsSequanceStates.Count();
+						sliderMain.Maximum = Field_.DotsSequanceStates.Count();
 						sliderMain.Value = sliderMain.Maximum;
 						sliderMain.ValueChanged += sliderMain_ValueChanged;
 					}

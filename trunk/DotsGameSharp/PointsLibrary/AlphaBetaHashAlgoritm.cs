@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Dots.Library;
 
-namespace PointsLibrary
+namespace Dots.AI
 {
 	class AlphaBetaHashAlgoritm
 	{
@@ -47,8 +48,6 @@ namespace PointsLibrary
 		{
 			int bestMove = 0;
 
-
-
 			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
 			Dot nextPlayer = player.NextPlayer();
 
@@ -81,6 +80,46 @@ namespace PointsLibrary
 			float oldAlpha = alpha;
 			Dot nextPlayer = player.NextPlayer();
 
+			float score = CheckCollision(player, depth, alpha, beta, key);
+			if (score >= 0)
+				return score;
+
+			if (depth == 0)
+			{
+				score = player == Dot.RedPlayer ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
+					Field_.BlueCaptureCount - Field_.RedCaptureCount;
+
+				return score;
+			}
+
+			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
+			foreach (var move in moves)
+			{
+				Field_.MakeMove(move);
+				HashField_.UpdateHash();
+				float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
+				Field_.UnmakeMove();
+				HashField_.UpdateHash();
+
+				if (tmp > alpha)
+				{
+					transpositionTable_.RecordHash(
+						(byte)depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta, HashField_.Key, (ushort)move);
+					
+					alpha = tmp;
+					if (alpha >= beta)
+						return beta;
+				}
+			}
+
+			if (alpha == oldAlpha)
+				transpositionTable_.RecordHash((byte)depth, alpha, enmHashEntryType.Alpha, HashField_.Key, 0);
+
+			return alpha;
+		}
+
+		private unsafe float CheckCollision(Dot player, byte depth, float alpha, float beta, ulong key)
+		{
 			fixed (HashEntry* hashEntry = &transpositionTable_.HashEntries_[key % TranspositionTable.TableSize])
 			{
 				if (hashEntry->HashKey == key)
@@ -106,7 +145,7 @@ namespace PointsLibrary
 					{
 						Field_.MakeMove(hashEntry->BestMove);
 						HashField_.UpdateHash();
-						float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
+						float tmp = -EvaluatePosition((byte)(depth - 1), player.NextPlayer(), -beta, -alpha, HashField_.Key);
 						Field_.UnmakeMove();
 						HashField_.UpdateHash();
 
@@ -121,37 +160,7 @@ namespace PointsLibrary
 					}
 				}
 			}
-
-			if (depth == 0)
-			{
-				return player == Dot.Red ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
-					Field_.BlueCaptureCount - Field_.RedCaptureCount;
-
-			}
-
-			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
-			foreach (var move in moves)
-			{
-				Field_.MakeMove(move);
-				HashField_.UpdateHash();
-				float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
-				Field_.UnmakeMove();
-				HashField_.UpdateHash();
-
-				if (tmp > alpha)
-				{
-					transpositionTable_.RecordHash(
-						(byte)depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta, HashField_.Key, (ushort)move);
-					alpha = tmp;
-					if (alpha >= beta)
-						return beta;
-				}
-			}
-
-			if (alpha == oldAlpha)
-				transpositionTable_.RecordHash((byte)depth, alpha, enmHashEntryType.Alpha, HashField_.Key, 0);
-
-			return alpha;
+			return -1;
 		}
 
 		#endregion
