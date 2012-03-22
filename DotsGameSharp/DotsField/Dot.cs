@@ -19,7 +19,7 @@ namespace Dots.Library
 	/// 00 - empty item.
 	/// 01 - invalid (field border).
 	/// 10 - red dot is putted.
-	/// 11 - blue dot is putter.
+	/// 11 - blue dot is putted.
 	/// </summary>
 	[Flags]
 	public enum Dot : int

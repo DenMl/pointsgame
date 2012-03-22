@@ -7,6 +7,11 @@ namespace Dots.Library
 {
 	public static class Helper
 	{
+		public static Dot GetPlayer(this Dot dot)
+		{
+			return dot & Dot.Player;
+		}
+
 		public static bool IsPutted(this Dot dot)
 		{
 			return (dot & Dot.Putted) == Dot.Putted;
@@ -65,6 +70,41 @@ namespace Dots.Library
 		public static bool IsRealBluePlayer(this Dot dot)
 		{
 			return (dot & Dot.RealPlayer) == Dot.BlueRealPlayer;
+		}
+
+		public static bool IsEnable(this Dot dot, Dot enableCondition)
+		{
+			return (dot & Dot.EnableMask) == enableCondition;
+		}
+
+		public static bool IsBound(this Dot dot, Dot boundCond)
+		{
+			return (dot & Dot.BoundMask) == boundCond;
+		}
+
+		public static bool IsTagged(this Dot dot)
+		{
+			return (dot & Dot.Tagged) == Dot.Tagged;
+		}
+
+		public static void ClearTag(this Dot dot)
+		{
+			dot &= ~Dot.Tagged;
+		}
+
+		public static Dot GetEnabledCondition(this Dot dot)
+		{
+			return dot & Dot.EnableMask;
+		}
+
+		public static int GetX(this int pos)
+		{
+			return pos % Field.RealWidth;
+		}
+
+		public static int GetY(this int pos)
+		{
+			return pos / Field.RealWidth;
 		}
 	}
 }
