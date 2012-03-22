@@ -396,11 +396,8 @@ namespace DotsTests
 			Field field = new Field();
 
 			var buffer = DotsTests.Properties.Resources.VeryLongGame;
-
 			for (var i = 58; i < buffer.Length; i += 13)
-			{
 				Assert.AreEqual(field.MakeMove(buffer[i], buffer[i + 1]), true);
-			}
 			
 			Assert.AreEqual(field.RedCaptureCount, 179);
 			Assert.AreEqual(field.BlueCaptureCount, 20);

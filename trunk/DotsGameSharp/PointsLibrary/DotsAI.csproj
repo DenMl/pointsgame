@@ -55,7 +55,7 @@
     <Compile Include="GameBot.cs" />
     <Compile Include="Patterns\Pattern.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StrategicalMovesGenerator.cs" />
+    <Compile Include="StrategicMovesAnalyzer.cs" />
     <Compile Include="TranspositionTable.cs" />
     <Compile Include="ZobristHash.cs" />
   </ItemGroup>
