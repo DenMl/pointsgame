@@ -123,6 +123,49 @@ namespace DotsTests
 		}
 
 		[TestMethod()]
+		public void SquareTest()
+		{
+			int startX = 16;
+			int startY = 16;
+			var field = new Field();
+
+			field.MakeMove(startX, startY);
+			field.MakeMove(startX + 1, startY);
+
+			field.MakeMove(startX + 1, startY - 1);
+			field.MakeMove(startX + 10, startY + 1);
+
+			field.MakeMove(startX + 2, startY - 1);
+			field.MakeMove(startX + 10, startY + 2);
+
+			field.MakeMove(startX + 3, startY - 1);
+			field.MakeMove(startX + 10, startY + 3);
+
+			field.MakeMove(startX + 1, startY + 1);
+			field.MakeMove(startX + 11, startY + 1);
+
+			field.MakeMove(startX + 2, startY + 1);
+			field.MakeMove(startX + 11, startY + 2);
+
+			field.MakeMove(startX + 3, startY + 1);
+			field.MakeMove(startX + 11, startY + 3);
+
+			int realBestMove = Field.GetPosition(startX + 4, startY);
+
+			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
+			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1, Dot.RedPlayer,
+				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+
+			Assert.AreEqual(alphaBetaBestMove, realBestMove);
+
+			alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
+			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2, Dot.RedPlayer,
+				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+
+			Assert.AreEqual(alphaBetaBestMove, realBestMove);
+		}
+
+		[TestMethod()]
 		public void SimpleBlueAttackTest()
 		{
 			int startX = 16;

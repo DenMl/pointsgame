@@ -9,6 +9,13 @@ namespace Dots.Library
 	{
 		#region Constatnts and masks
 
+		public static int[] DiagVertHorizDeltas = {
+			-Field.RealWidth - 1, -Field.RealWidth, -Field.RealWidth + 1,
+			-1, +1, 
+			+Field.RealWidth - 1, +Field.RealWidth, +Field.RealWidth + 1 };
+
+		public static int[] VertHorizDeltas = { -Field.RealWidth, +1, +Field.RealWidth, -1 };
+
 		public const int RealWidth = 64;
 
 		#endregion
@@ -21,12 +28,16 @@ namespace Dots.Library
 		private bool EmptyBaseCreated_;
 		private int RedCaptureCount_;
 		private int BlueCaptureCount_;
+		private int RedSquare_;
+		private int BlueSquare_;
 		private Dot CurrentPlayer_;
 		private int LastPosition_;
 		private int LastBaseCaptureCount_;
 		private int LastBaseFreedCount_;
 		private int LastMoveCaptureCount_;
 		private int LastMoveFreedCount_;
+		private int LastSquareCaptureCount_;
+		private int LastSquareFreedCount_;
 		private enmMoveState LastMoveState_;
 
 		/// <summary>
@@ -35,7 +46,7 @@ namespace Dots.Library
 		private Stack<DotPosition> ChainDotsPositions_;
 
 		/// <summary>
-		/// Indexes and states of last move surorund dots.
+		/// Indexes and states of last move surround dots.
 		/// </summary>
 		private Stack<DotPosition> SurroundDotsPositions_;
 
@@ -73,10 +84,6 @@ namespace Dots.Library
 			get
 			{
 				return Dots_[i];
-			}
-			set
-			{
-				Dots_[i] = value;
 			}
 		}
 
@@ -133,6 +140,22 @@ namespace Dots.Library
 			get
 			{
 				return DotsSequanceStates_.Count;
+			}
+		}
+
+		public int RedSquare
+		{
+			get
+			{
+				return RedSquare_;
+			}
+		}
+
+		public int BlueSquare
+		{
+			get
+			{
+				return BlueSquare_;
 			}
 		}
 
@@ -234,9 +257,9 @@ namespace Dots.Library
 		/// <param name="pos1"></param>
 		/// <param name="pos2"></param>
 		/// <returns></returns>
-		private static int Square(int pos1, int pos2)
+		private static int GetSquare(int pos1, int pos2)
 		{
-			return (pos1 % RealWidth) * (pos2 / RealWidth) - (pos1 / RealWidth) * (pos2 % RealWidth);
+			return (pos1 / RealWidth) * (pos2 % RealWidth) - (pos1 % RealWidth) * (pos2 / RealWidth);
 		}
 
 		/// <summary>
@@ -433,7 +456,7 @@ namespace Dots.Library
 				var centerPos = position;
 
 				// Returns square bounded by the triangle with vertexes (0, centerPos, pos)
-				int tempSquare = Square(centerPos, pos);
+				int tempSquare = GetSquare(centerPos, pos);
 				do
 				{
 					if ((ChainPositions_.Count > previousChainDotsCount + 1) && (pos == ChainPositions_[ChainPositions_.Count - 2]))
@@ -449,12 +472,12 @@ namespace Dots.Library
 					while (!Dots_[pos].IsEnable(enabledCondition))
 						GetNextPos(centerPos, ref pos);
 
-					tempSquare += Square(centerPos, pos);
+					tempSquare += GetSquare(centerPos, pos);
 				}
 				while (pos != position);
 
 				// Bypass territory only couter-clockwise (territiry wtih negative square)
-				if (tempSquare >= 0)
+				if (tempSquare <= 0)
 				{
 					ChainPositions_.RemoveRange(previousChainDotsCount, ChainPositions_.Count - previousChainDotsCount);
 					negativeSquare = false;
@@ -534,6 +557,8 @@ namespace Dots.Library
 
 			LastBaseCaptureCount_ = 0;
 			LastBaseFreedCount_ = 0;
+			LastSquareCaptureCount_ = 0;
+			LastSquareFreedCount_ = 0;
 			var pos = startPosition;
 			TempStack_.Clear();
 			TempStack_.Push(startPosition);
@@ -573,6 +598,7 @@ namespace Dots.Library
 
 		private void CheckCapturedAndFreed(int position, Dot player)
 		{
+			LastSquareCaptureCount_++;
 			if ((Dots_[position] & Dot.RealPutted) == Dot.RealPutted)
 			{
 				if ((Dots_[position] & Dot.RealPlayer) != (Dot)((int)player << DotConstants.RealPlayerShift))
@@ -584,6 +610,8 @@ namespace Dots.Library
 				{
 					LastBaseFreedCount_++;
 					LastMoveFreedCount_++;
+
+					LastSquareFreedCount_++;
 				}
 			}
 		}
@@ -597,15 +625,19 @@ namespace Dots.Library
 
 		private void AddCapturedFreedCount(Dot dotColor)
 		{
-			if (dotColor == 0)
+			if (dotColor == Dot.RedPlayer)
 			{
 				RedCaptureCount_ += LastBaseCaptureCount_;
 				BlueCaptureCount_ -= LastBaseFreedCount_;
+				RedSquare_ += LastSquareCaptureCount_;
+				BlueSquare_ -= LastSquareFreedCount_;
 			}
 			else
 			{
 				BlueCaptureCount_ += LastBaseCaptureCount_;
 				RedCaptureCount_ -= LastBaseFreedCount_;
+				BlueSquare_ += LastSquareCaptureCount_;
+				RedSquare_ -= LastSquareFreedCount_;
 			}
 		}
 
@@ -771,18 +803,18 @@ namespace Dots.Library
 
 		public static void GetPosition(int position, out int x, out int y)
 		{
-			x = position % RealWidth - 1;
-			y = position / RealWidth - 1;
+			x = position % RealWidth;
+			y = position / RealWidth;
 		}
 
 		public static int GetPosition(int x, int y)
 		{
-			return (y + 1) * RealWidth + (x + 1);
+			return y * RealWidth + x;
 		}
 
 		public bool MakeMove(int x, int y)
 		{
-			return MakeMove((y + 1) * RealWidth + (x + 1));
+			return MakeMove(y * RealWidth + x);
 		}
 
 		public bool MakeMove(int position, Dot color)
@@ -802,7 +834,7 @@ namespace Dots.Library
 		{
 			Dot oldCurrentPlayer = CurrentPlayer_;
 			CurrentPlayer_ = color;
-			if (MakeMove((y + 1) * RealWidth + (x + 1)))
+			if (MakeMove(y * RealWidth + x))
 				return true;
 			else
 			{
@@ -829,6 +861,8 @@ namespace Dots.Library
 				SurroundDotsPositions_.Clear();
 				LastMoveCaptureCount_ = 0;
 				LastMoveFreedCount_ = 0;
+				var oldRedSquare = RedSquare_;
+				var oldBlueSquare = BlueSquare_;
 
 				CheckClosure();
 
@@ -839,7 +873,7 @@ namespace Dots.Library
 						Base = ChainDotsPositions_.Count == 0 ? null :
 							new Base(LastMoveCaptureCount_, LastMoveFreedCount_,
 								new Stack<DotPosition>(ChainDotsPositions_), new Stack<DotPosition>(SurroundDotsPositions_),
-								new List<int>(ChainPositions_), new List<int>(SurroundPositions_))
+								new List<int>(ChainPositions_), new List<int>(SurroundPositions_), oldRedSquare, oldBlueSquare)
 					});
 
 				CurrentPlayer_ = CurrentPlayer_.NextPlayer();
@@ -879,6 +913,8 @@ namespace Dots.Library
 					SurroundDotsPositions_ = LastState.Base.SurrroundDotPositions;
 					ChainPositions_ = LastState.Base.ChainPositions;
 					SurroundPositions_ = LastState.Base.SurroundPoistions;
+					RedSquare_ = LastState.Base.RedSquare;
+					BlueSquare_ = LastState.Base.BlueSquare;
 				}
 				else
 				{
@@ -894,7 +930,6 @@ namespace Dots.Library
 				CurrentPlayer_ = CurrentPlayer_.NextPlayer();
 				DotsSequanceStates_.RemoveAt(DotsSequanceStates_.Count - 1);
 
-				//GetPosition(LastState.Move.Position, out LastX_, out LastY_);
 				LastPosition_ = LastState.Move.Position;
 				LastMoveState_ = enmMoveState.Remove;
 				return true;
@@ -914,6 +949,13 @@ namespace Dots.Library
 			return true;
 		}
 
+		public Dot[] CloneDots()
+		{
+			var result = new Dot[Dots_.Length];
+			Array.Copy(Dots_, result, Dots_.Length);
+			return result;
+		}
+
 		#endregion
 
 		#region Methods for tests
@@ -922,8 +964,8 @@ namespace Dots.Library
 		{
 			get
 			{
-				for (int i = 0; i < Width; i++)
-					for (int j = 0; j < Height; j++)
+				for (int i = 1; i <= Width; i++)
+					for (int j = 1; j <= Height; j++)
 						if (Dots_[GetPosition(i, j)] != Dot.Empty)
 							return false;
 				return true;
@@ -935,8 +977,8 @@ namespace Dots.Library
 			get
 			{
 				var result = new List<DotPosition>();
-				for (int i = 0; i < Width; i++)
-					for (int j = 0; j < Height; j++)
+				for (int i = 1; i < Width; i++)
+					for (int j = 1; j < Height; j++)
 						if (Dots_[GetPosition(i, j)] != Dot.Empty)
 							result.Add(new DotPosition(GetPosition(i, j), Dots_[GetPosition(i, j)]));
 				return result;

@@ -89,9 +89,7 @@ namespace DotsTests
 			TimeSpan alphaBetaElapsed = stopwatch.Elapsed;
 			stopwatch.Reset();
 			
-			var hashField = new ZobristHashField(field);
-			var transpositionTable = new TranspositionTable(field);
-			var alphaBetaHashAlgoritm = new AlphaBetaHashAlgoritm(field, hashField, transpositionTable);
+			var alphaBetaHashAlgoritm = new AlphaBetaHashAlgoritm(field);
 			stopwatch.Start();
 			int alphaBetaHashBestMove = alphaBetaHashAlgoritm.SearchBestMove((byte)depth, Dot.RedPlayer, -AiSettings.InfinityScore, AiSettings.InfinityScore);
 			stopwatch.Stop();

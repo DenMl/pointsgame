@@ -30,69 +30,38 @@ namespace DotsShell
 
 		MovesTree MovesTree;
 
-		public List<int> PointSeq2;
+		public List<int> InitSequance;
 
 		#endregion
 
-		public MoveEventHandler Move;
+		#region Constructors
 
-		protected void OnMove(MoveEventArgs e)
+		public GameField()
 		{
-			if (Move != null)
-				Move(this, e);
+			MovesTree = new MovesTree();
+			this.BeginPattern = enmBeginPattern.Crosswise;
+			PlaceBeginPattern();
 		}
 
-		void PlaceBeginPattern()
+		public GameField(Field field, enmBeginPattern beginPattern)
 		{
-			int centerX, centerY;
-			switch (BeginPattern)
-			{
-				case (enmBeginPattern.Crosswise):
-					centerX = Field.Width / 2 - 1;
-					centerY = Field.Height / 2 - 1;
-					MakeMove(centerX++, centerY);
-					MakeMove(centerX, centerY++);
-					MakeMove(centerX--, centerY);
-					MakeMove(centerX, centerY);
-					break;
-				case (enmBeginPattern.Square):
-					centerX = Field.Width / 2 - 1;
-					centerY = Field.Height / 2 - 1;
-					MakeMove(centerX++, centerY);
-					MakeMove(centerX--, centerY++);
-					MakeMove(centerX++, centerY);
-					MakeMove(centerX, centerY);
-					break;
-			}
-		}		
-
-		public GameField(string FileName)
-		{
-
+			Field = field;
+			MovesTree = new MovesTree();
+			BeginPattern = beginPattern;
 		}
+
+		#endregion
+
+		#region Public
 
 		public bool MakeMove(int X, int Y)
 		{
-			if (X < 0 || X >= Field.Width || Y < 0 || Y >= Field.Height)
-				return false;
 			if (Field.MakeMove(X, Y))
 			{
 				MovesTree.Add(X, Y);
-				OnMove(new MoveEventArgs(enmMoveState.Add, Field.CurrentPlayer.NextPlayer(), 
-					Field.LastPosition,
-					Field.ChainPositions, Field.SurroundPositions));
+				OnMove(new MoveEventArgs(enmMoveState.Add, Field.CurrentPlayer.NextPlayer(),
+					Field.LastPosition, Field.ChainPositions, Field.SurroundPositions));
 
-				if (Bot != null)
-				{
-					var botMove = Bot.MakeMove();
-					Field.MakeMove(botMove);
-
-					//MovesTree.Add();
-					OnMove(new MoveEventArgs(enmMoveState.Add, Field.CurrentPlayer.NextPlayer(),
-						Field.LastPosition,
-						Field.ChainPositions, Field.SurroundPositions));
-				}
-				
 				return true;
 			}
 			else
@@ -104,8 +73,7 @@ namespace DotsShell
 			if (Field.UnmakeMove())
 			{
 				OnMove(new MoveEventArgs(enmMoveState.Remove, Field.CurrentPlayer.NextPlayer(),
-					Field.LastPosition,
-					Field.ChainPositions, Field.SurroundPositions));
+					Field.LastPosition, Field.ChainPositions, Field.SurroundPositions));
 				return true;
 			}
 			else
@@ -130,28 +98,38 @@ namespace DotsShell
 		public void NextMoves(int Count)
 		{
 			for (int i = 0; i < Count; i++)
-				MakeMove(PointSeq2[Field.DotsSequanceStates.Count()] % Field.RealWidth - 1,
-					PointSeq2[Field.DotsSequanceStates.Count()] / Field.RealWidth - 1);
-		}
-
-		#region Constructors
-
-		public GameField()
-		{
-			MovesTree = new MovesTree();
-			this.BeginPattern = enmBeginPattern.Crosswise;
-			PlaceBeginPattern();
-		}
-
-		public GameField(Field field, enmBeginPattern beginPattern, GameBot gameBot)
-		{
-			Field = field;
-			//Bot = gameBot;
-			MovesTree = new MovesTree();
-			BeginPattern = beginPattern;
-			//PlaceBeginPattern();
+			{
+				int pos = InitSequance[Field.DotsSequanceStates.Count()];
+				int x, y;
+				Field.GetPosition(pos, out x, out y);
+				MakeMove(x, y);
+			}
 		}
 
 		#endregion
+
+		public MoveEventHandler Move;
+
+		private void OnMove(MoveEventArgs e)
+		{
+			if (Move != null)
+				Move(this, e);
+		}
+
+		private void PlaceBeginPattern()
+		{
+			int centerX, centerY;
+			switch (BeginPattern)
+			{
+				case (enmBeginPattern.Crosswise):
+					centerX = Field.Width / 2 - 1;
+					centerY = Field.Height / 2 - 1;
+					MakeMove(centerX, centerY);
+					MakeMove(centerX + 1, centerY);
+					MakeMove(centerX + 1, centerY);
+					MakeMove(centerX, centerY + 1);
+					break;
+			}
+		}
 	}
 }

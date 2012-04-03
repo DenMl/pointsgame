@@ -6,13 +6,18 @@ using Dots.Library;
 
 namespace Dots.AI
 {
-	class StrategicMovesAnalyzer
+	public class StrategicMovesAnalyzer
 	{
 		#region Fields
 
-		private Field Field_;
-		private List<LinkedGroup> RedGroups_;
-		private List<LinkedGroup> BlueGroups_;
+		private Dot[] Dots_;
+
+		private List<LinkedGroup> Groups_;
+		private List<LinkedGroup> OwnGroups_;
+		private List<LinkedGroup> EnemyGroups_;
+		private int[] DotsGroups;
+
+		private SortedList<int, Crosswise> Crosswises_;
 
 		#endregion
 
@@ -20,7 +25,9 @@ namespace Dots.AI
 
 		public StrategicMovesAnalyzer(Field field)
 		{
-			Field_ = field;
+			Field = field;
+			Dots_ = Field.CloneDots();
+			DotsGroups = new int[Field.RealDotsCount];
 		}
 
 		#endregion
@@ -33,26 +40,69 @@ namespace Dots.AI
 
 		public void GenerateGroups()
 		{
-			RedGroups_ = new List<LinkedGroup>();
-			BlueGroups_ = new List<LinkedGroup>();
-			for (int i = 1; i <= Field_.Width; i++)
-				for (int j = 1; j <= Field_.Height; j++)
-				{
-					int ind = j * Field.RealWidth + i;
+			Groups_ = new List<LinkedGroup>();
+			OwnGroups_ = new List<LinkedGroup>();
+			EnemyGroups_ = new List<LinkedGroup>();
+			var ownPlayer = Field.CurrentPlayer.NextPlayer();
+			var enemyPlayer = Field.CurrentPlayer;
+			LinkedGroup group;
 
-					if (Field_[ind].IsRedPutted() && !Field_[ind].IsTagged())
-						RedGroups_.Add(new LinkedGroup(Dot.RedPlayer, FillDiagVertHorizLinkedDots(ind)));
-					else if (Field_[ind].IsBluePutted() && !Field_[ind].IsTagged())
-						BlueGroups_.Add(new LinkedGroup(Dot.BluePlayer, FillDiagVertHorizLinkedDots(ind)));
+			for (int i = 1; i <= Field.Width; i++)
+				for (int j = 1; j <= Field.Height; j++)
+				{
+					int ind = Field.GetPosition(i, j);
+
+					if (!Dots_[ind].IsTagged())
+					{
+						if (Dots_[ind].IsPlayerPutted(ownPlayer))
+						{
+							group = new LinkedGroup(ownPlayer, Groups_.Count + 1, FillDiagVertHorizLinkedDots(ind, Groups_.Count + 1));
+							OwnGroups_.Add(group);
+							Groups_.Add(group);
+						}
+						else if (Dots_[ind].IsPlayerPutted(enemyPlayer))
+						{
+							group = new LinkedGroup(enemyPlayer, Groups_.Count + 1, FillDiagVertHorizLinkedDots(ind, Groups_.Count + 1));
+							EnemyGroups_.Add(group);
+							Groups_.Add(group);
+						}
+					}
+				}
+
+			ClearAllTags();
+		}
+
+		public void GenerateCrosswises()
+		{
+			var ownPlayer = Field.CurrentPlayer.NextPlayer();
+			var enemyPlayer = Field.CurrentPlayer;
+			Crosswises_ = new SortedList<int, Crosswise>();
+
+			foreach (var group in OwnGroups_)
+				foreach (var pos in group.Positions)
+				{
+					if (Field[pos + Field.RealWidth].IsPlayerPutted(enemyPlayer))
+					{
+						if (Field[pos + Field.RealWidth + 1].IsPlayerPutted(ownPlayer) &&
+							Field[pos + 1].IsPlayerPutted(enemyPlayer))
+							Crosswises_.Add(Crosswises_.Count + 1,
+								new Crosswise(ownPlayer, pos, enmCrosswiseOrientation.BottomRight, Crosswises_.Count + 1));
+
+						if (Field[pos + Field.RealWidth - 1].IsPlayerPutted(ownPlayer) &&
+							Field[pos - 1].IsPlayerPutted(enemyPlayer))
+							Crosswises_.Add(Crosswises_.Count + 1,
+								new Crosswise(ownPlayer, pos, enmCrosswiseOrientation.BottomLeft, Crosswises_.Count + 1));
+					}
 				}
 		}
 
-		private List<int> FillDiagVertHorizLinkedDots(int pos)
+		private List<int> FillDiagVertHorizLinkedDots(int pos, int currentGroupNumber)
 		{
 			var result = new List<int>();
 
-			Dot player = Field_[pos] & Dot.Player;
+			Dot player = Dots_[pos].GetPlayer();
 			var tempStack = new Stack<int>();
+			Dots_[pos] |= Dot.Tagged;
 			tempStack.Push(pos);
 			result.Add(pos);
 
@@ -60,97 +110,18 @@ namespace Dots.AI
 			while (tempStack.Count != 0)
 			{
 				pos = tempStack.Pop();
-				result.Add(pos);
 
-				if (Field_[pos - 1].IsPlayerPutted(player) && !Field_[pos - 1].IsTagged())
+				for (int i = 0; i < Field.DiagVertHorizDeltas.Length; i++)
 				{
-					tempStack.Push(pos - 1);
-					Field_[pos - 1] |= Dot.Tagged;
-				}
+					int newPos = pos + Field.DiagVertHorizDeltas[i];
+					if (Dots_[newPos].IsPlayerPutted(player) && !Dots_[newPos].IsTagged())
+					{
+						Dots_[newPos] |= Dot.Tagged;
+						tempStack.Push(newPos);
+						result.Add(newPos);
 
-				if (Field_[pos - Field.RealWidth - 1].IsPlayerPutted(player) && !Field_[pos - Field.RealWidth - 1].IsTagged())
-				{
-					tempStack.Push(pos - Field.RealWidth - 1);
-					Field_[pos - Field.RealWidth - 1] |= Dot.Tagged;
-				}
-
-				if (Field_[pos - Field.RealWidth].IsPlayerPutted(player) && !Field_[pos - Field.RealWidth].IsTagged())
-				{
-					tempStack.Push(pos - Field.RealWidth);
-					Field_[pos - Field.RealWidth] |= Dot.Tagged;
-				}
-
-				if (Field_[pos - Field.RealWidth + 1].IsPlayerPutted(player) && !Field_[pos - Field.RealWidth + 1].IsTagged())
-				{
-					tempStack.Push(pos - Field.RealWidth + 1);
-					Field_[pos - Field.RealWidth + 1] |= Dot.Tagged;
-				}
-
-				if (Field_[pos + 1].IsPlayerPutted(player) && !Field_[pos + 1].IsTagged())
-				{
-					tempStack.Push(pos + 1);
-					Field_[pos + 1] |= Dot.Tagged;
-				}
-
-				if (Field_[pos + Field.RealWidth + 1].IsPlayerPutted(player) && !Field_[pos + Field.RealWidth + 1].IsTagged())
-				{
-					tempStack.Push(pos + Field.RealWidth + 1);
-					Field_[pos + Field.RealWidth + 1] |= Dot.Tagged;
-				}
-
-				if (Field_[pos + Field.RealWidth].IsPlayerPutted(player) && !Field_[pos + Field.RealWidth].IsTagged())
-				{
-					tempStack.Push(pos + Field.RealWidth);
-					Field_[pos + Field.RealWidth] |= Dot.Tagged;
-				}
-
-				if (Field_[pos + Field.RealWidth - 1].IsPlayerPutted(player) && !Field_[pos + Field.RealWidth - 1].IsTagged())
-				{
-					tempStack.Push(pos + Field.RealWidth - 1);
-					Field_[pos + Field.RealWidth - 1] |= Dot.Tagged;
-				}
-			}
-
-			return result;
-		}
-
-		private List<int> FillVertHorizLinkedDots(int pos)
-		{
-			var result = new List<int>();
-
-			Dot player = Field_[pos] & Dot.Player;
-			var tempStack = new Stack<int>();
-			tempStack.Push(pos);
-			result.Add(pos);
-
-			List<Dot> dots = new List<Dot>();
-			while (tempStack.Count != 0)
-			{
-				pos = tempStack.Pop();
-				result.Add(pos);
-
-				if (Field_[pos - 1].IsPlayerPutted(player) && !Field_[pos - 1].IsTagged())
-				{
-					tempStack.Push(pos - 1);
-					Field_[pos - 1] |= Dot.Tagged;
-				}
-
-				if (Field_[pos - Field.RealWidth].IsPlayerPutted(player) && !Field_[pos - Field.RealWidth].IsTagged())
-				{
-					tempStack.Push(pos - Field.RealWidth);
-					Field_[pos - Field.RealWidth] |= Dot.Tagged;
-				}
-
-				if (Field_[pos + 1].IsPlayerPutted(player) && !Field_[pos + 1].IsTagged())
-				{
-					tempStack.Push(pos + 1);
-					Field_[pos + 1] |= Dot.Tagged;
-				}
-
-				if (Field_[pos + Field.RealWidth].IsPlayerPutted(player) && !Field_[pos + Field.RealWidth].IsTagged())
-				{
-					tempStack.Push(pos + Field.RealWidth);
-					Field_[pos + Field.RealWidth] |= Dot.Tagged;
+						DotsGroups[newPos] = currentGroupNumber;
+					}
 				}
 			}
 
@@ -159,31 +130,51 @@ namespace Dots.AI
 
 		private void ClearAllTags()
 		{
-			for (int i = 1; i <= Field_.Width; i++)
-				for (int j = 1; j <= Field_.Height; j++)
-				{
-					Field_[j * Field.RealWidth + i].ClearTag();
-				}
+			for (int i = 1; i <= Field.Width; i++)
+				for (int j = 1; j <= Field.Height; j++)
+					Dots_[j * Field.RealWidth + i].ClearTag();
 		}
 
 		#endregion
 
 		#region Properties
 
-		public IEnumerable<LinkedGroup> RedGroups
+		public IEnumerable<LinkedGroup> OwnGroups
 		{
 			get
 			{
-				return RedGroups_;
+				return OwnGroups_;
 			}
 		}
 
-		public IEnumerable<LinkedGroup> BlueGroups
+		public IEnumerable<LinkedGroup> EnemyGroups
 		{
 			get
 			{
-				return BlueGroups_;
+				return EnemyGroups_;
 			}
+		}
+
+		public IEnumerable<LinkedGroup> Groups
+		{
+			get
+			{
+				return Groups_;
+			}
+		}
+
+		public SortedList<int, Crosswise> Crosswises
+		{
+			get
+			{
+				return Crosswises_;
+			}
+		}
+
+		public Field Field
+		{
+			get;
+			set;
 		}
 
 		#endregion

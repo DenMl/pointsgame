@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace Dots.Library
 {
@@ -95,16 +96,6 @@ namespace Dots.Library
 		public static Dot GetEnabledCondition(this Dot dot)
 		{
 			return dot & Dot.EnableMask;
-		}
-
-		public static int GetX(this int pos)
-		{
-			return pos % Field.RealWidth;
-		}
-
-		public static int GetY(this int pos)
-		{
-			return pos / Field.RealWidth;
 		}
 	}
 }

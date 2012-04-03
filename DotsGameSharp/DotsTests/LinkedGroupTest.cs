@@ -71,7 +71,7 @@ namespace DotsTests
 
 			field.MakeMove(startX, startY, Dot.RedPlayer);
 
-			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, field.DotsSequancePositions.ToList());
+			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, 1, field.DotsSequancePositions.ToList());
 			linkedGroup.BuildEnvelope();
 
 			Assert.AreEqual(linkedGroup.EnvelopePositions.Count(), 1);
@@ -90,7 +90,7 @@ namespace DotsTests
 			field.MakeMove(startX, startY, Dot.RedPlayer);
 			field.MakeMove(startX, startY + 3, Dot.RedPlayer);
 
-			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, field.DotsSequancePositions.ToList());
+			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, 1, field.DotsSequancePositions.ToList());
 			linkedGroup.BuildEnvelope();
 
 			Assert.AreEqual(linkedGroup.EnvelopePositions.Count(), 2);
@@ -107,7 +107,7 @@ namespace DotsTests
 			field.MakeMove(startX + 3, startY + 3, Dot.RedPlayer);
 			field.MakeMove(startX, startY + 6, Dot.RedPlayer);
 
-			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, field.DotsSequancePositions.ToList());
+			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, 1, field.DotsSequancePositions.ToList());
 			linkedGroup.BuildEnvelope();
 
 			Assert.AreEqual(linkedGroup.EnvelopePositions.Count(), 3);
@@ -141,8 +141,7 @@ namespace DotsTests
 
 			field.MakeMove(startX + 7, startY - 2, Dot.RedPlayer);
 
-			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, field.DotsSequancePositions.ToList());
-			linkedGroup.BuildEnvelope();
+			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, 1, field.DotsSequancePositions.ToList());
 
 			Assert.AreEqual(linkedGroup.EnvelopePositions.Count(), 6);
 
@@ -153,6 +152,34 @@ namespace DotsTests
 			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX + 5, startY + 2)));
 			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX + 6, startY - 4)));
 			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX + 7, startY - 2)));
+		}
+
+		[TestMethod()]
+		public void EnvelopeManyDotsTest2()
+		{
+			int startX = 16;
+			int startY = 16;
+			Field field = new Field();
+
+			field.MakeMove(startX, startY, Dot.RedPlayer);
+			field.MakeMove(startX + 1, startY + 1, Dot.RedPlayer);
+			field.MakeMove(startX + 3, startY + 1, Dot.RedPlayer);
+			field.MakeMove(startX + 2, startY + 2, Dot.RedPlayer);
+			field.MakeMove(startX + 4, startY + 2, Dot.RedPlayer);
+			field.MakeMove(startX + 2, startY + 3, Dot.RedPlayer);
+			field.MakeMove(startX + 1, startY + 4, Dot.RedPlayer);
+			field.MakeMove(startX + 1, startY + 5, Dot.RedPlayer);
+
+			LinkedGroup linkedGroup = new LinkedGroup(Dot.RedPlayer, 1, field.DotsSequancePositions.ToList());
+			linkedGroup.BuildEnvelope();
+
+			Assert.AreEqual(linkedGroup.EnvelopePositions.Count(), 4);
+
+			var envelopePositions = linkedGroup.EnvelopePositions;
+			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX, startY)));
+			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX + 3, startY + 1)));
+			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX + 4, startY + 2)));
+			Assert.IsTrue(envelopePositions.Contains(Field.GetPosition(startX + 1, startY + 5)));
 		}
 	}
 }

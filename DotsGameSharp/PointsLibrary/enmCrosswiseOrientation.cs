@@ -5,9 +5,11 @@ using System.Text;
 
 namespace Dots.Library
 {
-	public enum enmBeginPattern
+	public enum enmCrosswiseOrientation
 	{
-		Clean,
-		Crosswise
+		BottomRight,
+		BottomLeft,
+		TopLeft,
+		TopRight
 	}
 }
