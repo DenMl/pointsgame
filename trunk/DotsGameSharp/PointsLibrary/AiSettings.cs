@@ -19,10 +19,17 @@ namespace Dots.AI
 			private set;
 		}
 
+		public static float SquareCoef
+		{
+			get;
+			private set;
+		}
+
 		static AiSettings()
 		{
 			InfinityScore = 100;
 			MaxPly = 50;
+			SquareCoef = 0.05f;
 		}
 	}
 }

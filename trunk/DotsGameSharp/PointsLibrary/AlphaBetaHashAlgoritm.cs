@@ -8,31 +8,16 @@ namespace Dots.AI
 {
 	class AlphaBetaHashAlgoritm
 	{
-		#region Fields
-
-		private Field Field_;
-		private MoveGenerator MoveGenerator_;
-		private ZobristHashField HashField_;
-		private TranspositionTable transpositionTable_;
-
-		#endregion
-
 		#region Constructors
 
-		public AlphaBetaHashAlgoritm(Field field)
+		public AlphaBetaHashAlgoritm(Field field, MoveGenerator moveGenerator = null, Estimator estimator = null,
+			ZobristHashField hashField = null, TranspositionTable transpositionTable = null)
 		{
-			Field_ = field;
-			MoveGenerator_ = new MoveGenerator(field);
-			HashField_ = new ZobristHashField(field, 0);
-			transpositionTable_ = new TranspositionTable(field);
-		}
-
-		public AlphaBetaHashAlgoritm(Field field, ZobristHashField hashField, TranspositionTable transpositionTable)
-		{
-			Field_ = field;
-			MoveGenerator_ = new MoveGenerator(field);
-			HashField_ = hashField;
-			transpositionTable_ = transpositionTable;
+			Field = field;
+			MoveGenerator = moveGenerator ?? new MoveGenerator(field);
+			Estimator = estimator ?? new Estimator(field);
+			HashField = hashField ?? new ZobristHashField(field, 0);
+			TranspositionTable = transpositionTable ?? new TranspositionTable(field);
 		}
 
 		#endregion
@@ -41,25 +26,25 @@ namespace Dots.AI
 
 		public int SearchBestMove()
 		{
-			return SearchBestMove(4, Field_.CurrentPlayer, -AiSettings.InfinityScore, -AiSettings.InfinityScore);
+			return SearchBestMove(4, Field.CurrentPlayer, -AiSettings.InfinityScore, -AiSettings.InfinityScore);
 		}
 
 		public int SearchBestMove(byte depth, Dot player, float alpha, float beta)
 		{
 			int bestMove = 0;
 
-			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
+			var moves = MoveGenerator.GenerateMovesForPlayer(player);
 			Dot nextPlayer = player.NextPlayer();
 
 			foreach (var move in moves)
 			{
 				if (alpha < beta)
 				{
-					Field_.MakeMove(move);
-					HashField_.UpdateHash();
-					float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
-					Field_.UnmakeMove();
-					HashField_.UpdateHash();
+					Field.MakeMove(move);
+					HashField.UpdateHash();
+					float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField.Key);
+					Field.UnmakeMove();
+					HashField.UpdateHash();
 					if (tmp > alpha)
 					{
 						alpha = tmp;
@@ -85,26 +70,21 @@ namespace Dots.AI
 				return score;
 
 			if (depth == 0)
-			{
-				score = player == Dot.RedPlayer ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
-					Field_.BlueCaptureCount - Field_.RedCaptureCount;
+				return Estimator.Estimate(player);
 
-				return score;
-			}
-
-			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
+			var moves = MoveGenerator.GenerateMovesForPlayer(player);
 			foreach (var move in moves)
 			{
-				Field_.MakeMove(move);
-				HashField_.UpdateHash();
-				float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField_.Key);
-				Field_.UnmakeMove();
-				HashField_.UpdateHash();
+				Field.MakeMove(move);
+				HashField.UpdateHash();
+				float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha, HashField.Key);
+				Field.UnmakeMove();
+				HashField.UpdateHash();
 
 				if (tmp > alpha)
 				{
-					transpositionTable_.RecordHash(
-						(byte)depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta, HashField_.Key, (ushort)move);
+					TranspositionTable.RecordHash(
+						(byte)depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta, HashField.Key, (ushort)move);
 					
 					alpha = tmp;
 					if (alpha >= beta)
@@ -113,14 +93,14 @@ namespace Dots.AI
 			}
 
 			if (alpha == oldAlpha)
-				transpositionTable_.RecordHash((byte)depth, alpha, enmHashEntryType.Alpha, HashField_.Key, 0);
+				TranspositionTable.RecordHash((byte)depth, alpha, enmHashEntryType.Alpha, HashField.Key, 0);
 
 			return alpha;
 		}
 
 		private unsafe float CheckCollision(Dot player, byte depth, float alpha, float beta, ulong key)
 		{
-			fixed (HashEntry* hashEntry = &transpositionTable_.HashEntries_[key % TranspositionTable.TableSize])
+			fixed (HashEntry* hashEntry = &TranspositionTable.HashEntries_[key % TranspositionTable.TableSize])
 			{
 				if (hashEntry->HashKey == key)
 				{
@@ -143,15 +123,15 @@ namespace Dots.AI
 					}
 					if (hashEntry->Type != enmHashEntryType.Alpha)
 					{
-						Field_.MakeMove(hashEntry->BestMove);
-						HashField_.UpdateHash();
-						float tmp = -EvaluatePosition((byte)(depth - 1), player.NextPlayer(), -beta, -alpha, HashField_.Key);
-						Field_.UnmakeMove();
-						HashField_.UpdateHash();
+						Field.MakeMove(hashEntry->BestMove);
+						HashField.UpdateHash();
+						float tmp = -EvaluatePosition((byte)(depth - 1), player.NextPlayer(), -beta, -alpha, HashField.Key);
+						Field.UnmakeMove();
+						HashField.UpdateHash();
 
 						if (tmp > alpha)
 						{
-							transpositionTable_.RecordHash(depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta,
+							TranspositionTable.RecordHash(depth, tmp, tmp < beta ? enmHashEntryType.Exact : enmHashEntryType.Beta,
 								key, hashEntry->BestMove);
 							alpha = tmp;
 							if (alpha >= beta)
@@ -161,6 +141,40 @@ namespace Dots.AI
 				}
 			}
 			return -1;
+		}
+
+		#endregion
+
+		#region Properties
+
+		public Field Field
+		{
+			get;
+			set;
+		}
+
+		public MoveGenerator MoveGenerator
+		{
+			get;
+			set;
+		}
+
+		public Estimator Estimator
+		{
+			get;
+			set;
+		}
+
+		public ZobristHashField HashField
+		{
+			get;
+			set;
+		}
+
+		public TranspositionTable TranspositionTable
+		{
+			get;
+			set;
 		}
 
 		#endregion

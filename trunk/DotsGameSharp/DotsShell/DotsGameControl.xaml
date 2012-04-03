@@ -4,7 +4,7 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 mc:Ignorable="d" 
-			 d:DesignHeight="484" d:DesignWidth="802" Loaded="UserControl_Loaded">
+			 d:DesignHeight="571" d:DesignWidth="947" Loaded="UserControl_Loaded">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="668*" />
@@ -15,19 +15,40 @@
 			<TabItem Header="Moves Tree">
 				<Grid Name="grid2">
 					<Grid Name="grid3" Background="#18FFE000">
-						<Slider Height="23" HorizontalAlignment="Left" Margin="6,0,0,6" Name="sliderMain" VerticalAlignment="Bottom" Width="218" ValueChanged="sliderMain_ValueChanged" />
-						<Button Content="Unmake move" Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="btnUnmakeMove" VerticalAlignment="Top" Width="218" Click="btnUnmakeMove_Click" />
-						<Button Content="Load game" Height="30" HorizontalAlignment="Left" Margin="6,42,0,0" Name="btnLoadGame" VerticalAlignment="Top" Width="218" Click="btnLoadGame_Click" />
-						<TextBlock Height="23" HorizontalAlignment="Left" Margin="73,341,0,0" Name="tbRedCaptureCount" Text="0" VerticalAlignment="Top" Foreground="Red" FontSize="15" />
-						<TextBlock Foreground="Blue" Height="23" HorizontalAlignment="Right" Margin="0,341,61,0" Name="tbBlueCaptureCount" Text="0" VerticalAlignment="Top" FontSize="15" />
-						<TextBlock FontSize="15" Height="23" HorizontalAlignment="Left" Margin="73,372,0,0" Name="tbHash" Text="0" VerticalAlignment="Top" />
+						<Button Content="Unmake move" HorizontalAlignment="Stretch" Margin="6,6,5,0" Name="btnUnmakeMove" VerticalAlignment="Top" Click="btnUnmakeMove_Click" />
+						<Button Content="Load game" HorizontalAlignment="Stretch" Margin="6,34,6,0" Name="btnLoadGame" VerticalAlignment="Top" Click="btnLoadGame_Click" Height="Auto" />
+                        <Button Content="Clear" HorizontalAlignment="Stretch" Margin="6,62,6,0" Name="btnClear" VerticalAlignment="Top" Click="btnClear_Click" Height="Auto" />
+                        <CheckBox Content="Convex Groups" Height="16" Margin="6,0,6,98" Name="cbConvexGroups" VerticalAlignment="Bottom" Checked="cbConvexGroups_Checked" Unchecked="cbConvexGroups_Unchecked" Width="Auto" />
+                        <CheckBox Content="Crosswises" Height="16" HorizontalAlignment="Stretch" Margin="6,0,6,73" Name="cbCrosswises" VerticalAlignment="Bottom" Checked="cbCrosswises_Checked" Unchecked="cbCrosswises_Unchecked" Width="Auto" />
+                    </Grid>
+					<Grid Height="28" HorizontalAlignment="Stretch" Margin="6,0,6,39" Name="grid1" VerticalAlignment="Bottom">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition />
+							<ColumnDefinition />
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+						<Label Content="Red" Name="label1" Foreground="Red" />
+						<Label Foreground="Red" Name="lblRedCaptureCount" Grid.Column="1" />
+						<Label Content="Blue" Foreground="Blue" Name="label3" Grid.Column="2" />
+						<Label Foreground="Blue" Name="lblBlueCaptureCount" Grid.Column="3" />
+					</Grid>
+					<Grid Height="27" HorizontalAlignment="Stretch" Margin="6,0,6,6" Name="grid4" VerticalAlignment="Bottom">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="34" />
+							<ColumnDefinition Width="34" />
+							<ColumnDefinition Width="179*" />
+						</Grid.ColumnDefinitions>
+						<Slider Name="sliderMain" ValueChanged="sliderMain_ValueChanged" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5,0" />
+						<Button Content="&lt;" Name="button1" />
+						<Button Content="&gt;" Name="button2" Grid.Column="1" />
 					</Grid>
 				</Grid>
 			</TabItem>
 		</TabControl>
 		<ScrollViewer HorizontalAlignment="Stretch" Margin="12,12,0,12" Name="scrollViewer1" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 			<Viewbox Name="viewbox1">
-				<Canvas Height="196" Name="canvasField" Width="224" MouseMove="canvasField_MouseMove" MouseLeftButtonUp="canvasField_MouseLeftButtonUp" />
+				<Canvas Height="196" Name="canvasField" Width="224" MouseLeftButtonUp="canvasField_MouseLeftButtonUp" />
 			</Viewbox>
 		</ScrollViewer>
 	</Grid>

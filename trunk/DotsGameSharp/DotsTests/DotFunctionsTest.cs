@@ -69,10 +69,10 @@ namespace DotsTests
 
 			for (var i = 58; i < buffer.Length; i += 13)
 			{
-				field.MakeMove(buffer[i], buffer[i + 1]);
+				field.MakeMove(buffer[i] + 1, buffer[i + 1] + 1);
 				if (field.DotsSequenceCount == 25)
 				{
-					int pos = Field.GetPosition(12, 12);
+					int pos = Field.GetPosition(13, 13);
 
 					Assert.IsTrue(field[pos].IsRedPutted());
 					Assert.IsTrue(field[pos + 1].IsRedPutted());
@@ -81,14 +81,14 @@ namespace DotsTests
 				}
 				else if (field.DotsSequenceCount == 58)
 				{
-					int pos = Field.GetPosition(12, 12);
+					int pos = Field.GetPosition(13, 13);
 
 					Assert.IsTrue(field[pos].IsBluePutted());
 					Assert.IsTrue(field[pos + 1].IsBluePutted());
 					Assert.IsTrue(field[pos + 2].IsBluePutted());
 					Assert.IsTrue(field[pos + 3].IsBluePutted());
-					Assert.IsTrue(field[Field.GetPosition(12 - 3, 12 - 1)].IsBluePutted());
-					Assert.IsTrue(field[Field.GetPosition(12 + 5, 12)].IsBluePutted());
+					Assert.IsTrue(field[Field.GetPosition(13 - 3, 13 - 1)].IsBluePutted());
+					Assert.IsTrue(field[Field.GetPosition(13 + 5, 13)].IsBluePutted());
 
 					Assert.IsFalse(field[pos].IsRedPutted());
 					Assert.IsFalse(field[pos + 1].IsRedPutted());

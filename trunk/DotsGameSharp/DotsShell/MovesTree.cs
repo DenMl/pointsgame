@@ -46,60 +46,25 @@ namespace DotsShell
 		[XmlAttribute]
 		public readonly int Y;
 
-		public List<Label> Labels;
-
+		public readonly List<Label> Labels;
 		public readonly MovesTreeNode Parent;
-		List<MovesTreeNode> Childrens;
+		public readonly List<MovesTreeNode> Childrens;
 
-		private MovesTreeNode(MovesTreeNode ParentNode, int X, int Y, List<Label> Labels = null)
+		#region Constructors
+
+		public MovesTreeNode(MovesTreeNode parentNode, int x, int y, List<Label> labels = null)
 		{
-			this.Parent = ParentNode;
-			this.X = X;
-			this.Y = Y;
-			if (Labels != null && Labels.Count == 0)
-				Labels = null;
+			Parent = parentNode;
+			X = x;
+			Y = y;
+			if (labels != null && labels.Count == 0)
+				labels = null;
 			else
-				this.Labels = Labels;
-
-			//if (ParentNode != null)
-			//    ParentNode.Childrens.Add(this);
+				Labels = labels;
+			Childrens = new List<MovesTreeNode>();
 		}
 
-		public MovesTreeNode(int X, int Y, List<Label> Labels = null)
-		{
-			this.Parent = null;
-			this.X = X;
-			this.Y = Y;
-			if (Labels != null && Labels.Count == 0)
-				Labels = null;
-			else
-				this.Labels = Labels;
-		}
-
-		public void AddChildren(int X, int Y, List<Label> Labels = null)
-		{
-			if (Childrens == null)
-				Childrens = new List<MovesTreeNode>(1);
-			Childrens.Add(new MovesTreeNode(this, X, Y, Labels));
-		}
-
-		public MovesTreeNode GetChildren(int Index)
-		{
-			return Childrens[Index];
-		}
-
-		/*
-		private void RemoveChildrens()
-		{
-			if (Childrens != null)
-				foreach (MovesTreeNode Node in Childrens)
-					Node.RemoveChildrens();
-		}
-
-		public void RemoveChildren(int Index)
-		{
-			foreach (MovesTreeNode Node in Childrens) ;
-		}*/
+		#endregion
 	}
 
 	public delegate void MovesTreeHandler(object sender, EventArgs e);
@@ -117,26 +82,41 @@ namespace DotsShell
 				Draw(this, e);
 		}
 
-		List<MovesTreeNode> Roots;
-		MovesTreeNode CurNode;
+		MovesTreeNode Root_;
+		MovesTreeNode CurrentNode_;
 
 		public MovesTree()
 		{
-			Roots = new List<MovesTreeNode>(1);
+			Root_ = null;
+			CurrentNode_ = null;
 		}
 
-		public void Add(int X, int Y)
+		public void Add(int x, int y)
 		{
-			if (Roots.Count == 0)
+			if (Root_ == null)
 			{
-				Roots.Add(new MovesTreeNode(X, Y));
-				CurNode = Roots[0];
+				Root_ = new MovesTreeNode(null, x, y);
+				CurrentNode_ = Root_;
 			}
 			else
 			{
-				CurNode.AddChildren(X, Y);
-				CurNode = CurNode.GetChildren(0);
+				foreach (var node in CurrentNode_.Childrens)
+					if (node.X == x && node.Y == y)
+					{
+						CurrentNode_ = node;
+						return;
+					}
+
+				var newNode = new MovesTreeNode(CurrentNode_, x, y);
+				CurrentNode_.Childrens.Add(newNode);
+				CurrentNode_ = newNode;
 			}
+		}
+
+		public void Remove()
+		{
+			if (CurrentNode_ != null)
+				CurrentNode_ = CurrentNode_.Parent;
 		}
 	}
 }

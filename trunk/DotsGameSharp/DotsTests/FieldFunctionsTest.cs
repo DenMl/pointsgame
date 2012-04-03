@@ -12,9 +12,6 @@ namespace DotsTests
 	[TestClass()]
 	public class FieldFunctionsTest
 	{
-		private int startX = 16;
-		private int startY = 16;
-
 		private TestContext testContextInstance;
 
 		/// <summary>
@@ -70,6 +67,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void SimpleSequenceTest()
 		{
+			int startX = 16;
+			int startY = 16;
+
 			Field field = new Field();
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -85,6 +85,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void BlueSurroundFirst()
 		{
+			int startX = 16;
+			int startY = 16;
+
 			Field field = new Field();
 
 			field.MakeMove(startX, startY);
@@ -112,6 +115,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void OneBaseTest()
 		{
+			int startX = 16;
+			int startY = 16;
+
 			Field field = new Field();
 
 			field.MakeMove(startX, startY);
@@ -209,6 +215,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void EmptyBaseTest()
 		{
+			int startX = 16;
+			int startY = 16;
+
 			Field field = new Field();
 
 			field.MakeMove(startX, startY);
@@ -238,6 +247,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void BlueSurroundFirstInEmptyBase()
 		{
+			int startX = 16;
+			int startY = 16;
+
 			Field field = new Field();
 
 			field.MakeMove(startX, startY);
@@ -264,6 +276,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void ThreeAdjacentBasesTest()
 		{
+			int startX = 16;
+			int startY = 16;
+
 			Field field = new Field();
 
 			field.MakeMove(startX, startY);
@@ -301,8 +316,8 @@ namespace DotsTests
 		[TestMethod()]
 		public void BigEmptyBaseTest()
 		{
-			startX = 10;
-			startY = 0;
+			int startX = 12;
+			int startY = 2;
 			Field field = new Field();
 
 			// top chain.
@@ -397,7 +412,7 @@ namespace DotsTests
 
 			var buffer = DotsTests.Properties.Resources.VeryLongGame;
 			for (var i = 58; i < buffer.Length; i += 13)
-				Assert.AreEqual(field.MakeMove(buffer[i], buffer[i + 1]), true);
+				Assert.AreEqual(field.MakeMove(buffer[i] + 1, buffer[i + 1] + 1), true);
 			
 			Assert.AreEqual(field.RedCaptureCount, 179);
 			Assert.AreEqual(field.BlueCaptureCount, 20);

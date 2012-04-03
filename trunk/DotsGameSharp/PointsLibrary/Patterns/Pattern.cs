@@ -13,10 +13,10 @@ namespace Dots.Library
 
 	public class Pattern
 	{
-		int Width;
-		int Height;
-		enmPatternDotState[] PatternStates;
+		public int Width;
+		public int Height;
+		public enmPatternDotState[] PatternStates;
 
-		double Probability;
+		public double Probability;
 	}
 }

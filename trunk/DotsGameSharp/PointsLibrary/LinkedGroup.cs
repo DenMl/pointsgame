@@ -6,19 +6,33 @@ using Dots.Library;
 
 namespace Dots.AI
 {
-	class LinkedGroup
+	public class LinkedGroup
 	{
+		#region Readonly & Fields
+
+		public const int ZeroGroup = 0;
 		public readonly Dot Player;
 		public readonly List<int> Positions;
-
+		public readonly int Number;
 		private List<int> EnvelopePositions_;
 
-		public LinkedGroup(Dot player, List<int> positions)
+		#endregion
+
+		#region Constructors
+		
+		public LinkedGroup(Dot player, int number, List<int> positions)
 		{
 			Player = player;
 			Positions = positions;
-		}
+			Number = number;
 
+			BuildEnvelope();
+		}
+		
+		#endregion
+
+		#region Public Methods
+		
 		public void BuildEnvelope()
 		{
 			EnvelopePositions_ = new List<int>(Positions);
@@ -27,19 +41,22 @@ namespace Dots.AI
 				return;
 
 			int minPos = Positions.Min();
-			int minPosX = minPos % Field.RealWidth;
-			int minPosY = minPos / Field.RealWidth;
+			int minPosX, minPosY;
+			Field.GetPosition(minPos, out minPosX, out minPosY);
 
 			EnvelopePositions_.Remove(minPos);
 
 			EnvelopePositions_.Sort((pos2, pos1) =>
-				{
-					int x1 = pos1 % Field.RealWidth - minPosX;
-					int y1 = pos1 / Field.RealWidth - minPosY;
-					int x2 = pos2 % Field.RealWidth - minPosX;
-					int y2 = pos2 / Field.RealWidth - minPosY;
-					return ((float)x1 / (Math.Abs(x1) + Math.Abs(y1))).CompareTo((float)x2 / (Math.Abs(x2) + Math.Abs(y2)));
-				});
+			{
+				int x1, y1, x2, y2;
+				Field.GetPosition(pos1, out x1, out y1);
+				Field.GetPosition(pos2, out x2, out y2);
+				x1 -= minPosX;
+				y1 -= minPosY;
+				x2 -= minPosX;
+				y2 -= minPosY;
+				return ((float)x1 / (Math.Abs(x1) + Math.Abs(y1))).CompareTo((float)x2 / (Math.Abs(x2) + Math.Abs(y2)));
+			});
 
 			EnvelopePositions_.Insert(0, minPos);
 
@@ -61,17 +78,26 @@ namespace Dots.AI
 			}
 
 			if (m + 1 != EnvelopePositions_.Count)
-				EnvelopePositions_.RemoveRange(EnvelopePositions_.Count - m - 1, m + 1);
-		}
-		
-		private float IsCCW(int p1, int p2, int p3)
-		{
-			return (p2 % Field.RealWidth - p1 % Field.RealWidth) *
-				(p3 / Field.RealWidth - p1 / Field.RealWidth) -
-				(p2 / Field.RealWidth - p1 / Field.RealWidth) *
-				(p3 % Field.RealWidth - p1 % Field.RealWidth);
+				EnvelopePositions_.RemoveRange(m + 1, EnvelopePositions_.Count - m - 1);
 		}
 
+		#endregion
+
+		#region Helpers
+
+		private float IsCCW(int p1, int p2, int p3)
+		{
+			int x1, y1, x2, y2, x3, y3;
+			Field.GetPosition(p1, out x1, out y1);
+			Field.GetPosition(p2, out x2, out y2);
+			Field.GetPosition(p3, out x3, out y3);
+			return (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+		}
+
+		#endregion
+
+		#region Properties
+		
 		public IEnumerable<int> EnvelopePositions
 		{
 			get
@@ -79,5 +105,7 @@ namespace Dots.AI
 				return EnvelopePositions_;
 			}
 		}
+
+		#endregion
 	}
 }

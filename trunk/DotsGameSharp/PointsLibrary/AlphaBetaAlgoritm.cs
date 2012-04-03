@@ -8,19 +8,13 @@ namespace Dots.AI
 {
 	class AlphaBetaAlgoritm
 	{
-		#region Fields
-
-		private Field Field_;
-		private MoveGenerator MoveGenerator_;
-
-		#endregion
-
 		#region Constructors
 
-		public AlphaBetaAlgoritm(Field field)
+		public AlphaBetaAlgoritm(Field field, MoveGenerator moveGenerator = null, Estimator estimator = null)
 		{
-			Field_ = field;
-			MoveGenerator_ = new MoveGenerator(field);
+			Field = field;
+			MoveGenerator = moveGenerator ?? new MoveGenerator(field);
+			Estimator = estimator ?? new Estimator(field);
 		}
 
 		#endregion
@@ -29,23 +23,23 @@ namespace Dots.AI
 
 		public int SearchBestMove()
 		{
-			return SearchBestMove(4, Field_.CurrentPlayer, -100, -100);
+			return SearchBestMove(4, Field.CurrentPlayer, -AiSettings.InfinityScore, -AiSettings.InfinityScore);
 		}
 
 		public int SearchBestMove(int depth, Dot player, float alpha, float beta)
 		{
 			int bestMove = 0;
 
-			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
+			var moves = MoveGenerator.GenerateMovesForPlayer(player);
 			Dot nextPlayer = player.NextPlayer();
 
 			foreach (var move in moves)
 			{
 				if (alpha < beta)
 				{
-					Field_.MakeMove(move);
+					Field.MakeMove(move);
 					float tmp = -EvaluatePosition(depth - 1, nextPlayer, -beta, -alpha);
-					Field_.UnmakeMove();
+					Field.UnmakeMove();
 					if (tmp > alpha)
 					{
 						alpha = tmp;
@@ -64,25 +58,46 @@ namespace Dots.AI
 		private float EvaluatePosition(int depth, Dot player, float alpha, float beta)
 		{
 			if (depth == 0)
-				return player == Dot.RedPlayer ? Field_.RedCaptureCount - Field_.BlueCaptureCount :
-					Field_.BlueCaptureCount - Field_.RedCaptureCount;
+				return Estimator.Estimate(player);
 
-			var moves = MoveGenerator_.GenerateMovesForPlayer(player);
+			var moves = MoveGenerator.GenerateMovesForPlayer(player);
 			Dot nextPlayer = player.NextPlayer();
 
 			foreach (var move in moves)
 			{
 				if (alpha < beta)
 				{
-					Field_.MakeMove(move);
+					Field.MakeMove(move);
 					float tmp = -EvaluatePosition(depth - 1, nextPlayer, -beta, -alpha);
-					Field_.UnmakeMove();
+					Field.UnmakeMove();
 					if (tmp > alpha)
 						alpha = tmp;
 				}
 			}
 
 			return alpha;
+		}
+
+		#endregion
+
+		#region Properties
+
+		public Field Field
+		{
+			get;
+			set;
+		}
+
+		public MoveGenerator MoveGenerator
+		{
+			get;
+			set;
+		}
+
+		public Estimator Estimator
+		{
+			get;
+			set;
 		}
 
 		#endregion

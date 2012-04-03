@@ -15,8 +15,6 @@ namespace DotsTests
 	public class ZobristHashTest
 	{
 		private TestContext testContextInstance;
-		private int StartX_ = 16;
-		private int StartY_ = 16;
 
 		/// <summary>
 		///Gets or sets the test context which provides
@@ -74,6 +72,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void SimpleSequenceTest()
 		{
+			int StartX_ = 16;
+			int StartY_ = 16;
+
 			var field = new Field();
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
@@ -103,6 +104,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void SimpleBaseTest()
 		{
+			int StartX_ = 16;
+			int StartY_ = 16;
+			
 			var field = new Field();
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
@@ -138,6 +142,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void DifferentBaseCreationOrderTest()
 		{
+			int StartX_ = 16;
+			int StartY_ = 16;
+
 			var field = new Field();
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
@@ -220,8 +227,8 @@ namespace DotsTests
 		[TestMethod()]
 		public void BaseInBaseTest()
 		{
-			StartX_ = 5;
-			StartY_ = 0;
+			int StartX_ = 5;
+			int StartY_ = 2;
 
 			var field = new Field();
 			ZobristHashField hash = new ZobristHashField(field, 0);
@@ -313,8 +320,8 @@ namespace DotsTests
 		[TestMethod()]
 		public void EnemyBaseInBaseTest()
 		{
-			StartX_ = 5;
-			StartY_ = 0;
+			int StartX_ = 5;
+			int StartY_ = 2;
 
 			var field = new Field();
 			ZobristHashField hash = new ZobristHashField(field, 0);
@@ -370,6 +377,9 @@ namespace DotsTests
 
 		private void PutBigBase(Field field, ZobristHashField hash)
 		{
+			int StartX_ = 5;
+			int StartY_ = 2;
+
 			// top.
 			field.MakeMove(StartX_, StartY_);
 			hash.UpdateHash();
@@ -468,6 +478,9 @@ namespace DotsTests
 		[TestMethod()]
 		public void EmptyBaseTest()
 		{
+			int StartX_ = 16;
+			int StartY_ = 16;
+
 			var field = new Field();
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
@@ -524,7 +537,7 @@ namespace DotsTests
 
 			for (var i = 58; i < buffer.Length; i += 13)
 			{
-				Assert.AreEqual(field.MakeMove(buffer[i], buffer[i + 1]), true);
+				Assert.AreEqual(field.MakeMove(buffer[i] + 1, buffer[i + 1] + 1), true);
 				hash.UpdateHash();
 			}
 
