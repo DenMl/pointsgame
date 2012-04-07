@@ -8,6 +8,9 @@ namespace Dots.Library
 {
 	public static class Helper
 	{
+		public static int[] NextPosOffsets_;
+		public static int[] NextFirstPosOffsets_;
+
 		public static Dot GetPlayer(this Dot dot)
 		{
 			return dot & Dot.Player;
@@ -58,6 +61,11 @@ namespace Dots.Library
 			return (dot & Dot.SurroundCountMask) > Dot.FirstSurroundLevel;
 		}
 
+		public static bool IsSurrounded(this Dot dot)
+		{
+			return (dot & Dot.SurroundCountMask) >= Dot.FirstSurroundLevel;
+		}
+
 		public static bool IsRealPutted(this Dot dot)
 		{
 			return (dot & Dot.RealPutted) == Dot.RealPutted;
@@ -96,6 +104,29 @@ namespace Dots.Library
 		public static Dot GetEnabledCondition(this Dot dot)
 		{
 			return dot & Dot.EnableMask;
+		}
+
+		static Helper()
+		{
+			NextPosOffsets_ = new int[Field.RealWidth * 2 + 3];
+			NextPosOffsets_[0] = -Field.RealWidth;
+			NextPosOffsets_[1] = -Field.RealWidth + 1;
+			NextPosOffsets_[2] = +1;
+			NextPosOffsets_[2 + Field.RealWidth] = +Field.RealWidth + 1;
+			NextPosOffsets_[2 + Field.RealWidth * 2] = +Field.RealWidth;
+			NextPosOffsets_[1 + Field.RealWidth * 2] = +Field.RealWidth - 1;
+			NextPosOffsets_[0 + Field.RealWidth * 2] = -1;
+			NextPosOffsets_[0 + Field.RealWidth] = -Field.RealWidth - 1;
+			
+			NextFirstPosOffsets_ = new int[Field.RealWidth * 2 + 3];
+			NextFirstPosOffsets_[0] = -Field.RealWidth + 1;
+			NextFirstPosOffsets_[1] = +Field.RealWidth + 1;
+			NextFirstPosOffsets_[2] = +Field.RealWidth + 1;
+			NextFirstPosOffsets_[2 + Field.RealWidth] = +Field.RealWidth - 1;
+			NextFirstPosOffsets_[2 + Field.RealWidth * 2] = +Field.RealWidth - 1;
+			NextFirstPosOffsets_[1 + Field.RealWidth * 2] = -Field.RealWidth - 1;
+			NextFirstPosOffsets_[0 + Field.RealWidth * 2] = -Field.RealWidth - 1;
+			NextFirstPosOffsets_[0 + Field.RealWidth] = -Field.RealWidth + 1;
 		}
 	}
 }

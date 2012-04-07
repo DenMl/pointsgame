@@ -7,26 +7,25 @@ namespace Dots.Library
 {
 	public class Base
 	{
-		public readonly int CaptureCountRed;
-		public readonly int CaptureCountBlue;
+		public readonly int LastCaptureCount;
+		public readonly int LastFreedCount;
 		public readonly int RedSquare;
 		public readonly int BlueSquare;
 		public readonly List<int> ChainPositions;
 		public readonly List<int> SurroundPoistions;
 		public readonly Stack<DotPosition> ChainDotPositions;
 		public readonly Stack<DotPosition> SurrroundDotPositions;
-		
 
-		public Base(int captureCountsRed, 
-			int captureCountsBlack, 
+		public Base(int lastCaptureCount, 
+			int lastFreedCount, 
 			Stack<DotPosition> chainPointPoses,
 			Stack<DotPosition> surPointPoses,
 			List<int> chainPositions,
 			List<int> surroundPoistions,
 			int redSquare, int blueSquare)
 		{
-			CaptureCountRed = captureCountsRed;
-			CaptureCountBlue = captureCountsBlack;
+			LastCaptureCount = lastCaptureCount;
+			LastFreedCount = lastFreedCount;
 			ChainDotPositions = chainPointPoses;
 			SurrroundDotPositions = surPointPoses;
 			ChainPositions = chainPositions;
@@ -37,7 +36,7 @@ namespace Dots.Library
 
 		public override string ToString()
 		{
-			return "R: " + CaptureCountRed + ", B: " + CaptureCountBlue;
+			return "R: " + LastCaptureCount + ", B: " + LastFreedCount;
 		}
 	}
 }

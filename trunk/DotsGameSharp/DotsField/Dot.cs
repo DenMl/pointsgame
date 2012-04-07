@@ -33,11 +33,11 @@ namespace Dots.Library
 		Tagged = 1 << 5,
 		RealPlayer = 1 << DotConstants.RealPlayerShift,
 		RealPutted = 1 << DotConstants.RealPuttedShift,
-
+		
+		RedPlayer = 0,
 		BluePlayer = 1,
 		RedRealPlayer = 0 << DotConstants.RealPlayerShift,
 		BlueRealPlayer = 1 << DotConstants.RealPlayerShift,
-		RedPlayer = 0,
 		Empty = 0,
 		Invalid = 1,
 

@@ -70,18 +70,17 @@
     <Compile Include="ZobristHashTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotsAI\DotsAI.csproj">
+      <Project>{A21DD11B-A29A-4F57-BA59-D751FC314E44}</Project>
+      <Name>DotsAI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotsField\DotsField.csproj">
       <Project>{07FD35E2-6ABD-41D2-A032-D0FC9040DA67}</Project>
       <Name>DotsField</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PointsLibrary\DotsAI.csproj">
-      <Project>{F290A8F9-369C-4651-B00F-707E50359F4E}</Project>
-      <Name>DotsAI</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="DotFunctionsTest.sav" />
-    <Shadow Include="Test References\PointsLibrary.accessor" />
     <None Include="VeryLongGame.sav" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +88,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

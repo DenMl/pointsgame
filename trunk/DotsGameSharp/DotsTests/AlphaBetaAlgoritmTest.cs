@@ -65,7 +65,7 @@ namespace DotsTests
 		{
 			int startX = 16;
 			int startY = 16;
-			var field = new Field();
+			var field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -96,7 +96,7 @@ namespace DotsTests
 		{
 			int startX = 16;
 			int startY = 16;
-			var field = new Field();
+			var field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -127,7 +127,7 @@ namespace DotsTests
 		{
 			int startX = 16;
 			int startY = 16;
-			var field = new Field();
+			var field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -170,7 +170,7 @@ namespace DotsTests
 		{
 			int startX = 16;
 			int startY = 16;
-			var field = new Field();
+			var field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -203,7 +203,7 @@ namespace DotsTests
 		{
 			int startX = 16;
 			int startY = 16;
-			var field = new Field();
+			var field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);

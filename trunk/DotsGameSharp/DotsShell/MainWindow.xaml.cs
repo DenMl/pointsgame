@@ -11,14 +11,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DotsShell.Properties;
+using System.ComponentModel;
 
 namespace DotsShell
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -29,6 +33,11 @@ namespace DotsShell
 			var page = new DotsGameControl(39, 32);
 
 			gridMain.Children.Add(page);
+		}
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			Settings.Default.Save();
 		}
 	}
 }

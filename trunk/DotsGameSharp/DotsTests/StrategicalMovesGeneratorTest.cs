@@ -67,7 +67,7 @@ namespace DotsTests
 		[TestMethod()]
 		public void GenerateGroupsTest()
 		{
-			var field = new Field();
+			var field = new Field(39, 32);
 			var buffer = DotsTests.Properties.Resources.VeryLongGame;
 			for (var i = 58; i < buffer.Length; i += 13)
 				field.MakeMove(buffer[i] + 1, buffer[i + 1] + 1);

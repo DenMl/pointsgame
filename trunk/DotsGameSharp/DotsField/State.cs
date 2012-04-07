@@ -9,7 +9,7 @@ namespace Dots.Library
 	/// Struct for field changes on each move
 	/// if surround on Move then Base != null
 	/// </remarks>
-	public class State
+	public struct State
 	{
 		#region Properties
 
@@ -29,13 +29,9 @@ namespace Dots.Library
 
 		#region Constructors
 
-		public State()
+		public State(DotPosition dotPosition, Base b) : this()
 		{
-		}
-
-		public State(DotPosition dotPosition, Base Base)
-		{
-			this.Base = Base;
+			Base = b;
 			Move = dotPosition;
 		}
 
@@ -48,7 +44,18 @@ namespace Dots.Library
 
 		public override string ToString()
 		{
-			return Move.ToString() + "; " + Base.ToString();
+			return Move.ToString() + (Base == null ? string.Empty : "; " + Base.ToString());
+		}
+
+		public State Clone()
+		{
+			var result = new State();
+			if (Base != null)
+				result.Base = new Base(Base.LastCaptureCount, Base.LastFreedCount,
+					new Stack<DotPosition>(Base.ChainDotPositions), new Stack<DotPosition>(Base.SurrroundDotPositions),
+					new List<int>(Base.ChainPositions), new List<int>(Base.SurroundPoistions), Base.RedSquare, Base.BlueSquare);
+			result.Move = Move;
+			return result;
 		}
 	}
 }

@@ -12,16 +12,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using DotsShell.Properties;
 using Dots.AI;
 using Dots.Library;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Threading;
 
 namespace DotsShell
 {
 	/// <summary>
 	/// Interaction logic for DotsGameControl.xaml
 	/// </summary>
-	public partial class DotsGameControl : UserControl
+	public partial class DotsGameControl : UserControl, INotifyPropertyChanged
 	{
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		double CellSize;
 		double CellSizeDiv2;
 		double Radius;
@@ -37,26 +43,52 @@ namespace DotsShell
 		double LineCellRatio = 0.14;
 
 		int FieldWidth, FieldHeight;
-		GameField GameField_;
-		Field Field_;
+		GameField GameField;
+		Field Field;
+		ZobristHashField HashField;
 
+		private Dictionary<int, List<Shape>> OneMoveShapes = new Dictionary<int, List<Shape>>();
 		private List<Polygon> GroupPolygons = new List<Polygon>();
 		private List<Polygon> CrosswisePolygons = new List<Polygon>();
+
+		byte Depth;
+
+		private bool InputEnabled_ = true;
+		private bool InputEnabled
+		{
+			get
+			{
+				return InputEnabled_;
+			}
+			set
+			{
+				InputEnabled_ = value;
+				if (PropertyChanged != null)
+					PropertyChanged(this, new PropertyChangedEventArgs("InputEnabled")); 
+			}
+		}
+
+		Thread SearchingThread;
 
 		#region Constructors
 
 		public DotsGameControl(int FieldWidth, int FieldHeight)
 		{
+			this.DataContext = this;
 			InitializeComponent();
+			
+			//PropertyChanged += new PropertyChangedEventHandler((sender, e) => 
+			//	PropertyChanged(this, new PropertyChangedEventArgs("InputEnabled")));
 
 			this.FieldWidth = FieldWidth;
 			this.FieldHeight = FieldHeight;
 
-			Field_ = new Field(FieldWidth, FieldHeight, enmSurroundCondition.Standart);
-			GameField_ = new GameField(Field_, enmBeginPattern.Clean);
-			GameField_.Move += OnMakeMove;
+			Field = new Field(FieldWidth, FieldHeight, enmSurroundCondition.Standart);
+			HashField = new ZobristHashField(Field, 0);
+			GameField = new GameField(Field, enmBeginPattern.Clean);
+			GameField.Move += OnMakeMove;
 
-			CellSize = 647 / Field_.Width;
+			CellSize = 647 / Field.Width;
 			CellSizeDiv2 = CellSize / 2;
 		}
 
@@ -67,89 +99,81 @@ namespace DotsShell
 		private void UserControl_Loaded(object sender, RoutedEventArgs e)
 		{
 			RedrawField();
+
+			if (!string.IsNullOrEmpty(Settings.Default.LoadedFileName))
+				LoadGame(Settings.Default.LoadedFileName);
 		}
 
 		private void OnMakeMove(object sender, MoveEventArgs e)
 		{
 			if (e.Action == enmMoveState.Add)
 			{
-				DrawState(Field_.DotsSequanceStates.Last());
+				HashField.UpdateHash();
+				DrawState(Field.DotsSequanceStates.Last());
 			}
 			else
 				if (e.Action == enmMoveState.Remove)
 				{
-					// removing base polygon if exists
-					if (Field_.IsBaseAddedAtLastMove)
-						canvasField.Children.RemoveAt(canvasField.Children.Count - 1);
-					canvasField.Children.RemoveAt(canvasField.Children.Count - 1);
+					HashField.UpdateHash();
+					foreach (var shape in OneMoveShapes[e.Pos])
+						canvasField.Children.Remove(shape);
+					OneMoveShapes.Remove(e.Pos);
 				}
-			lblRedCaptureCount.Content = Field_.RedCaptureCount.ToString();
-			lblBlueCaptureCount.Content = Field_.BlueCaptureCount.ToString();
+			lblDotsCount.Content = Field.DotsSequenceCount.ToString();
+			lblRedCaptureCount.Content = Field.RedCaptureCount.ToString() + "," + Field.RedSquare.ToString();
+			lblBlueCaptureCount.Content = Field.BlueCaptureCount.ToString() + "," + Field.BlueSquare.ToString();
+			tbHash.Text = HashField.Key.ToString();
 		}
 
 		private void canvasField_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			Point Pos = e.GetPosition(canvasField);
-			int X = (int)Math.Round((Pos.X - 1 - CellSizeDiv2) / CellSize);
-			int Y = (int)Math.Round((Pos.Y - 1 - CellSizeDiv2) / CellSize);
-			GameField_.MakeMove(X, Y);
+			if (InputEnabled)
+			{
+				int x, y;
+				GetFieldPoint(e.GetPosition(canvasField), out x, out y);
+				GameField.MakeMove(x, y);
+			}
 		}
 
-		private void sliderMain_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		private void canvasField_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (GameField_ != null)
-				GameField_.SetMoveNumber((int)Math.Round(e.NewValue));
+			int x, y, pos;
+			GetFieldPoint(e.GetPosition(canvasField), out x, out y);
+			pos = Field.GetPosition(x, y);
+			lblX.Content = x;
+			lblY.Content = y;
+			lblPos.Content = pos;
 		}
 
 		private void btnUnmakeMove_Click(object sender, RoutedEventArgs e)
 		{
-			GameField_.UnmakeMove();
+			GameField.UnmakeMove();
+		}
+
+		private void sliderMain_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			if (GameField != null)
+				GameField.SetMoveNumber((int)Math.Round(e.NewValue));
 		}
 
 		private void btnLoadGame_Click(object sender, RoutedEventArgs e)
 		{
 			using (var ofd = new System.Windows.Forms.OpenFileDialog() { Filter = "pointsxt files|*.sav" })
-			{
 				if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-				{
-					Field_ = new Field(39, 32, enmSurroundCondition.Standart);
-					GameField_ = new GameField(Field_, enmBeginPattern.Crosswise);
-
-					RedrawField();
-					GameField_.Move += OnMakeMove;
-					using (var Stream = new StreamReader(ofd.FileName))
-					{
-						var buffer = new byte[Stream.BaseStream.Length];
-						var Count = (int)Stream.BaseStream.Length;
-						Stream.BaseStream.Read(buffer, 0, Count);
-						Stream.Close();
-
-						for (var i = 58; i < Count; i += 13)
-						{
-							GameField_.MakeMove(buffer[i] + 1, buffer[i + 1] + 1);
-						}
-						sliderMain.ValueChanged -= sliderMain_ValueChanged;
-						sliderMain.SmallChange = 1;
-						sliderMain.Minimum = 1;
-						sliderMain.Maximum = Field_.DotsSequanceStates.Count();
-						sliderMain.Value = sliderMain.Maximum;
-						sliderMain.ValueChanged += sliderMain_ValueChanged;
-					}
-				}
-			}
+					LoadGame(ofd.FileName);
 		}
 
 		private void btnClear_Click(object sender, RoutedEventArgs e)
 		{
-			Field_ = new Field(FieldWidth, FieldHeight, enmSurroundCondition.Standart);
-			GameField_ = new GameField(Field_, enmBeginPattern.Clean);
-			GameField_.Move += OnMakeMove;
+			Field = new Field(FieldWidth, FieldHeight, enmSurroundCondition.Standart);
+			GameField = new GameField(Field, enmBeginPattern.Clean);
+			GameField.Move += OnMakeMove;
 			RedrawField();
 		}
 
 		private void cbConvexGroups_Checked(object sender, RoutedEventArgs e)
 		{
-			var analyzer = new StrategicMovesAnalyzer(Field_);
+			var analyzer = new StrategicMovesAnalyzer(Field);
 			analyzer.GenerateGroups();
 
 			foreach (var group in analyzer.Groups)
@@ -157,12 +181,9 @@ namespace DotsShell
 				var polygon = new Polygon { Stretch = Stretch.None };
 				polygon.Stroke = group.Player == Dot.RedPlayer ? Player1Stroke : Player2Stroke;
 				polygon.Fill = group.Player == Dot.RedPlayer ? Player1Fill : Player2Fill;
+				polygon.StrokeMiterLimit = 1;
 				foreach (var pos in group.EnvelopePositions)
-				{
-					int x, y;
-					Field.GetPosition(pos, out x, out y);
-					polygon.Points.Add(new Point(x * CellSize + CellSizeDiv2, y * CellSize + CellSizeDiv2));
-				}
+					polygon.Points.Add(GetGraphicaPoint(pos));
 				GroupPolygons.Add(polygon);
 				canvasField.Children.Add(polygon);
 			}
@@ -177,7 +198,7 @@ namespace DotsShell
 
 		private void cbCrosswises_Checked(object sender, RoutedEventArgs e)
 		{
-			var analyzer = new StrategicMovesAnalyzer(Field_);
+			var analyzer = new StrategicMovesAnalyzer(Field);
 			analyzer.GenerateGroups();
 			analyzer.GenerateCrosswises();
 
@@ -217,66 +238,203 @@ namespace DotsShell
 			CrosswisePolygons.Clear();
 		}
 
+		private void cbWalls_Checked(object sender, RoutedEventArgs e)
+		{
+			foreach (var pair in OneMoveShapes)
+				foreach (var shape in pair.Value)
+					if (shape is Line)
+						shape.Visibility = System.Windows.Visibility.Visible;
+		}
+
+		private void cbWalls_Unchecked(object sender, RoutedEventArgs e)
+		{
+			foreach (var pair in OneMoveShapes)
+				foreach (var shape in pair.Value)
+					if (shape is Line)
+						shape.Visibility = System.Windows.Visibility.Hidden;
+		}
+
+		private bool AlphaBetaHash;
+
+		private void btnAlphaBetaSolve_Click(object sender, RoutedEventArgs e)
+		{
+			if (InputEnabled)
+			{
+				InputEnabled = false;
+				Depth = byte.Parse(tbDepth.Text);
+				AlphaBetaHash = (string)((Button)sender).Content == "AB" ? false : true;
+				SearchingThread = new Thread(new ThreadStart(AlphaBetaSearch));
+				SearchingThread.Start();
+
+				((Button)sender).Content = "Stop";
+			}
+			else
+			{
+				SearchingThread.Abort();
+				InputEnabled = true;
+
+				if (!AlphaBetaHash)
+					btnAlphaBetaSolve.Content = "AB";
+				else
+					btnAlphaBetaHashSolve.Content = "AB Hash";
+			}
+		}
+
+		private void AlphaBetaSearch()
+		{
+			var tempField = Field.Clone();
+
+			var pos = !AlphaBetaHash ?
+				new AlphaBetaAlgoritm(tempField).SearchBestMove(Depth)
+				: new AlphaBetaHashAlgoritm(tempField).SearchBestMove(Depth);
+			int x, y;
+			Field.GetPosition(pos, out x, out y);
+
+			this.Dispatcher.Invoke(new Action(() => { 
+				GameField.MakeMove(x, y);
+				if (!AlphaBetaHash)
+					btnAlphaBetaSolve.Content = "AB";
+				else
+					btnAlphaBetaHashSolve.Content = "AB Hash";
+				InputEnabled = true; }));
+		}
+
+		private void btnClearHash_Click(object sender, RoutedEventArgs e)
+		{
+			HashField = new ZobristHashField(Field, 0);
+			tbHash.Text = HashField.Key.ToString();
+		}
+
 		#endregion
 		
 		#region Helpers
 
+		private void LoadGame(string fileName)
+		{
+			Field = new Field(39, 32);
+			GameField = new GameField(Field, enmBeginPattern.Crosswise);
+			HashField = new ZobristHashField(Field, 0);
+
+			RedrawField();
+			GameField.Move += OnMakeMove;
+			using (var Stream = new StreamReader(fileName))
+			{
+				var buffer = new byte[Stream.BaseStream.Length];
+				var Count = (int)Stream.BaseStream.Length;
+				Stream.BaseStream.Read(buffer, 0, Count);
+				Stream.Close();
+
+				for (var i = 58; i < Count; i += 13)
+					GameField.MakeMove(buffer[i] + 1, buffer[i + 1] + 1);
+				sliderMain.ValueChanged -= sliderMain_ValueChanged;
+				sliderMain.SmallChange = 1;
+				sliderMain.Minimum = 1;
+				sliderMain.Maximum = Field.DotsSequanceStates.Count();
+				sliderMain.Value = sliderMain.Maximum;
+				sliderMain.ValueChanged += sliderMain_ValueChanged;
+			}
+			Settings.Default.LoadedFileName = fileName;
+			Settings.Default.Save();
+		}
+
 		private void DrawState(State State)
 		{
-			int x, y;
-			Field.GetPosition(State.Move.Position, out x, out y);
+			var point = GetGraphicaPoint(State.Move.Position);
+			var pos = State.Move.Position;
+
+			var shapeList = new List<Shape>();
 
 			Ellipse E = new Ellipse
 			{
-				Fill = (Field_[State.Move.Position] & Dot.Player) == Dot.RedPlayer ? Player1Stroke : Player2Stroke,
+				Fill = Field[State.Move.Position].IsRealRedPlayer() ? Player1Stroke : Player2Stroke,
 				Width = Radius * 2,
 				Height = Radius * 2,
 				Stretch = Stretch.Uniform
 			};
-			Canvas.SetLeft(E, x * CellSize + CellSizeDiv2 - Radius);
-			Canvas.SetTop(E, y * CellSize + CellSizeDiv2 - Radius);
+			Canvas.SetLeft(E, point.X - Radius);
+			Canvas.SetTop(E, point.Y - Radius);
+
+			shapeList.Add(E);
 			canvasField.Children.Add(E);
 
-			if (State.Base != null && Field_.LastMoveCaptureCount != 0)
+			Polygon polygon;
+			if (State.Base != null && Field.LastMoveCaptureCount != 0)
 			{
 				var chainPositions = State.Base.ChainDotPositions;
-				PointCollection GraphicsPoints = new PointCollection(chainPositions.Count);
+				var GraphicsPoints = new PointCollection(chainPositions.Count);
 				foreach (var PointPos in chainPositions)
 					GraphicsPoints.Add(GetGraphicaPoint(PointPos.Position));
 
-				Polygon Poly = new Polygon { Points = GraphicsPoints, Stretch = Stretch.None };
-				if (Field_[chainPositions.Peek().Position].IsRedPutted())
+				polygon = new Polygon { StrokeThickness = LineCellRatio * CellSize, Points = GraphicsPoints, Stretch = Stretch.None };
+				if (Field[chainPositions.Peek().Position].IsRedPutted())
 				{
-					Poly.Fill = Player1Fill;
-					Poly.Stroke = Player1Stroke;
+					polygon.Fill = Player1Fill;
+					polygon.Stroke = Player1Stroke;
 				}
 				else
 				{
-					Poly.Fill = Player2Fill;
-					Poly.Stroke = Player2Stroke;
+					polygon.Fill = Player2Fill;
+					polygon.Stroke = Player2Stroke;
 				}
 
-				canvasField.Children.Add(Poly);
+				shapeList.Add(polygon);
+				canvasField.Children.Add(polygon);
 			}
+
+			var player = Field.CurrentPlayer.NextPlayer();
+			Brush stroke;
+			if (Field[State.Move.Position].IsRedPutted())
+				stroke = Player1Stroke;
+			else
+				stroke = Player2Stroke;
+
+			var beginPoint = GetGraphicaPoint(pos);
+			double x2 = beginPoint.X;
+			double y2 = beginPoint.Y;
+			if (Field[pos - 1].IsPlayerPutted(player) && !Field[pos - 1].IsSurrounded())
+				AddLineToWalls(beginPoint, GetGraphicaPoint(pos - 1), stroke, shapeList);
+			if (Field[pos - Field.RealWidth].IsPlayerPutted(player) && !Field[pos - Field.RealWidth].IsSurrounded())
+				AddLineToWalls(beginPoint, GetGraphicaPoint(pos - Field.RealWidth), stroke, shapeList);
+			if (Field[pos + 1].IsPlayerPutted(player) && !Field[pos + 1].IsSurrounded())
+				AddLineToWalls(beginPoint, GetGraphicaPoint(pos + 1), stroke, shapeList);
+			if (Field[pos + Field.RealWidth].IsPlayerPutted(player) && !Field[pos + Field.RealWidth].IsSurrounded())
+				AddLineToWalls(beginPoint, GetGraphicaPoint(pos + Field.RealWidth), stroke, shapeList);
+
+			OneMoveShapes.Add(pos, shapeList);
+		}
+
+		private void AddLineToWalls(Point p1, Point p2, Brush stroke, List<Shape> shapeList)
+		{
+			var line = new Line() { StrokeThickness = LineCellRatio * CellSize, Stroke = stroke, Stretch = Stretch.None };
+			line.X1 = p1.X;
+			line.Y1 = p1.Y;
+			line.X2 = p2.X;
+			line.Y2 = p2.Y;
+			shapeList.Add(line);
+			canvasField.Children.Add(line);
 		}
 
 		public void RedrawField()
 		{
+			OneMoveShapes.Clear();
+			GroupPolygons.Clear();
+			CrosswisePolygons.Clear();
+
 			if (canvasField.RenderSize.Width == 0)
 				return;
 
-			CellSize = canvasField.RenderSize.Width / Field_.Width;
+			CellSize = canvasField.RenderSize.Width / Field.Width;
 			CellSizeDiv2 = CellSize / 2.0;
 			Radius = CellSize * PointCellRatio;
 
-			canvasField.Height = CellSize * Field_.Height;
+			canvasField.Height = CellSize * Field.Height;
 
 			double a = CellSizeDiv2;
 			canvasField.Background = Background_;
 			canvasField.Children.Clear();
 
-			double LineLength = CellSize * (Field_.Height + 1);
-			for (int i = 0; i < Field_.Width; i++)
+			double LineLength = CellSize * (Field.Height + 1);
+			for (int i = 0; i < Field.Width; i++)
 			{
 				Line L = new Line();
 				L.X1 = L.X2 = a;
@@ -288,9 +446,9 @@ namespace DotsShell
 				a += CellSize;
 			}
 
-			LineLength = CellSize * (Field_.Width + 1);
+			LineLength = CellSize * (Field.Width + 1);
 			a = CellSizeDiv2;
-			for (int i = 0; i < Field_.Height; i++)
+			for (int i = 0; i < Field.Height; i++)
 			{
 				Line L = new Line();
 				L.Y1 = L.Y2 = a;
@@ -302,7 +460,7 @@ namespace DotsShell
 				a += CellSize;
 			}
 
-			foreach (var P in Field_.DotsSequanceStates)
+			foreach (var P in Field.DotsSequanceStates)
 				DrawState(P);
 		}
 
@@ -315,7 +473,13 @@ namespace DotsShell
 
 		private Point GetGraphicaPoint(int x, int y)
 		{
-			return new Point(x * CellSize + CellSizeDiv2, y * CellSize + CellSizeDiv2);
+			return new Point((x - 1) * CellSize + CellSizeDiv2, (y - 1) * CellSize + CellSizeDiv2);
+		}
+
+		private void GetFieldPoint(Point p, out int x, out int y)
+		{
+			x = (int)Math.Round((p.X - CellSizeDiv2) / CellSize) + 1;
+			y = (int)Math.Round((p.Y - CellSizeDiv2) / CellSize) + 1;
 		}
 
 		#endregion
