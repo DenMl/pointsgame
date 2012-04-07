@@ -70,7 +70,7 @@ namespace DotsTests
 			int startX = 16;
 			int startY = 16;
 
-			Field field = new Field();
+			Field field = new Field(39, 32);
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
 			field.MakeMove(startX + 1, startY + 1);
@@ -88,7 +88,7 @@ namespace DotsTests
 			int startX = 16;
 			int startY = 16;
 
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX - 1, startY);
@@ -118,7 +118,7 @@ namespace DotsTests
 			int startX = 16;
 			int startY = 16;
 
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -142,7 +142,7 @@ namespace DotsTests
 		{
 			int startX = 16;
 			int startY = 16;
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -186,7 +186,7 @@ namespace DotsTests
 		[TestMethod()]
 		public void ComplexBaseInBaseTest()
 		{
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			var buffer = DotsTests.Properties.Resources.DotFunctionsTest;
 
@@ -218,7 +218,7 @@ namespace DotsTests
 			int startX = 16;
 			int startY = 16;
 
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX - 1, startY);
@@ -250,7 +250,7 @@ namespace DotsTests
 			int startX = 16;
 			int startY = 16;
 
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX - 1, startY);
@@ -279,7 +279,7 @@ namespace DotsTests
 			int startX = 16;
 			int startY = 16;
 
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			field.MakeMove(startX, startY);
 			field.MakeMove(startX + 1, startY);
@@ -318,7 +318,7 @@ namespace DotsTests
 		{
 			int startX = 12;
 			int startY = 2;
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			// top chain.
 			field.MakeMove(startX, startY);
@@ -408,7 +408,7 @@ namespace DotsTests
 		[TestMethod()]
 		public void VeryLongGameTest()
 		{
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			var buffer = DotsTests.Properties.Resources.VeryLongGame;
 			for (var i = 58; i < buffer.Length; i += 13)

@@ -75,7 +75,7 @@ namespace DotsTests
 			int StartX_ = 16;
 			int StartY_ = 16;
 
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;
@@ -107,7 +107,7 @@ namespace DotsTests
 			int StartX_ = 16;
 			int StartY_ = 16;
 			
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;
@@ -145,7 +145,7 @@ namespace DotsTests
 			int StartX_ = 16;
 			int StartY_ = 16;
 
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;
@@ -230,7 +230,7 @@ namespace DotsTests
 			int StartX_ = 5;
 			int StartY_ = 2;
 
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;
@@ -323,7 +323,7 @@ namespace DotsTests
 			int StartX_ = 5;
 			int StartY_ = 2;
 
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;
@@ -481,7 +481,7 @@ namespace DotsTests
 			int StartX_ = 16;
 			int StartY_ = 16;
 
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;
@@ -528,7 +528,7 @@ namespace DotsTests
 		[TestMethod()]
 		public void VeryLongGameTest()
 		{
-			var field = new Field();
+			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);
 
 			ulong initKey = hash.Key;

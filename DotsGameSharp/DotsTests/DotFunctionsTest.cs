@@ -63,7 +63,7 @@ namespace DotsTests
 		[TestMethod()]
 		public void IsRedDotTest()
 		{
-			Field field = new Field();
+			Field field = new Field(39, 32);
 
 			var buffer = DotsTests.Properties.Resources.DotFunctionsTest;
 

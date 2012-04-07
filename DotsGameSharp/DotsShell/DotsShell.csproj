@@ -98,6 +98,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -105,13 +106,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotsAI\DotsAI.csproj">
+      <Project>{A21DD11B-A29A-4F57-BA59-D751FC314E44}</Project>
+      <Name>DotsAI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotsField\DotsField.csproj">
       <Project>{07FD35E2-6ABD-41D2-A032-D0FC9040DA67}</Project>
       <Name>DotsField</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PointsLibrary\DotsAI.csproj">
-      <Project>{F290A8F9-369C-4651-B00F-707E50359F4E}</Project>
-      <Name>DotsAI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
