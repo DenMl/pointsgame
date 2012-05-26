@@ -6,11 +6,7 @@ namespace PointsShell.Bots
 {
 	class DllBot : IBot
 	{
-#if DEBUG
-		const string DllName = "../../../../PointsBot/Debug/PointsBot.dll";
-#else
 		const string DllName = "PointsBot.dll";
-#endif
 
 		private IntPtr _handle = IntPtr.Zero;
 
