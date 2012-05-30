@@ -39,11 +39,3 @@
 #define DEFAULT_UCT_ITERATIONS 200000
 #define MIN_COMPLEXITY 0
 #define MAX_COMPLEXITY 100
-
-// 1, если компил€ци€ происходит дл€ Windows.
-#define WINDOWS 1
-
-// 1, если компил€ци€ происходит дл€ Linux.
-#define LINUX 0
-
-#define X64 0

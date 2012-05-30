@@ -1,6 +1,6 @@
 OBJS = console.o bot.o field.o minimax.o position_estimate.o uct.o
 BINS = kkai
-CXXFLAGS = -lrt -std=c++0x -fopenmp -O3
+CXXFLAGS = -lrt -std=c++0x -fopenmp -O3 -D LINUX -D ENVIRONMENT_32
 
 .PHONY = all clean
 

@@ -59,8 +59,8 @@ struct board_change
 	stack<pair<pos, value>> changes;
 };
 
-#if X64
-typedef random::mt19937_64 mt;
-#else
+#if ENVIRONMENT_32
 typedef random::mt19937 mt;
+#elif ENVIRONMENT_64
+typedef random::mt19937_64 mt;
 #endif
