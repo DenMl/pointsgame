@@ -59,7 +59,13 @@ score alphabeta(field* cur_field, size_t depth, pos cur_pos, trajectories* last,
 #endif
 		for (auto i = moves.begin(); i != moves.end(); i++)
 		{
+#if NEGASCOUT
+			score cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -alpha - 1, -alpha, empty_board);
+			if (cur_estimate > alpha && cur_estimate < beta)
+				cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -beta, -cur_estimate, empty_board);
+#else
 			score cur_estimate = alphabeta(cur_field, depth - 1, *i, &cur_trajectories, -beta, -alpha, empty_board);
+#endif
 			if (cur_estimate > alpha)
 			{
 				alpha = cur_estimate;
@@ -105,7 +111,13 @@ pos minimax(field* cur_field, size_t depth)
 		#pragma omp for schedule(dynamic, 1)
 		for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(moves.size()); i++)
 		{
-			int cur_estimate = alphabeta(local_field, depth - 1, moves[i], &cur_trajectories, -beta, -alpha, empty_board);
+#if NEGASCOUT
+			score cur_estimate = alphabeta(local_field, depth - 1, moves[i], &cur_trajectories, -alpha - 1, -alpha, empty_board);
+			if (cur_estimate > alpha && cur_estimate < beta)
+				cur_estimate = alphabeta(local_field, depth - 1, moves[i], &cur_trajectories, -beta, -cur_estimate, empty_board);
+#else
+			score cur_estimate = alphabeta(local_field, depth - 1, moves[i], &cur_trajectories, -beta, -alpha, empty_board);
+#endif
 			#pragma omp critical
 			{
 				if (cur_estimate > alpha) // Обновляем нижнюю границу.

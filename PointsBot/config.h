@@ -12,6 +12,8 @@
 // ќпредел€ть ли границы в рекурсивном alphabeta дл€ уточнени€ alpha и beta.
 #define CALCULATE_BOUNDARIES 1
 
+#define NEGASCOUT 1
+
 // Larger values give uniform search.
 // Smaller values give very selective search.
 #define UCTK 1
