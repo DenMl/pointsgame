@@ -29,6 +29,8 @@
 // 1 - minimax
 // 2 - uct
 // 3 - minimax with uct
+// 4 - MTD(f)
+// 5 - MTD(f) with uct
 #define SEARCH_TYPE 3
 #define SEARCH_WITH_COMPLEXITY_TYPE 3
 #define SEARCH_WITH_TIME_TYPE 2
@@ -36,6 +38,9 @@
 #define MIN_MINIMAX_DEPTH 0
 #define MAX_MINIMAX_DEPTH 10
 #define DEFAULT_MINIMAX_DEPTH 8
+#define MIN_MTDF_DEPTH 0
+#define MAX_MTDF_DEPTH 10
+#define DEFAULT_MTDF_DEPTH 8
 #define MIN_UCT_ITERATIONS 0
 #define MAX_UCT_ITERATIONS 250000
 #define DEFAULT_UCT_ITERATIONS 200000

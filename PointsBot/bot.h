@@ -18,6 +18,7 @@ private:
 	zobrist* _zobrist;
 	field* _field;
 	size_t get_minimax_depth(size_t complexity);
+	size_t get_mtdf_depth(size_t complexity);
 	size_t get_uct_iterations(size_t complexity);
 	bool is_field_occupied() const;
 	bool boundary_check(coord& x, coord& y) const;

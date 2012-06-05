@@ -8,6 +8,7 @@
 #include "position_estimate.h"
 #include "zobrist.h"
 #include <list>
+#include "mtdf.h"
 
 using namespace std;
 
@@ -28,6 +29,11 @@ bot::~bot()
 size_t bot::get_minimax_depth(size_t complexity)
 {
 	return (complexity - MIN_COMPLEXITY) * (MAX_MINIMAX_DEPTH - MIN_MINIMAX_DEPTH) / (MAX_COMPLEXITY - MIN_COMPLEXITY) + MIN_MINIMAX_DEPTH;
+}
+
+size_t bot::get_mtdf_depth(size_t complexity)
+{
+	return (complexity - MIN_COMPLEXITY) * (MAX_MTDF_DEPTH - MIN_MTDF_DEPTH) / (MAX_COMPLEXITY - MIN_COMPLEXITY) + MIN_MTDF_DEPTH;
 }
 
 size_t bot::get_uct_iterations(size_t complexity)
@@ -106,6 +112,20 @@ void bot::get(coord& x, coord& y)
 		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
+#elif SEARCH_TYPE == 4 // MTD(f)
+	pos result =  mtdf(_field, DEFAULT_MTDF_DEPTH);
+	if (result == -1)
+		result = position_estimate(_field);
+	x = _field->to_x(result);
+	y = _field->to_y(result);
+#elif SEARCH_TYPE == 5 // MTD(f) with uct
+	pos result =  mtdf(_field, DEFAULT_MTDF_DEPTH);
+	if (result == -1)
+		result = uct(_field, _gen, DEFAULT_UCT_ITERATIONS);
+	if (result == -1)
+		result = position_estimate(_field);
+	x = _field->to_x(result);
+	y = _field->to_y(result);
 #else
 #error Invalid SEARCH_TYPE.
 #endif
@@ -139,6 +159,20 @@ void bot::get_with_complexity(coord& x, coord& y, size_t complexity)
 		result = position_estimate(_field);
 	x = _field->to_x(result);
 	y = _field->to_y(result);
+#elif SEARCH_WITH_COMPLEXITY_TYPE == 4 // MTD(f)
+	pos result =  mtdf(_field, get_mtdf_depth(complexity));
+	if (result == -1)
+		result = position_estimate(_field);
+	x = _field->to_x(result);
+	y = _field->to_y(result);
+#elif SEARCH_WITH_COMPLEXITY_TYPE == 5 // MTD(f) with uct
+	pos result =  mtdf(_field, get_mtdf_depth(complexity));
+	if (result == -1)
+		result = uct(_field, _gen, get_uct_iterations(complexity));
+	if (result == -1)
+		result = position_estimate(_field);
+	x = _field->to_x(result);
+	y = _field->to_y(result);
 #else
 #error Invalid SEARCH_WITH_COMPLEXITY_TYPE.
 #endif
@@ -161,6 +195,10 @@ void bot::get_with_time(coord& x, coord& y, size_t time)
 	x = _field->to_x(result);
 	y = _field->to_y(result);
 #elif SEARCH_WITH_TIME_TYPE == 3 // minimax with uct
+#error Invalid SEARCH_WITH_TIME_TYPE.
+#elif SEARCH_WITH_TIME_TYPE == 4 // MTD(f)
+#error Invalid SEARCH_WITH_TIME_TYPE.
+#elif SEARCH_WITH_TIME_TYPE == 5 // MTD(f) with uct
 #error Invalid SEARCH_WITH_TIME_TYPE.
 #else
 #error Invalid SEARCH_WITH_TIME_TYPE.
