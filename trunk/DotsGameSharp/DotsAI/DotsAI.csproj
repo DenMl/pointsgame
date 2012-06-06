@@ -22,15 +22,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,8 +55,10 @@
     <Compile Include="Estimator.cs" />
     <Compile Include="GameBot.cs" />
     <Compile Include="HashEntry.cs" />
+    <Compile Include="CMoveGenerator.cs" />
     <Compile Include="LinkedGroup.cs" />
     <Compile Include="MoveGenerator.cs" />
+    <Compile Include="OldMoveGenerator.cs" />
     <Compile Include="Patterns\enmBeginPattern.cs" />
     <Compile Include="Patterns\enmPatternDotState.cs" />
     <Compile Include="Patterns\Pattern.cs" />

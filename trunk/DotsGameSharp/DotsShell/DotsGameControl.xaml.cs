@@ -18,6 +18,7 @@ using Dots.Library;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Threading;
+using System.Diagnostics;
 
 namespace DotsShell
 {
@@ -255,6 +256,7 @@ namespace DotsShell
 		}
 
 		private bool AlphaBetaHash;
+		private Stopwatch stopwatch;
 
 		private void btnAlphaBetaSolve_Click(object sender, RoutedEventArgs e)
 		{
@@ -264,6 +266,8 @@ namespace DotsShell
 				Depth = byte.Parse(tbDepth.Text);
 				AlphaBetaHash = (string)((Button)sender).Content == "AB" ? false : true;
 				SearchingThread = new Thread(new ThreadStart(AlphaBetaSearch));
+				stopwatch = new Stopwatch();
+				stopwatch.Start();
 				SearchingThread.Start();
 
 				((Button)sender).Content = "Stop";
@@ -284,18 +288,44 @@ namespace DotsShell
 		{
 			var tempField = Field.Clone();
 
-			var pos = !AlphaBetaHash ?
-				new AlphaBetaAlgoritm(tempField).SearchBestMove(Depth)
-				: new AlphaBetaHashAlgoritm(tempField).SearchBestMove(Depth);
+			AlphaBetaAlgoritm algorithm = null;
+			AlphaBetaHashAlgoritm hashAlgorithm = null;
+			int pos = 0;
+			if (!AlphaBetaHash)
+			{
+				algorithm = new AlphaBetaAlgoritm(tempField);
+				pos = algorithm.SearchBestMove(Depth);
+			}
+			else
+			{
+				hashAlgorithm = new AlphaBetaHashAlgoritm(tempField);
+				pos = hashAlgorithm.SearchBestMove(Depth);
+			}
+			
+			stopwatch.Stop();
 			int x, y;
 			Field.GetPosition(pos, out x, out y);
+			double time = (double)stopwatch.ElapsedMilliseconds / 1000;
 
 			this.Dispatcher.Invoke(new Action(() => { 
 				GameField.MakeMove(x, y);
 				if (!AlphaBetaHash)
+				{
 					btnAlphaBetaSolve.Content = "AB";
+					lblAlphaBetaTime.Text = string.Format(
+						"t:{0:0.000},c:{1},s:{2:0.00}", 
+						time, 
+						algorithm.CalculatedPositionCount,
+						(double)algorithm.CalculatedPositionCount / time / 1000);
+				}
 				else
+				{
+					
 					btnAlphaBetaHashSolve.Content = "AB Hash";
+					lblAlphaBetaHashTime.Text = string.Format(
+						"t:{0:0.000},c:{1},s:{2:0.00}", time, hashAlgorithm.CalculatedPositionCount,
+							(double)hashAlgorithm.CalculatedPositionCount / time / 1000);
+				}
 				InputEnabled = true; }));
 		}
 
@@ -366,7 +396,7 @@ namespace DotsShell
 					GraphicsPoints.Add(GetGraphicaPoint(PointPos.Position));
 
 				polygon = new Polygon { StrokeThickness = LineCellRatio * CellSize, Points = GraphicsPoints, Stretch = Stretch.None };
-				if (Field[chainPositions.Peek().Position].IsRedPutted())
+				if (Field[chainPositions.Last().Position].IsRedPutted())
 				{
 					polygon.Fill = Player1Fill;
 					polygon.Stroke = Player1Stroke;

@@ -79,14 +79,12 @@ namespace DotsTests
 			int realBestMove = Field.GetPosition(startX + 2, startY);
 
 			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1, Dot.RedPlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 
 			alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2, Dot.RedPlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 		}
@@ -110,14 +108,12 @@ namespace DotsTests
 			int realBestMove = Field.GetPosition(startX - 1, startY);
 
 			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2, Dot.RedPlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 
 			alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(3, Dot.RedPlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(3);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 		}
@@ -153,14 +149,12 @@ namespace DotsTests
 			int realBestMove = Field.GetPosition(startX + 4, startY);
 
 			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1, Dot.RedPlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 
 			alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2, Dot.RedPlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 		}
@@ -186,14 +180,12 @@ namespace DotsTests
 			int realBestMove = Field.GetPosition(startX - 1, startY);
 
 			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1, Dot.BluePlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(1);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 
 			alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2, Dot.BluePlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 		}
@@ -219,14 +211,12 @@ namespace DotsTests
 			int realBestMove = Field.GetPosition(startX + 2, startY);
 
 			var alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2, Dot.BluePlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			int alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(2);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 
 			alphaBetaAlgoritm = new AlphaBetaAlgoritm(field);
-			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(3, Dot.BluePlayer,
-				-AiSettings.InfinityScore, AiSettings.InfinityScore);
+			alphaBetaBestMove = alphaBetaAlgoritm.SearchBestMove(3);
 
 			Assert.AreEqual(alphaBetaBestMove, realBestMove);
 		}

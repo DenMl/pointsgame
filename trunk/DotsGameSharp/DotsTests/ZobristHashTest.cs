@@ -524,9 +524,7 @@ namespace DotsTests
 
 			Assert.AreEqual(initKey, hash.Key);
 		}
-
-		[TestMethod()]
-		public void VeryLongGameTest()
+		public void VeryulongGameTest()
 		{
 			var field = new Field(39, 32);
 			ZobristHashField hash = new ZobristHashField(field, 0);

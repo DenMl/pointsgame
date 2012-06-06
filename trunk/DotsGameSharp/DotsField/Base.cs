@@ -13,13 +13,13 @@ namespace Dots.Library
 		public readonly int BlueSquare;
 		public readonly List<int> ChainPositions;
 		public readonly List<int> SurroundPoistions;
-		public readonly Stack<DotPosition> ChainDotPositions;
-		public readonly Stack<DotPosition> SurrroundDotPositions;
+		public readonly List<DotPosition> ChainDotPositions;
+		public readonly List<DotPosition> SurrroundDotPositions;
 
 		public Base(int lastCaptureCount, 
-			int lastFreedCount, 
-			Stack<DotPosition> chainPointPoses,
-			Stack<DotPosition> surPointPoses,
+			int lastFreedCount,
+			List<DotPosition> chainPointPoses,
+			List<DotPosition> surPointPoses,
 			List<int> chainPositions,
 			List<int> surroundPoistions,
 			int redSquare, int blueSquare)

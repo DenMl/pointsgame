@@ -23,7 +23,7 @@ namespace Dots.Library
 
 		#region Fields
 
-		private Stack<int> TempStack_;
+		private List<int> TempList_;
 		private List<int> ChainPositions_;
 		private List<int> SurroundPositions_;
 		private bool EmptyBaseCreated_;
@@ -35,12 +35,12 @@ namespace Dots.Library
 		/// <summary>
 		/// Indexes and states of last move chain dots.
 		/// </summary>
-		private Stack<DotPosition> ChainDotsPositions_;
+		private List<DotPosition> ChainDotsPositions_;
 
 		/// <summary>
 		/// Indexes and states of last move surround dots.
 		/// </summary>
-		private Stack<DotPosition> SurroundDotsPositions_;
+		private List<DotPosition> SurroundDotsPositions_;
 
 		/// <summary>
 		/// Array of dots or dot states
@@ -242,9 +242,9 @@ namespace Dots.Library
 
 			ChainPositions_ = new List<int>(16);
 			SurroundPositions_ = new List<int>(InputSurroundDotsCount);
-			ChainDotsPositions_ = new Stack<DotPosition>(16);
-			SurroundDotsPositions_ = new Stack<DotPosition>(InputSurroundDotsCount);
-			TempStack_ = new Stack<int>(16);
+			ChainDotsPositions_ = new List<DotPosition>(16);
+			SurroundDotsPositions_ = new List<DotPosition>(InputSurroundDotsCount);
+			TempList_ = new List<int>(16);
 			InputChainDots_ = new List<int>(InputSurroundDotsCount);
 			InputSurroundedDots_ = new List<int>(InputSurroundDotsCount);
 			LastMoveState = enmMoveState.None;
@@ -297,50 +297,51 @@ namespace Dots.Library
 
 		private void RemoveEmptyBaseFlags(int startPosition)
 		{
-			SurroundDotsPositions_.Push(new DotPosition(startPosition, Dots_[startPosition]));
+			SurroundDotsPositions_.Add(new DotPosition(startPosition, Dots_[startPosition]));
 			Dots_[startPosition] &= ~Dot.EmptyBase;
 
 			var pos = startPosition;
-			TempStack_.Clear();
-			TempStack_.Push(startPosition);
+			TempList_.Clear();
+			TempList_.Add(startPosition);
 
-			while (TempStack_.Count != 0)
+			while (TempList_.Count != 0)
 			{
-				pos = TempStack_.Pop();
+				pos = TempList_.Last();
+				TempList_.RemoveAt(TempList_.Count - 1);
 
 				if ((Dots_[pos - 1] & Dot.EmptyBase) == Dot.EmptyBase)
 				{
 					// Save state for rollback.
-					SurroundDotsPositions_.Push(new DotPosition(pos - 1, Dots_[pos - 1]));
+					SurroundDotsPositions_.Add(new DotPosition(pos - 1, Dots_[pos - 1]));
 
-					TempStack_.Push(pos - 1);
+					TempList_.Add(pos - 1);
 					Dots_[pos - 1] &= ~Dot.EmptyBase;
 				}
 
 				if ((Dots_[pos - RealWidth] & Dot.EmptyBase) == Dot.EmptyBase)
 				{
 					// Save state for rollback.
-					SurroundDotsPositions_.Push(new DotPosition(pos - RealWidth, Dots_[pos - RealWidth]));
+					SurroundDotsPositions_.Add(new DotPosition(pos - RealWidth, Dots_[pos - RealWidth]));
 
-					TempStack_.Push(pos - RealWidth);
+					TempList_.Add(pos - RealWidth);
 					Dots_[pos - RealWidth] &= ~Dot.EmptyBase;
 				}
 
 				if ((Dots_[pos + 1] & Dot.EmptyBase) == Dot.EmptyBase)
 				{
 					// Save state for rollback.
-					SurroundDotsPositions_.Push(new DotPosition(pos + 1, Dots_[pos + 1]));
+					SurroundDotsPositions_.Add(new DotPosition(pos + 1, Dots_[pos + 1]));
 
-					TempStack_.Push(pos + 1);
+					TempList_.Add(pos + 1);
 					Dots_[pos + 1] &= ~Dot.EmptyBase;
 				}
 
 				if ((Dots_[pos + RealWidth] & Dot.EmptyBase) == Dot.EmptyBase)
 				{
 					// Save state for rollback.
-					SurroundDotsPositions_.Push(new DotPosition(pos + RealWidth, Dots_[pos + RealWidth]));
+					SurroundDotsPositions_.Add(new DotPosition(pos + RealWidth, Dots_[pos + RealWidth]));
 
-					TempStack_.Push(pos + RealWidth);
+					TempList_.Add(pos + RealWidth);
 					Dots_[pos + RealWidth] &= ~Dot.EmptyBase;
 				}
 			}
@@ -390,18 +391,19 @@ namespace Dots.Library
 						chainPosition--;
 
 					int inputChainDot, inputSurroundedDot;
-					if (GetInputDotForEmptyBase(chainPosition, nextPlayer, out inputChainDot, out inputSurroundedDot))
+					//if (GetInputDotForEmptyBase(chainPosition, nextPlayer, out inputChainDot, out inputSurroundedDot))
+					if (GetInputDots(chainPosition) > 1)
 					{
-						InputChainDots_.Clear();
+						/*InputChainDots_.Clear();
 						InputChainDots_.Add(inputChainDot);
 						InputSurroundedDots_.Clear();
 						InputSurroundedDots_.Add(inputSurroundedDot);
-
+						*/
 						ChainPositions_.Clear();
 						SurroundPositions_.Clear();
 						ChainDotsPositions_.Clear();
 						SurroundDotsPositions_.Clear();
-
+						
 						FindAndMarkChainAndSurroundedDots(chainPosition);
 					}
 				}
@@ -468,7 +470,7 @@ namespace Dots.Library
 					for (var j = previousChainDotsCount; j < ChainPositions_.Count; j++)
 					{
 						// Save chain dot states for further rollback.
-						ChainDotsPositions_.Push(new DotPosition(ChainPositions_[j], Dots_[ChainPositions_[j]]));
+						ChainDotsPositions_.Add(new DotPosition(ChainPositions_[j], Dots_[ChainPositions_[j]]));
 
 						// Mark surrounded dots by flag "Bound".
 						Dots_[ChainPositions_[j]] |= Dot.Bound;
@@ -491,7 +493,7 @@ namespace Dots.Library
 							Dots_[SurroundPositions_[j]] = Dots_[SurroundPositions_[j]] & ~Dot.Tagged;
 
 							// Save surrounded dot states for further rollback.
-							SurroundDotsPositions_.Push(new DotPosition(SurroundPositions_[j], Dots_[SurroundPositions_[j]]));
+							SurroundDotsPositions_.Add(new DotPosition(SurroundPositions_[j], Dots_[SurroundPositions_[j]]));
 
 							SetCaptureFreeState(SurroundPositions_[j], dotColor);
 						}
@@ -512,7 +514,7 @@ namespace Dots.Library
 							Dots_[SurroundPositions_[j]] &= ~Dot.Tagged;
 
 							// Save surrounded dot states for further rollback.
-							SurroundDotsPositions_.Push(new DotPosition(SurroundPositions_[j], Dots_[SurroundPositions_[j]]));
+							SurroundDotsPositions_.Add(new DotPosition(SurroundPositions_[j], Dots_[SurroundPositions_[j]]));
 
 							// If dot is not putted in empty territory then set flag "EmptyBase"
 							if ((Dots_[SurroundPositions_[j]] & Dot.Putted) == 0)
@@ -546,37 +548,38 @@ namespace Dots.Library
 			LastSquareCaptureCount_ = 0;
 			LastSquareFreedCount_ = 0;
 			var pos = startPosition;
-			TempStack_.Clear();
-			TempStack_.Push(startPosition);
+			TempList_.Clear();
+			TempList_.Add(startPosition);
 
-			while (TempStack_.Count != 0)
+			while (TempList_.Count != 0)
 			{
-				pos = TempStack_.Pop();
+				pos = TempList_.Last();
+				TempList_.RemoveAt(TempList_.Count - 1);
 				CheckCapturedAndFreed(pos, player);
 
 				SurroundPositions_.Add(pos);
 
 				if (!Dots_[pos - 1].IsBound(boundCondition) && !Dots_[pos - 1].IsTagged())
 				{
-					TempStack_.Push(pos - 1);
+					TempList_.Add(pos - 1);
 					Dots_[pos - 1] |= Dot.Tagged;
 				}
 
 				if (!Dots_[pos - RealWidth].IsBound(boundCondition) && !Dots_[pos - RealWidth].IsTagged())
 				{
-					TempStack_.Push(pos - RealWidth);
+					TempList_.Add(pos - RealWidth);
 					Dots_[pos - RealWidth] |= Dot.Tagged;
 				}
 
 				if (!Dots_[pos + 1].IsBound(boundCondition) && !Dots_[pos + 1].IsTagged())
 				{
-					TempStack_.Push(pos + 1);
+					TempList_.Add(pos + 1);
 					Dots_[pos + 1] |= Dot.Tagged;
 				}
 
 				if (!Dots_[pos + RealWidth].IsBound(boundCondition) && !Dots_[pos + RealWidth].IsTagged())
 				{
-					TempStack_.Push(pos + RealWidth);
+					TempList_.Add(pos + RealWidth);
 					Dots_[pos + RealWidth] |= Dot.Tagged;
 				}
 			}
@@ -846,7 +849,7 @@ namespace Dots.Library
 						Move = new DotPosition(position, oldDot),
 						Base = ChainDotsPositions_.Count == 0 ? null :
 							new Base(LastMoveCaptureCount, LastMoveFreedCount,
-								new Stack<DotPosition>(ChainDotsPositions_), new Stack<DotPosition>(SurroundDotsPositions_),
+								new List<DotPosition>(ChainDotsPositions_), new List<DotPosition>(SurroundDotsPositions_),
 								new List<int>(ChainPositions_), new List<int>(SurroundPositions_), oldRedSquare, oldBlueSquare)
 					});
 
@@ -937,7 +940,7 @@ namespace Dots.Library
 		public Field Clone()
 		{
 			var result = new Field();
-			result.TempStack_ = new Stack<int>(TempStack_);
+			result.TempList_ = new List<int>(TempList_);
 			result.ChainPositions_ = new List<int>(ChainPositions_);
 			result.SurroundPositions_ = new List<int>(SurroundPositions_);
 			result.EmptyBaseCreated_ = EmptyBaseCreated_;
@@ -957,8 +960,8 @@ namespace Dots.Library
 			//result.LastSquareFreedCount_ = LastSquareFreedCount_;
 			result.LastState = LastState.Clone();
 			result.LastMoveState = LastMoveState;
-			result.ChainDotsPositions_ = new Stack<DotPosition>(ChainDotsPositions_);
-			result.SurroundDotsPositions_ = new Stack<DotPosition>(SurroundDotsPositions_);
+			result.ChainDotsPositions_ = new List<DotPosition>(ChainDotsPositions_);
+			result.SurroundDotsPositions_ = new List<DotPosition>(SurroundDotsPositions_);
 			result.Dots_ = (Dot[])Dots_.Clone();
 			var newDotsSequanceStates = new List<State>(DotsSequanceStates_.Capacity);
 			DotsSequanceStates_.ForEach(state => newDotsSequanceStates.Add(state.Clone()));
