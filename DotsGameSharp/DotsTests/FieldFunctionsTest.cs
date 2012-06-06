@@ -406,7 +406,39 @@ namespace DotsTests
 		}
 
 		[TestMethod()]
-		public void VeryLongGameTest()
+		public void UCTBagEmptyBaseTest()
+		{
+			int startX = 16;
+			int startY = 16;
+			Field field = new Field(39, 32);
+
+			field.MakeMove(startX + 2, startY + 2, Dot.RedPlayer);
+
+			field.MakeMove(startX + 2, startY, Dot.RedPlayer);
+			field.MakeMove(startX + 3, startY, Dot.RedPlayer);
+			field.MakeMove(startX + 4, startY, Dot.RedPlayer);
+
+			field.MakeMove(startX + 5, startY + 1, Dot.RedPlayer);
+			field.MakeMove(startX + 5, startY + 2, Dot.RedPlayer);
+			field.MakeMove(startX + 5, startY + 3, Dot.RedPlayer);
+
+			field.MakeMove(startX + 4, startY + 4, Dot.RedPlayer);
+			field.MakeMove(startX + 3, startY + 4, Dot.RedPlayer);
+			field.MakeMove(startX + 2, startY + 4, Dot.RedPlayer);
+			field.MakeMove(startX + 1, startY + 4, Dot.RedPlayer);
+
+			field.MakeMove(startX, startY + 3, Dot.RedPlayer);
+			field.MakeMove(startX, startY + 2, Dot.RedPlayer);
+			field.MakeMove(startX + 1, startY + 1, Dot.RedPlayer);
+
+			// Put opponent point.
+			field.MakeMove(startX + 4, startY + 1, Dot.BluePlayer);
+
+			Assert.AreEqual(field.RedCaptureCount, 1);
+			Assert.AreEqual(field.BlueCaptureCount, 0);
+		}
+
+		public void VerylongGameTest()
 		{
 			Field field = new Field(39, 32);
 

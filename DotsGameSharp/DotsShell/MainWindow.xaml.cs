@@ -13,6 +13,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using DotsShell.Properties;
 using System.ComponentModel;
+using System.Threading;
+using Dots.AI;
 
 namespace DotsShell
 {
@@ -23,6 +25,7 @@ namespace DotsShell
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		
 		public MainWindow()
 		{
 			InitializeComponent();

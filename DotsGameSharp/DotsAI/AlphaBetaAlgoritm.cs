@@ -10,7 +10,7 @@ namespace Dots.AI
 	{
 		#region Constructors
 
-		public AlphaBetaAlgoritm(Field field, MoveGenerator moveGenerator = null, Estimator estimator = null)
+		public AlphaBetaAlgoritm(Field field, CMoveGenerator moveGenerator = null, Estimator estimator = null)
 		{
 			Field = field;
 			MoveGenerator = moveGenerator ?? new MoveGenerator(field);
@@ -30,20 +30,28 @@ namespace Dots.AI
 		{
 			int bestMove = 0;
 
-			var moves = MoveGenerator.GenerateMovesForPlayer(player);
+			CalculatedPositionCount = 0;
+
+			MoveGenerator.MaxDepth = depth;
+			MoveGenerator.GenerateMoves(player, depth);
 			Dot nextPlayer = player.NextPlayer();
 
-			foreach (var move in moves)
+			foreach (var move in MoveGenerator.Moves)
 			{
 				if (alpha < beta)
 				{
-					Field.MakeMove(move);
-					float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha);
-					Field.UnmakeMove();
-					if (tmp > alpha)
+					if (Field.MakeMove(move))
 					{
-						alpha = tmp;
-						bestMove = move;
+						CalculatedPositionCount++;
+						MoveGenerator.UpdateMoves();
+						float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha);
+						Field.UnmakeMove();
+						MoveGenerator.UpdateMoves();
+						if (tmp > alpha)
+						{
+							alpha = tmp;
+							bestMove = move;
+						}
 					}
 				}
 			}
@@ -60,19 +68,23 @@ namespace Dots.AI
 			if (depth == 0)
 				return Estimator.Estimate(player);
 
+			MoveGenerator.GenerateMoves(player, depth);
 			Dot nextPlayer = player.NextPlayer();
 
-			var moves = MoveGenerator.GenerateMovesForPlayer(player);
-
-			foreach (var move in moves)
+			foreach (var move in MoveGenerator.Moves)
 			{
 				if (alpha < beta)
 				{
-					Field.MakeMove(move);
-					float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha);
-					Field.UnmakeMove();
-					if (tmp > alpha)
-						alpha = tmp;
+					if (Field.MakeMove(move))
+					{
+						CalculatedPositionCount++;
+						MoveGenerator.UpdateMoves();
+						float tmp = -EvaluatePosition((byte)(depth - 1), nextPlayer, -beta, -alpha);
+						Field.UnmakeMove();
+						MoveGenerator.UpdateMoves();
+						if (tmp > alpha)
+							alpha = tmp;
+					}
 				}
 			}
 
@@ -89,7 +101,7 @@ namespace Dots.AI
 			set;
 		}
 
-		public MoveGenerator MoveGenerator
+		public CMoveGenerator MoveGenerator
 		{
 			get;
 			set;
@@ -99,6 +111,12 @@ namespace Dots.AI
 		{
 			get;
 			set;
+		}
+
+		public long CalculatedPositionCount
+		{
+			get;
+			private set;
 		}
 
 		#endregion

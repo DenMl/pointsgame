@@ -58,6 +58,7 @@
     <Compile Include="AlphaBetaAlgoritmTest.cs" />
     <Compile Include="DotFunctionsTest.cs" />
     <Compile Include="FieldFunctionsTest.cs" />
+    <Compile Include="HashEntryTest.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="LinkedGroupTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,6 +71,20 @@
     <Compile Include="ZobristHashTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DotFunctionsTest.sav" />
+    <None Include="VeryLongGame.sav" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Test References\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\DotsAI\DotsAI.csproj">
       <Project>{A21DD11B-A29A-4F57-BA59-D751FC314E44}</Project>
       <Name>DotsAI</Name>
@@ -78,19 +93,6 @@
       <Project>{07FD35E2-6ABD-41D2-A032-D0FC9040DA67}</Project>
       <Name>DotsField</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DotFunctionsTest.sav" />
-    <None Include="VeryLongGame.sav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

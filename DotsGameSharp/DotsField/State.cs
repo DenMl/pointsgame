@@ -52,7 +52,7 @@ namespace Dots.Library
 			var result = new State();
 			if (Base != null)
 				result.Base = new Base(Base.LastCaptureCount, Base.LastFreedCount,
-					new Stack<DotPosition>(Base.ChainDotPositions), new Stack<DotPosition>(Base.SurrroundDotPositions),
+					new List<DotPosition>(Base.ChainDotPositions), new List<DotPosition>(Base.SurrroundDotPositions),
 					new List<int>(Base.ChainPositions), new List<int>(Base.SurroundPoistions), Base.RedSquare, Base.BlueSquare);
 			result.Move = Move;
 			return result;

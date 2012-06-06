@@ -5,54 +5,49 @@ using Dots.Library;
 
 namespace Dots.AI
 {
-	public class MoveGenerator
+	public class MoveGenerator : CMoveGenerator
 	{
-		#region Fields
-		
-		private Field Field_;
-
-		#endregion
-
 		#region Constructors
 
-		public MoveGenerator(Field field)
+		public MoveGenerator(Field field) :
+			base(field)
 		{
-			Field_ = field;
 		}
 
 		#endregion
 
-		#region Public Method
+		#region Overrides
 
-		public int[] GenerateMovesForPlayer(Dot player)
+		public override void GenerateMoves(Dot player, int depth = 0)
 		{
-			var result = new HashSet<int>();
-
-			foreach (var dotState in Field_.DotsSequanceStates)
+			if (depth == MaxDepth)
 			{
-				GetAllEmptyPositions(dotState.Move.Position, ref result);
-			}
+				Moves = new List<int>(Field.DotsSequenceCount * 2);
 
-			return result.ToArray();
+				foreach (var dotState in Field.DotsSequanceStates)
+					AddRemoveEmptyPositions(dotState.Move.Position);
+			}
 		}
 
 		#endregion
 
 		#region Helpers
 
-		public void GetAllEmptyPositions(int centerPosition, ref HashSet<int> positions)
+		private void AddRemoveEmptyPositions(int pos)
 		{
-			var position = centerPosition - Field.RealWidth - 2;
-			for (int i = 0; i < 5; i++)
+			var position = pos - Field.RealWidth - 1;
+			for (int i = 0; i < 3; i++)
 			{
-				for (int j = position; j < position + 4; j++)
-				{
-					if (Field_.IsValidPos(j) && Field_[j].IsPuttingAllowed())
-						positions.Add(j);
-				}
+				for (int j = position; j < position + 3; j++)
+					if (Field.IsValidPos(j) && Field[j].IsPuttingAllowed() && !Moves.Contains(j))
+						Moves.Add(j);
 
 				position += Field.RealWidth;
 			}
+		}
+
+		public override void UpdateMoves()
+		{
 		}
 
 		#endregion

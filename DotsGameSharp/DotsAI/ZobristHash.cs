@@ -179,7 +179,7 @@ namespace Dots.AI
 		public Field Field
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public enmRandomGenerateMethod RandomGenerateMethod
