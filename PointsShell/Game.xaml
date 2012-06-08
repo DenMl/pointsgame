@@ -26,6 +26,7 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
 			<TextBlock Name="RedTextBlock" Text="{x:Static res:Resources.RedTextBlock}" Grid.Row="0" Grid.Column="0" />
@@ -39,6 +40,8 @@
 
 			<TextBlock Name="MouseCoord" Grid.Row="0" Grid.Column="3" />
 			<TextBlock Name="StepCount" Grid.Row="1" Grid.Column="3" />
+
+			<TextBlock Name="TimeElapsed" Grid.Row="1" Grid.Column="4" />
 		</Grid>
 	</Grid>
 </UserControl>

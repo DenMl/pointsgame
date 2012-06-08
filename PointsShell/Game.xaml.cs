@@ -394,12 +394,16 @@ namespace PointsShell
 			if (_thinking)
 				return;
 			_thinking = true;
-			Action<Pos> action = pos =>
-			             	{
-			             		_bot.PutPoint(pos, Field.CurPlayer);
-			             		Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action) (() => PutPoint(pos)));
-			             		_thinking = false;
-			             	};
+			Action<Pos, TimeSpan> action = (pos, time) =>
+											{
+			                               		_bot.PutPoint(pos, Field.CurPlayer);
+												Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action) (() =>
+																												{
+												                                                            		PutPoint(pos);
+																													TimeElapsed.Text = Math.Round(time.TotalSeconds, 3).ToString();
+																												}));
+			                               		_thinking = false;
+											};
 			switch (_preferences.GetMoveType)
 			{
 				case (GetMoveType.GetMove):

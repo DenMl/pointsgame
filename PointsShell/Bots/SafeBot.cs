@@ -112,6 +112,16 @@ namespace PointsShell.Bots
 			ExecuteNext();
 		}
 
+		public void GetMove(PlayerColor player, Action<Pos, TimeSpan> getMoveSuccess)
+		{
+			var startTime = DateTime.Now;
+			GetMove(player, pos =>
+								{
+			                		if (getMoveSuccess != null)
+			                			getMoveSuccess(pos, DateTime.Now - startTime);
+								});
+		}
+
 		public void GetMove(PlayerColor player, Action<Pos> getMoveSuccess)
 		{
 			if (_error)
@@ -125,6 +135,16 @@ namespace PointsShell.Bots
 			ExecuteNext();
 		}
 
+		public void GetMoveWithComplexity(PlayerColor player, int complexity, Action<Pos, TimeSpan> getMoveWithComplexitySuccess)
+		{
+			var startTime = DateTime.Now;
+			GetMoveWithComplexity(player, complexity, pos =>
+														{
+			                                          		if (getMoveWithComplexitySuccess != null)
+			                                          			getMoveWithComplexitySuccess(pos, DateTime.Now - startTime);
+														});
+		}
+
 		public void GetMoveWithComplexity(PlayerColor player, int complexity, Action<Pos> getMoveWithComplexitySuccess)
 		{
 			if (_error)
@@ -136,6 +156,16 @@ namespace PointsShell.Bots
 										getMoveWithComplexitySuccess(pos);
 								});
 			ExecuteNext();
+		}
+
+		public void GetMoveWithTime(PlayerColor player, int time, Action<Pos, TimeSpan> getMoveWithTimeSuccess)
+		{
+			var startTime = DateTime.Now;
+			GetMoveWithTime(player, time, pos =>
+											{
+			                              		if (getMoveWithTimeSuccess != null)
+			                              			getMoveWithTimeSuccess(pos, DateTime.Now - startTime);
+											});
 		}
 
 		public void GetMoveWithTime(PlayerColor player, int time, Action<Pos> getMoveWithTimeSuccess)
