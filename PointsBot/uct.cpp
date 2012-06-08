@@ -223,7 +223,7 @@ pos uct(field* cur_field, mt* gen, size_t max_simulations)
 
 		#pragma omp critical
 		{
-			uct_node* next = n.child; 
+			uct_node* next = n.child;
 			while (next != NULL)
 			{
 				double cur_estimate = static_cast<double>(next->wins) / next->visits;

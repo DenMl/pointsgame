@@ -15,7 +15,8 @@ private:
 	int* _trajectories_board;
 	bool _trajectories_board_owner;
 	zobrist* _zobrist;
-	score _max_score[2];
+	list<pos> _moves[2];
+	list<pos> _all_moves;
 
 private:
 	template<typename _InIt>
@@ -134,9 +135,9 @@ private:
 		include_all_trajectories(player_black);
 	}
 	// Возвращает хеш Зобриста пересечения двух траекторий.
-	inline ulong get_intersect_hash(trajectory* t1, trajectory* t2)
+	inline hash_t get_intersect_hash(trajectory* t1, trajectory* t2)
 	{
-		ulong result_hash = t1->hash();
+		hash_t result_hash = t1->hash();
 		for (auto i = t2->begin(); i != t2->end(); i++)
 			if (find(t1->begin(), t1->end(), *i) == t1->end())
 				result_hash ^= _zobrist->get_hash(*i);
@@ -144,7 +145,6 @@ private:
 	}
 	bool exclude_unnecessary_trajectories(player cur_player)
 	{
-		uint c;
 		bool need_exclude = false;
 
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
@@ -152,7 +152,7 @@ private:
 			if (i->excluded())
 				continue;
 			// Считаем в c количество точек, входящих только в эту траекторию.
-			c = 0;
+			uint c = 0;
 			for (auto j = i->begin(); j != i->end(); j++)
 				if (_trajectories_board[*j] == 1)
 					c++;
@@ -188,8 +188,7 @@ private:
 		exclude_composite_trajectories(player_red);
 		exclude_composite_trajectories(player_black);
 	}
-	template<typename _Cont>
-	inline void get_points(_Cont* moves, player cur_player)
+	inline void get_points(list<pos>* moves, player cur_player)
 	{
 		for (auto i = _trajectories[cur_player].begin(); i != _trajectories[cur_player].end(); i++)
 			if (!i->excluded())
@@ -197,19 +196,25 @@ private:
 					if (find(moves->begin(), moves->end(), *j) == moves->end())
 						moves->push_back(*j);
 	}
-	void calculate_max_score(player cur_player, list<pos>* moves, size_t depth)
+	score calculate_max_score(player cur_player, size_t depth)
 	{
-		if (_field->get_score(cur_player) > _max_score[cur_player])
-			_max_score[cur_player] = _field->get_score(cur_player);
+		score result = _field->get_score(cur_player);
 		if (depth > 0)
-			for (auto i = moves->begin(); i != moves->end(); i++)
+		{
+			for (auto i = _moves[cur_player].begin(); i != _moves[cur_player].end(); i++)
 				if (_field->putting_allow(*i))
 				{
 					_field->do_unsafe_step(*i, cur_player);
 					if (_field->get_d_score(cur_player) >= 0)
-						calculate_max_score(cur_player, moves, depth - 1);
+					{
+						score cur_score = calculate_max_score(cur_player, depth - 1);
+						if (cur_score > result)
+							result = cur_score;
+					}
 					_field->undo_step();
 				}
+		}
+		return result;
 	}
 
 public:
@@ -230,8 +235,6 @@ public:
 			_trajectories_board_owner = false;
 		}
 		_zobrist = &cur_field->get_zobrist();
-		_max_score[0] = numeric_limits<score>::min();
-		_max_score[1] = numeric_limits<score>::min();
 	}
 	~trajectories()
 	{
@@ -260,10 +263,33 @@ public:
 		if (_depth[cur_player] > 0)
 			build_trajectories_recursive(_depth[cur_player] - 1, cur_player);
 	}
+	void calculate_moves()
+	{
+		exclude_composite_trajectories();
+		// Проецируем неисключенные траектории на доску.
+		project();
+		// Исключаем те траектории, у которых имеется более одной точки, принадлежащей только ей.
+		exclude_unnecessary_trajectories();
+		// Получаем список точек, входящих в оставшиеся неисключенные траектории.
+		get_points(&_moves[player_red], player_red);
+		get_points(&_moves[player_black], player_black);
+		_all_moves.assign(_moves[player_red].begin(), _moves[player_red].end());
+		for (auto i = _moves[player_black].begin(); i != _moves[player_black].end(); i++)
+			if (find(_all_moves.begin(), _all_moves.end(), *i) == _all_moves.end())
+				_all_moves.push_back(*i);
+#if ALPHABETA_SORT
+		_all_moves.sort([&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
+#endif
+		// Очищаем доску от проекций.
+		unproject();
+		// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).
+		include_all_trajectories();
+	}
 	inline void build_trajectories()
 	{
 		build_trajectories(get_cur_player());
 		build_trajectories(get_enemy_player());
+		calculate_moves();
 	}
 	void build_trajectories(trajectories* last, pos cur_pos)
 	{
@@ -277,6 +303,25 @@ public:
 			for (auto i = last->_trajectories[get_enemy_player()].begin(); i != last->_trajectories[get_enemy_player()].end(); i++)
 				if ((i->size() <= _depth[get_enemy_player()] || (i->size() == _depth[get_enemy_player()] + 1 && find(i->begin(), i->end(), cur_pos) != i->end())) && i->is_valid(_field, cur_pos))
 					add_trajectory(&(*i), cur_pos, get_enemy_player());
+
+		calculate_moves();
+	}
+	// Строит траектории с учетом предыдущих траекторий и того, что последний ход был сделан не на траектории (или не сделан вовсе).
+	void build_trajectories(trajectories* last)
+	{
+		_depth[get_cur_player()] = last->_depth[get_cur_player()];
+		_depth[get_enemy_player()] = last->_depth[get_enemy_player()] - 1;
+
+		if (_depth[get_cur_player()] > 0)
+			for (auto i = last->_trajectories[get_cur_player()].begin(); i != last->_trajectories[get_cur_player()].end(); i++)
+				add_trajectory(&(*i), get_cur_player());
+
+		if (_depth[get_enemy_player()] > 0)
+			for (auto i = last->_trajectories[get_enemy_player()].begin(); i != last->_trajectories[get_enemy_player()].end(); i++)
+				if (i->size() <= _depth[get_enemy_player()])
+					add_trajectory(&(*i), get_enemy_player());
+
+		calculate_moves();
 	}
 	inline void sort_moves(vector<pos>* moves) const
 	{
@@ -288,56 +333,13 @@ public:
 		// Сортируем точки по убыванию количества траекторий, в которые они входят.
 		moves->sort([&](pos x, pos y){ return _trajectories_board[x] < _trajectories_board[y]; });
 	}
-	// Получить список ходов и вычислить max_score.
-	template<typename _Cont>
-	void get_points(_Cont* moves)
+	// Получить список ходов.
+	inline list<pos>* get_points()
 	{
-		exclude_composite_trajectories();
-		// Проецируем неисключенные траектории на доску.
-		project();
-		// Исключаем те траектории, у которых имеется более одной точки, принадлежащей только ей.
-		exclude_unnecessary_trajectories();
-		// Получаем список точек, входящих в оставшиеся неисключенные траектории.
-		list<pos> moves1, moves2;
-		get_points(&moves1, player_red);
-		get_points(&moves2, player_black);
-		calculate_max_score(player_red, &moves1, _depth[player_red]);
-		calculate_max_score(player_black, &moves2, _depth[player_black]);
-		moves->assign(moves1.begin(), moves1.end());
-		for (auto i = moves2.begin(); i != moves2.end(); i++)
-			if (find(moves->begin(), moves->end(), *i) == moves->end())
-				moves->push_back(*i);
-#if ALPHABETA_SORT
-		sort_moves(moves);
-#endif
-		// Очищаем доску от проекций.
-		unproject();
-		// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).
-		include_all_trajectories();
-	}
-	// Получить список ходов без вычисления max_score.
-	template<typename _Cont>
-	void get_points_fast(_Cont* moves)
-	{
-		exclude_composite_trajectories();
-		// Проецируем неисключенные траектории на доску.
-		project();
-		// Исключаем те траектории, у которых имеется более одной точки, принадлежащей только ей.
-		exclude_unnecessary_trajectories();
-		// Получаем список точек, входящих в оставшиеся неисключенные траектории.
-		moves->clear();
-		get_points(moves, player_red);
-		get_points(moves, player_black);
-#if ALPHABETA_SORT
-		sort_moves(moves);
-#endif
-		// Очищаем доску от проекций.
-		unproject();
-		// После получения списка ходов обратно включаем в рассмотрение все траектории (для следующего уровня рекурсии).
-		include_all_trajectories();
+		return &_all_moves;
 	}
 	inline score get_max_score(player cur_player)
 	{
-		return _max_score[cur_player];
+		return calculate_max_score(cur_player, _depth[player_red]);
 	}
 };
