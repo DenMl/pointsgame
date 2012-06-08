@@ -41,7 +41,7 @@ pos mtdf(field* cur_field, size_t depth)
 
 	// ѕолучаем ходы из траекторий (которые имеет смысл рассматривать), и находим пересечение со входными возможными точками.
 	cur_trajectories.build_trajectories();
-	cur_trajectories.get_points(&moves);
+	moves.assign(cur_trajectories.get_points()->begin(), cur_trajectories.get_points()->end());
 	// ≈сли нет возможных ходов, вход€щих в траектории - выходим.
 	if (moves.size() == 0)
 		return -1;
