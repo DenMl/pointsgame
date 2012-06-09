@@ -114,12 +114,16 @@ namespace PointsShell.Bots
 
 		public void GetMove(PlayerColor player, Action<Pos, TimeSpan> getMoveSuccess)
 		{
-			var startTime = DateTime.Now;
-			GetMove(player, pos =>
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
 								{
-			                		if (getMoveSuccess != null)
-			                			getMoveSuccess(pos, DateTime.Now - startTime);
+									var startTime = DateTime.Now;
+			                 		var pos = _bot.GetMove(player);
+			                 		if (getMoveSuccess != null)
+										getMoveSuccess(pos, DateTime.Now - startTime);
 								});
+			ExecuteNext();
 		}
 
 		public void GetMove(PlayerColor player, Action<Pos> getMoveSuccess)
@@ -137,12 +141,16 @@ namespace PointsShell.Bots
 
 		public void GetMoveWithComplexity(PlayerColor player, int complexity, Action<Pos, TimeSpan> getMoveWithComplexitySuccess)
 		{
-			var startTime = DateTime.Now;
-			GetMoveWithComplexity(player, complexity, pos =>
-														{
-			                                          		if (getMoveWithComplexitySuccess != null)
-			                                          			getMoveWithComplexitySuccess(pos, DateTime.Now - startTime);
-														});
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+									var startTime = DateTime.Now;
+			                 		var pos = _bot.GetMoveWithComplexity(player, complexity);
+			                 		if (getMoveWithComplexitySuccess != null)
+			                 			getMoveWithComplexitySuccess(pos, DateTime.Now - startTime);
+								});
+			ExecuteNext();
 		}
 
 		public void GetMoveWithComplexity(PlayerColor player, int complexity, Action<Pos> getMoveWithComplexitySuccess)
@@ -160,12 +168,16 @@ namespace PointsShell.Bots
 
 		public void GetMoveWithTime(PlayerColor player, int time, Action<Pos, TimeSpan> getMoveWithTimeSuccess)
 		{
-			var startTime = DateTime.Now;
-			GetMoveWithTime(player, time, pos =>
-											{
-			                              		if (getMoveWithTimeSuccess != null)
-			                              			getMoveWithTimeSuccess(pos, DateTime.Now - startTime);
-											});
+			if (_error)
+				return;
+			_actions.Enqueue(() =>
+								{
+									var startTime = DateTime.Now;
+			                 		var pos = _bot.GetMoveWithTime(player, time);
+			                 		if (getMoveWithTimeSuccess != null)
+										getMoveWithTimeSuccess(pos, DateTime.Now - startTime);
+								});
+			ExecuteNext();
 		}
 
 		public void GetMoveWithTime(PlayerColor player, int time, Action<Pos> getMoveWithTimeSuccess)
