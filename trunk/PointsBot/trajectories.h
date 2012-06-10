@@ -340,6 +340,6 @@ public:
 	}
 	inline score get_max_score(player cur_player)
 	{
-		return calculate_max_score(cur_player, _depth[player_red]);
+		return calculate_max_score(cur_player, _depth[cur_player]) + _depth[next_player(cur_player)];
 	}
 };
