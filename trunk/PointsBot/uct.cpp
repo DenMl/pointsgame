@@ -295,7 +295,8 @@ pos uct_with_time(field* cur_field, mt* gen, size_t time)
 			}
 		}
 
-		final_uct(&n);
+		if (n.child != NULL)
+			final_uct(n.child);
 		delete local_gen;
 		delete local_field;
 	}
